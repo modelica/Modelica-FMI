@@ -1,0 +1,24 @@
+[project]
+name = "modelica-fmi"
+version = "0.0.1"
+description = "Import FMUs to Modelica"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "fmpy>=0.3.22",
+    "jinja2>=3.1.6",
+]
+
+[dependency-groups]
+dev = [
+    "ompython>=3.6.0",
+    "pytest>=8.3.5",
+    "requests>=2.32.3",
+]
+
+[project.scripts]
+modelica-fmi = "modelica_fmi.cli:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"

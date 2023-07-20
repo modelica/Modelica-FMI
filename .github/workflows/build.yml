@@ -1,0 +1,93 @@
+on:
+  push:
+    branches: [ main ]
+    tags: [ 'v*' ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-win32-binaries:
+    runs-on: windows-2022
+    steps:
+    - uses: actions/checkout@v4
+    - run: cmake -S ./runtime -B ./runtime/win32 -G "Visual Studio 17 2022" -A Win32
+    - run: cmake --build ./runtime/win32 --config release --target install
+    - uses: actions/upload-artifact@v4
+      with:
+       name: win32
+       path: ./FMI/Resources/Library/win32/ModelicaFMI.dll
+       if-no-files-found: error
+  build-win64-binaries:
+    runs-on: windows-2022
+    steps:
+    - uses: actions/checkout@v4
+    - run: cmake -S ./runtime -B ./runtime/win64 -G "Visual Studio 17 2022" -A x64
+    - run: cmake --build ./runtime/win64 --config release --target install
+    - uses: actions/upload-artifact@v4
+      with:
+        name: win64
+        path: ./FMI/Resources/Library/win64/ModelicaFMI.dll
+        if-no-files-found: error
+  build-linux64-binaries:
+    runs-on: ubuntu-22.04
+    steps:
+    - uses: actions/checkout@v4
+    - run: cmake -S ./runtime -B ./runtime/linux64
+    - run: cmake --build ./runtime/linux64 --target install
+    - uses: actions/upload-artifact@v4
+      with:
+        name: linux64
+        path: ./FMI/Resources/Library/linux64/libModelicaFMI.so
+        if-no-files-found: error
+  build-darwin64-binaries:
+    runs-on: macos-13
+    steps:
+    - uses: actions/checkout@v4
+    - run: cmake -S ./runtime -B ./runtime/darwin64 -D "CMAKE_OSX_ARCHITECTURES=arm64;x86_64"
+    - run: cmake --build ./runtime/darwin64 --target install
+    - uses: actions/upload-artifact@v4
+      with:
+        name: darwin64
+        path: ./FMI/Resources/Library/darwin64/libModelicaFMI.dylib
+        if-no-files-found: error
+  build-modelica-library:
+    runs-on: ubuntu-22.04
+    needs: [build-win32-binaries, build-win64-binaries, build-linux64-binaries, build-darwin64-binaries]
+    steps:
+    - uses: actions/checkout@v4
+    - uses: actions/download-artifact@v4
+      with:
+        name: win32
+        path: ./FMI/Resources/Library/win32/
+    - uses: actions/download-artifact@v4
+      with:
+        name: win64
+        path: ./FMI/Resources/Library/win64/
+    - uses: actions/download-artifact@v4
+      with:
+        name: linux64
+        path: ./FMI/Resources/Library/linux64/
+    - uses: actions/download-artifact@v4
+      with:
+        name: darwin64
+        path: ./FMI/Resources/Library/darwin64/
+    - run: tree
+    - uses: actions/upload-artifact@v4
+      with:
+        name: Modelica-FMI
+        path: |
+          FMI/
+          LICENSE
+          README.md
+        if-no-files-found: error
+  build-python-wheel:
+    runs-on: ubuntu-22.04
+    steps:
+    - uses: actions/checkout@v4
+    - uses: astral-sh/setup-uv@v4
+    - run: uv build modelica_fmi
+    - uses: actions/upload-artifact@v4
+      with:
+        name: dist
+        path: modelica_fmi/dist/*.whl
+        if-no-files-found: error
