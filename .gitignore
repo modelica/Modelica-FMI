@@ -1,0 +1,4 @@
+.idea
+*.bak-mo
+__pycache__
+*.zip
