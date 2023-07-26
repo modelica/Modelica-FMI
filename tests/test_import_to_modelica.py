@@ -45,7 +45,7 @@ def test_run_examples_in_om(root_dir, reference_fmus_dist_dir, work_dir, fmi_ver
 
     omc = OMCSessionZMQ()
 
-    package = root_dir / 'FMI' / 'package.mo'
+    package = os.path.join(root_dir, 'FMI', 'package.mo')
 
     assert omc.sendExpression(f'cd("{work_dir.as_posix()}")')
 
@@ -66,7 +66,7 @@ def test_run_examples_in_om(root_dir, reference_fmus_dist_dir, work_dir, fmi_ver
 
     result = Dsres(info['resultFile'])
 
-    filename = str(reference_fmus_dist_dir / f'{fmi_version}.0' / f'{model}.fmu')
+    filename = os.path.join(reference_fmus_dist_dir, f'{fmi_version}.0', f'{model}.fmu')
 
     model_description = read_model_description(filename)
 
@@ -86,7 +86,7 @@ def test_run_examples_in_om(root_dir, reference_fmus_dist_dir, work_dir, fmi_ver
 @pytest.mark.parametrize('fmi_version, interface_type, model', product(fmi_versions, interface_types, models))
 def test_run_examples_in_dymola(dymola, root_dir, reference_fmus_dist_dir, fmi_version, interface_type, model):
 
-    dymola.loadClass(root_dir / 'FMI' / 'package.mo')
+    dymola.loadClass(os.path.join(root_dir, 'FMI', 'package.mo'))
 
     start_values = {}
     stop_time = None
@@ -98,7 +98,7 @@ def test_run_examples_in_dymola(dymola, root_dir, reference_fmus_dist_dir, fmi_v
     elif model == 'VanDerPol':
         start_values = {'mu': 2.5}
 
-    filename = str(reference_fmus_dist_dir / f'{fmi_version}.0' / f'{model}.fmu')
+    filename = os.path.join(reference_fmus_dist_dir, f'{fmi_version}.0', f'{model}.fmu')
 
     model_description = read_model_description(filename)
 
@@ -120,4 +120,4 @@ def test_run_examples_in_dymola(dymola, root_dir, reference_fmus_dist_dir, fmi_v
 
     for name, expected in intial_values.items():
         actual = result[name]
-        assert np.allclose(actual, expected)
+        np.testing.assert_allclose(actual, expected)
