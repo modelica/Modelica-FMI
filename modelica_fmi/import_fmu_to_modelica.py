@@ -1,4 +1,4 @@
-def import_fmu_to_modelica(fmu_path, model_path, interface_type):
+def import_fmu_to_modelica(fmu_path, model_path, interface_type, variables=None):
 
     from os import makedirs
     from pathlib import Path
@@ -65,6 +65,9 @@ def import_fmu_to_modelica(fmu_path, model_path, interface_type):
     outputs = []
 
     for variable in model_description.modelVariables:
+
+        if variables is not None and variable.name not in variables:
+            continue
 
         if variable.type not in {'Float64', 'Int32', 'Real', 'Integer', 'Boolean', 'String'}:
             continue
