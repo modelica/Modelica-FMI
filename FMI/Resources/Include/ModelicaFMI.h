@@ -8,6 +8,14 @@
 #define EXPORT __attribute__((visibility("default")))
 #endif
 
+typedef struct {
+
+    FILE* logFile;
+    char* valueBuffer;
+    size_t valueBufferSize;
+
+} FMU_UserData;
+
 EXPORT void* FMU_load(
     const char* unzipdir,
     int fmiVersion,

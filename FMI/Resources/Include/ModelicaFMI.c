@@ -43,12 +43,16 @@ static void logFunctionCall(FMIInstance* instance, FMIStatus status, const char*
         break;
     }
 
-    FILE* logFile = (FILE*)instance->userData;
+    if (instance->userData) {
 
-    if (logFile) {
-        fprintf(logFile, "[%s] ", instance->name);
-        vfprintf(logFile, message, args);
-        fprintf(logFile, suffix);
+        FILE* logFile = ((FMU_UserData*)instance->userData)->logFile;
+        
+        if (logFile) {
+            fprintf(logFile, "[%s] ", instance->name);
+            vfprintf(logFile, message, args);
+            fprintf(logFile, suffix);
+        }
+
     } else {
         ModelicaFormatMessage("[%s] ", instance->name);
         ModelicaVFormatMessage(message, args);
@@ -78,12 +82,17 @@ void* FMU_load(
 
     FMIInstance* S = FMICreateInstance(instanceName, platformBinaryPath, logMessage, logFMICalls ? logFunctionCall : NULL);
 
-    if (logToFile && logFile) {
-        S->userData = fopen(logFile, "w");
-    }
-
     if (!S) {
         ModelicaFormatError("Failed to load platform binary %s.", platformBinaryPath);
+    }
+
+    S->userData = calloc(1, sizeof(FMU_UserData));
+
+    if (logToFile && logFile) {
+
+        FMU_UserData* userData = (FMU_UserData*)S->userData;
+
+        userData->logFile = fopen(logFile, "w");
     }
 
     char resourcePath[4096] = "";
@@ -139,5 +148,17 @@ void FMU_free(void* instance) {
     // TODO: terminate
 
     FMIInstance* S = (FMIInstance*)instance;
+
+    if (S->userData) {
+
+        FMU_UserData* userData = (FMU_UserData*)S->userData;
+
+        if (userData->valueBuffer) {
+            free(userData->valueBuffer);
+        }
+
+        free(userData);
+    }
+
     FMIFreeInstance(S);
 }
