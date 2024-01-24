@@ -1,4 +1,5 @@
 #include <math.h>
+#include <float.h>
 
 #include "ModelicaUtilities.h"
 #include "ModelicaFMI3.h"
@@ -37,6 +38,24 @@ void FMU_FMI3EnterEventMode(void* instance) {
     CALL(FMI3EnterEventMode((FMIInstance*)instance));
 }
 
+void FMU_FMI3GetFloat32(void* instance, const int valueReferences[], int nValueReferences, double values[]) {
+
+    if (nValueReferences == 0) return;
+
+    FMU_UserData* userData = ((FMIInstance*)instance)->userData;
+
+    if (userData->valueBufferSize < nValueReferences * sizeof(fmi3Float32)) {
+        userData->valueBuffer = (char*)realloc(userData->valueBuffer, nValueReferences * sizeof(fmi3Float32));
+        userData->valueBufferSize = nValueReferences * sizeof(fmi3Float32);
+    }
+
+    CALL(FMI3GetFloat32((FMIInstance*)instance, valueReferences, nValueReferences, (fmi3Float32*)userData->valueBuffer, nValueReferences));
+
+    for (size_t i = 0; i < nValueReferences; i++) {
+        values[i] = ((fmi3Float32*)userData->valueBuffer)[i];
+    }
+}
+
 void FMU_FMI3GetFloat64(void* instance, const int valueReferences[], int nValueReferences, double values[]) {
     if (nValueReferences > 0) CALL(FMI3GetFloat64((FMIInstance*)instance, valueReferences, nValueReferences, values, nValueReferences));
 }
@@ -47,6 +66,29 @@ void FMU_FMI3GetInt32(void* instance, const int valueReferences[], int nValueRef
 
 void FMU_FMI3GetBoolean(void* instance, const int valueReferences[], int nValueReferences, int values[]) {
     if (nValueReferences > 0) CALL(FMI3GetBoolean((FMIInstance*)instance, valueReferences, nValueReferences, (fmi3Boolean*)values, nValueReferences));
+}
+
+void FMU_FMI3SetFloat32(void* instance, const int valueReferences[], int nValueReferences, const double values[]) {
+
+    if (nValueReferences == 0) return;
+
+    FMU_UserData* userData = ((FMIInstance*)instance)->userData;
+
+    if (userData->valueBufferSize < nValueReferences * sizeof(fmi3Float32)) {
+        userData->valueBuffer = (char*)realloc(userData->valueBuffer, nValueReferences * sizeof(fmi3Float32));
+        userData->valueBufferSize = nValueReferences * sizeof(fmi3Float32);
+    }
+
+    for (size_t i = 0; i < nValueReferences; i++) {
+
+        if (values[i] < -FLT_MAX || values[i] > FLT_MAX) {
+            ModelicaFormatError("Value exceeds allowed range of fmi3Float32.");
+        }
+
+        ((fmi3Float32*)userData->valueBuffer)[i] = (fmi3Float32)values[i];
+    }
+
+    CALL(FMI3SetFloat32((FMIInstance*)instance, valueReferences, nValueReferences, (fmi3Float32*)userData->valueBuffer, nValueReferences));
 }
 
 void FMU_FMI3SetFloat64(void* instance, const int valueReferences[], int nValueReferences, const double values[]) {

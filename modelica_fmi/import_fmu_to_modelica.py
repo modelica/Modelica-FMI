@@ -69,7 +69,7 @@ def import_fmu_to_modelica(fmu_path, model_path, interface_type, variables=None)
         if variables is not None and variable.name not in variables:
             continue
 
-        if variable.type not in {'Float64', 'Int32', 'Real', 'Integer', 'Boolean', 'String'}:
+        if variable.type not in {'Float32', 'Float64', 'Int32', 'Real', 'Integer', 'Boolean', 'String'}:
             continue
 
         if variable.causality == 'parameter':
