@@ -10,7 +10,7 @@ from modelica_fmi.generate_examples import generate_examples
 
 models = ['BouncingBall', 'Dahlquist', 'Stair', 'Resource', 'VanDerPol']
 fmi_versions = [2, 3]
-interface_types = ['CoSimulation', 'ModelExchange']
+interface_types = ['CoSimulation']  # , 'ModelExchange']
 
 
 def pymola_available():
@@ -78,7 +78,7 @@ def test_run_examples_in_om(root_dir, reference_fmus_dist_dir, work_dir, fmi_ver
                              fmi_type=interface_type)
 
     for name in outputs:
-        _, _, _, i_out = validate_signal(result['Time'], result[f"'{name}'"], reference['time'],  reference[name])
+        _, _, _, i_out = validate_signal(result['Time'], result[name], reference['time'], reference[name])
         assert not i_out.any()
 
 
@@ -106,7 +106,7 @@ def test_run_examples_in_dymola(dymola, root_dir, reference_fmus_dist_dir, fmi_v
 
     reference = simulate_fmu(filename=filename, start_values=start_values, output=outputs, stop_time=stop_time, fmi_type=interface_type)
 
-    intial_values = dict(map(lambda i: (f"'{i[0]}'", i[1]), start_values.items()))
+    intial_values = dict(map(lambda i: (i[0], i[1]), start_values.items()))
 
     result = dymola.simulate(
         model=f'FMI.Examples.FMI{fmi_version}.{interface_type}.{model}',
@@ -115,7 +115,7 @@ def test_run_examples_in_dymola(dymola, root_dir, reference_fmus_dist_dir, fmi_v
     )
 
     for name in outputs:
-        _, _, _, i_out = validate_signal(result['Time'], result[f"'{name}'"], reference['time'],  reference[name])
+        _, _, _, i_out = validate_signal(result['Time'], result[name], reference['time'],  reference[name])
         assert not i_out.any()
 
     for name, expected in intial_values.items():

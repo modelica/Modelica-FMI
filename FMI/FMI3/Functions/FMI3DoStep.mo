@@ -1,8 +1,9 @@
 within FMI.FMI3.Functions;
 impure function FMI3DoStep
+  extends Modelica.Icons.Function;
   input Internal.ExternalFMU externalFMU;
     input Real currentCommunicationPoint;
     input Real communicationStepSize;
     external"C" FMU_FMI3DoStep(externalFMU, currentCommunicationPoint, communicationStepSize) annotation (Include="#include \"ModelicaFMI.h\"");
-  annotation ();
+  annotation();
 end FMI3DoStep;

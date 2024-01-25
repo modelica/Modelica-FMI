@@ -10,11 +10,11 @@
 Common Functions
 ****************************************************/
 
-EXPORT void FMU_FMI2GetReal(void* instance, const int vr[], int nvr, double value[]);
+EXPORT void FMU_FMI2GetReal(void* instance, int vr, double* value);
 
-EXPORT void FMU_FMI2GetInteger(void* instance, const int vr[], int nvr, int value[]);
+EXPORT void FMU_FMI2GetInteger(void* instance, int vr, int* value);
 
-EXPORT void FMU_FMI2GetBoolean(void* instance, const int vr[], int nvr, int value[]);
+EXPORT void FMU_FMI2GetBoolean(void* instance, int vr, int* value);
 
 EXPORT void FMU_FMI2SetReal(void* instance, const int vr[], int nvr, const double value[]);
 

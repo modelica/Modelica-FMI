@@ -1,5 +1,6 @@
 within FMI.FMI3.Functions;
 impure function FMI3EnterInitializationMode
+  extends Modelica.Icons.Function;
   input Internal.ExternalFMU externalFMU;
   input Boolean toleranceDefined;
   input Real tolerance;

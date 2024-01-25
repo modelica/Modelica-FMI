@@ -1,5 +1,6 @@
 within FMI.FMI3.Functions;
 impure function FMI3UpdateDiscreteStates
+  extends Modelica.Icons.Function;
   input Internal.ExternalFMU externalFMU;
     output Boolean valuesOfContinuousStatesChanged;
     output Real nextEventTime;

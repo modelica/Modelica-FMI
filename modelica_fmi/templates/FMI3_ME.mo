@@ -80,13 +80,13 @@
 initial algorithm
 
 @@ for variable in parameters @@
-  FMI3Set@=variable.type=@(instance, {@=variable.valueReference=@}, 1, {'@=variable.name=@'});
+  FMI3Set@=fmi_type(variable)=@(instance, {@=variable.valueReference=@}, 1, {'@=variable.name=@'});
 @@ endfor @@
 
   FMI3EnterInitializationMode(instance, tolerance > 0.0, tolerance, startTime, stopTime < Modelica.Constants.inf, stopTime);
 
 @@ for variable in inputs @@
-  FMI3Set@=variable.type=@(instance, {@=variable.valueReference=@}, 1, {'@=variable.name=@_start'});
+  FMI3Set@=fmi_type(variable)=@(instance, {@=variable.valueReference=@}, 1, {'@=variable.name=@_start'});
 @@ endfor @@
 
   FMI3ExitInitializationMode(instance);
@@ -139,24 +139,24 @@ algorithm
     FMI3SetTime(instance, instanceStartTime);
 @@ for variable in inputs @@
 @@ if variable.type != 'Float64' @@
-    // FMI3Set@=variable.type=@(instance, {@=variable.valueReference=@}, 1, {'@=variable.name=@'});
+    // FMI3Set@=fmi_type(variable)=@(instance, {@=variable.valueReference=@}, 1, {'@=variable.name=@'});
 @@ endif @@
 @@ endfor @@
 @@ for variable in outputs @@
 @@ if variable.type != 'Float64' @@
-    '@=variable.name=@' := FMI3Get@=variable.type=@Scalar(instance, @=variable.valueReference=@, instanceStartTime);
+    '@=variable.name=@' := FMI3Get@=fmi_type(variable)=@Scalar(instance, @=variable.valueReference=@, instanceStartTime);
 @@ endif @@
 @@ endfor @@
   else
     FMI3SetTime(instance, instanceTime);
 @@ for variable in inputs @@
 @@ if variable.type != 'Float64' @@
-    // FMI3Set@=variable.type=@(instance, {@=variable.valueReference=@}, 1, {'@=variable.name=@'});
+    // FMI3Set@=fmi_type(variable)=@(instance, {@=variable.valueReference=@}, 1, {'@=variable.name=@'});
 @@ endif @@
 @@ endfor @@
 @@ for variable in outputs @@
 @@ if variable.type != 'Float64' @@
-    '@=variable.name=@' := FMI3Get@=variable.type=@Scalar(instance, @=variable.valueReference=@, instanceTime);
+    '@=variable.name=@' := FMI3Get@=fmi_type(variable)=@Scalar(instance, @=variable.valueReference=@, instanceTime);
 @@ endif @@
 @@ endfor @@  end if;
 @@ endblock @@

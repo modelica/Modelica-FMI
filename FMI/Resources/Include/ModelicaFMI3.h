@@ -22,19 +22,31 @@ EXPORT void FMU_FMI3ExitInitializationMode(void* instance);
 
 EXPORT void FMU_FMI3EnterEventMode(void* instance);
 
-EXPORT void FMU_FMI3GetFloat64(void* instance, const int valueReferences[], int nValueReferences, double values[]);
+EXPORT void FMU_FMI3EnterConfigurationMode(void* instance);
 
-EXPORT void FMU_FMI3GetInt32(void* instance, const int valueReferences[], int nValueReferences, int values[]);
+EXPORT void FMU_FMI3ExitConfigurationMode(void* instance);
 
-EXPORT void FMU_FMI3GetBoolean(void* instance, const int valueReferences[], int nValueReferences, int values[]);
+EXPORT void FMU_FMI3GetFloat32(void* instance, int valueReference, double values[], int nValues);
 
-EXPORT void FMU_FMI3SetFloat64(void* instance, const int valueReferences[], int nValueReferences, const double values[]);
+EXPORT void FMU_FMI3GetFloat64(void* instance, int valueReference, double values[], int nValues);
 
-EXPORT void FMU_FMI3SetInt32(void* instance, const int valueReferences[], int nValueReferences, const int values[]);
+EXPORT void FMU_FMI3GetInt32(void* instance, int valueReference, int values[], int nValues);
 
-EXPORT void FMU_FMI3SetBoolean(void* instance, const int valueReferences[], int nValueReferences, const int values[]);
+EXPORT void FMU_FMI3GetInt64(void* instance, int valueReference, int values[], int nValues);
 
-EXPORT void FMU_FMI3SetString(void* instance, const int valueReferences[], int nValueReferences, const char* values[]);
+EXPORT void FMU_FMI3GetBoolean(void* instance, int valueReference, int values[], int nValues);
+
+EXPORT void FMU_FMI3SetFloat32(void* instance, int valueReferences[], int nValueReferences, const double values[], int nValues);
+
+EXPORT void FMU_FMI3SetFloat64(void* instance, int valueReferences[], int nValueReferences, const double values[], int nValues);
+
+EXPORT void FMU_FMI3SetInt32(void* instance, int valueReferences[], int nValueReferences, const int values[], int nValues);
+
+EXPORT void FMU_FMI3SetInt64(void* instance, int valueReferences[], int nValueReferences, const int values[], int nValues);
+
+EXPORT void FMU_FMI3SetBoolean(void* instance, int valueReferences[], int nValueReferences, const int values[], int nValues);
+
+EXPORT void FMU_FMI3SetString(void* instance, int valueReferences[], int nValueReferences, const char* values[], int nValues);
 
 EXPORT void FMU_FMI3UpdateDiscreteStates(void* instance, int* valuesOfContinuousStatesChanged, double* nextEventTime);
 

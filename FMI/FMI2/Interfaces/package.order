@@ -1,6 +1,6 @@
-RealInput
-RealOutput
-IntegerInput
-IntegerOutput
-BooleanInput
-BooleanOutput
+FMI2RealInput
+FMI2RealOutput
+FMI2IntegerInput
+FMI2IntegerOutput
+FMI2BooleanInput
+FMI2BooleanOutput

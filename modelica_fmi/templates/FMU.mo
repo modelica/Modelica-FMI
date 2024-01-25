@@ -8,8 +8,6 @@ model @=modelName=@
 @@ block imports @@
 @@ endblock @@
 
-  parameter Modelica.Units.SI.Time startTime = 0.0 annotation(Dialog(tab="FMI", group="Parameters"));
-
   parameter Modelica.Units.SI.Time stopTime = Modelica.Constants.inf annotation(Dialog(tab="FMI", group="Parameters"));
 
   parameter Real tolerance = 0.0 annotation(Dialog(tab="FMI", group="Parameters"));
@@ -27,19 +25,19 @@ model @=modelName=@
 @@ endblock @@
 @@ for variable in parameters @@
 
-  parameter @=variable.type=@ '@=variable.name=@'@=attributes(variable)=@ = @=start_value(variable)=@@@ if variable.description @@ "@=variable.description=@"@@ endif @@;
+  parameter @=fmi_type(variable, prefix=True)=@ @=name(variable)=@@@ if variable.dimensions @@@=subscripts(variable)=@@@ endif @@@=attributes(variable)=@ = @=start_value(variable)=@@@ if variable.description @@ "@=variable.description=@"@@ endif @@@=choices(variable)=@;
 @@ endfor @@
 @@ for variable in inputs @@
 
-  parameter @=variable.type=@ '@=variable.name=@_start'@=attributes(variable)=@ = @=start_value(variable)=@;
+  parameter @=fmi_type(variable, prefix=True)=@ @=name(variable, '_start')=@@=subscripts(variable)=@@=attributes(variable)=@ = @=start_value(variable)=@;
 @@ endfor @@
 @@ for variable in inputs @@
 
-  @=variable.type=@Input '@=variable.name=@'@=attributes(variable, start=True)=@ @=annotations[variable.name]=@;
+  @=fmi_type(variable, prefix=True)=@Input @=name(variable)=@@=subscripts(variable)=@@=attributes(variable, start=True)=@ @=annotations[variable.name]=@;
 @@ endfor @@
 @@ for variable in outputs @@
 
-  @=variable.type=@Output '@=variable.name=@'@=attributes(variable)=@ @=annotations[variable.name]=@;
+  @=fmi_type(variable, prefix=True)=@Output @=name(variable)=@@=subscripts(variable)=@@=attributes(variable)=@ @=annotations[variable.name]=@;
 @@ endfor @@
 
 protected

@@ -20,3 +20,5 @@ FMI2SetContinuousStates
 FMI2GetDerivatives
 FMI2GetEventIndicators
 FMI2GetContinuousStates
+FMI2GetInitialReal
+FMI2GetString

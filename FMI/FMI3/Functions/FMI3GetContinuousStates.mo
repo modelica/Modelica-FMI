@@ -1,5 +1,6 @@
 within FMI.FMI3.Functions;
 impure function FMI3GetContinuousStates
+  extends Modelica.Icons.Function;
   input Internal.ExternalFMU instance;
     output Real continuousStates[nContinuousStates];
     input Integer nContinuousStates;

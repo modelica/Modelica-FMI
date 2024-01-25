@@ -33,7 +33,7 @@ typedef enum {
 
 typedef enum {
 
-    // FMI 3.0 variable types
+    /* FMI 3.0 variable types */
     FMIFloat32Type,
     FMIDiscreteFloat32Type,
     FMIFloat64Type,
@@ -51,11 +51,11 @@ typedef enum {
     FMIBinaryType,
     FMIClockType,
 
-    // non-variable types used as parameters
+    /* non-variable types used as parameters */
     FMIValueReferenceType,
     FMISizeTType,
 
-    // aliases for FMI 1.0 and 2.0 variable types
+    /* aliases for FMI 1.0 and 2.0 variable types */
     FMIRealType         = FMIFloat64Type,
     FMIDiscreteRealType = FMIDiscreteFloat64Type,
     FMIIntegerType      = FMIInt32Type,
@@ -79,11 +79,11 @@ typedef enum {
     FMI2InstantiatedState       = 1 << 1,
     FMI2InitializationModeState = 1 << 2,
 
-    // model exchange states
+    /* model exchange states */
     FMI2EventModeState          = 1 << 3,
     FMI2ContinuousTimeModeState = 1 << 4,
 
-    // co-simulation states
+    /* co-simulation states */
     FMI2StepCompleteState       = 1 << 5,
     FMI2StepInProgressState     = 1 << 6,
     FMI2StepFailedState         = 1 << 7,

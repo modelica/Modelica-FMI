@@ -1,5 +1,6 @@
 @@ extends "FMU.mo" @@
 @@ block imports @@
+  import FMI.FMI2.Types.*;
   import FMI.FMI2.Interfaces.*;
   import FMI.FMI2.Functions.*;
 @@ endblock @@
@@ -12,6 +13,7 @@
   final constant Integer integerInputVRs[@=integerInputVRs|length=@] = @=as_array(integerInputVRs, '0')=@;
   final constant Integer booleanInputVRs[@=booleanInputVRs|length=@] = @=as_array(booleanInputVRs, '0')=@;
 
+  parameter Real startTime(fixed=false);
   parameter Real instanceStartTime(fixed=false);
 
   Real x[nx];
@@ -81,13 +83,13 @@ initial algorithm
   FMI2SetupExperiment(instance, tolerance > 0.0, tolerance, startTime, stopTime < Modelica.Constants.inf, stopTime);
 
 @@ for variable in parameters @@
-  FMI2Set@=variable.type=@(instance, {@=variable.valueReference=@}, 1, {'@=variable.name=@'});
+  FMI2Set@=fmi_type(variable)=@(instance, {@=variable.valueReference=@}, 1, {@=name(variable)=@});
 @@ endfor @@
 
   FMI2EnterInitializationMode(instance);
 
 @@ for variable in inputs @@
-  FMI2Set@=variable.type=@(instance, {@=variable.valueReference=@}, 1, {'@=variable.name=@_start'});
+  FMI2Set@=fmi_type(variable)=@(instance, {@=variable.valueReference=@}, 1, {'@=variable.name=@_start'});
 @@ endfor @@
 
   FMI2ExitInitializationMode(instance);
@@ -124,13 +126,13 @@ equation
   if initial() then
 @@ for variable in outputs @@
 @@ if variable.type == 'Real' @@
-    '@=variable.name=@' = FMI2GetRealScalar(instance, @=variable.valueReference=@, instanceStartTime);
+    @=name(variable)=@ = FMI2GetRealScalar(instance, @=variable.valueReference=@, instanceStartTime);
 @@ endif @@
 @@ endfor @@
   else
 @@ for variable in outputs @@
 @@ if variable.type == 'Real' @@
-    '@=variable.name=@' = FMI2GetRealScalar(instance, @=variable.valueReference=@, instanceTime);
+    @=name(variable)=@ = FMI2GetRealScalar(instance, @=variable.valueReference=@, instanceTime);
 @@ endif @@
 @@ endfor @@
   end if;
@@ -140,24 +142,24 @@ algorithm
     FMI2SetTime(instance, instanceStartTime);
 @@ for variable in inputs @@
 @@ if variable.type != 'Real' @@
-    // FMI2Set@=variable.type=@(instance, {@=variable.valueReference=@}, 1, {'@=variable.name=@'});
+    // FMI2Set@=fmi_type(variable)=@(instance, {@=variable.valueReference=@}, 1, {@=name(variable)=@});
 @@ endif @@
 @@ endfor @@
 @@ for variable in outputs @@
 @@ if variable.type != 'Real' @@
-    '@=variable.name=@' := FMI2Get@=variable.type=@Scalar(instance, @=variable.valueReference=@);
+    @=name(variable)=@ := FMI2Get@=fmi_type(variable)=@Scalar(instance, @=variable.valueReference=@);
 @@ endif @@
 @@ endfor @@
   else
     FMI2SetTime(instance, instanceTime);
 @@ for variable in inputs @@
 @@ if variable.type != 'Real' @@
-    // FMI2Set@=variable.type=@(instance, {@=variable.valueReference=@}, 1, {'@=variable.name=@'});
+    // FMI2Set@=fmi_type(variable)=@(instance, {@=variable.valueReference=@}, 1, {@=name(variable)=@});
 @@ endif @@
 @@ endfor @@
 @@ for variable in outputs @@
 @@ if variable.type != 'Real' @@
-    '@=variable.name=@' := FMI2Get@=variable.type=@Scalar(instance, @=variable.valueReference=@);
+    @=name(variable)=@ := FMI2Get@=fmi_type(variable)=@Scalar(instance, @=variable.valueReference=@);
 @@ endif @@
 @@ endfor @@  end if;
 @@ endblock @@

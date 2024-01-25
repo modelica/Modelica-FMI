@@ -5,5 +5,9 @@ impure function FMI2GetBooleanScalar
   input Real t = 0;
   output Boolean value;
 algorithm
-  value :=scalar(FMI2GetBoolean(externalFMU, {valueReference}, 1));
+  value :=scalar(
+    FMI2GetBoolean(
+      externalFMU,
+      {valueReference},
+      1));
 end FMI2GetBooleanScalar;

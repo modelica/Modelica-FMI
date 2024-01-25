@@ -5,5 +5,5 @@ impure function FMI2GetRealScalar
   input Real t = 0;
   output Real value;
 algorithm
-  value :=scalar(FMI2GetReal(externalFMU, {valueReference}, 1));
+  value := FMI2GetReal(externalFMU, valueReference);
 end FMI2GetRealScalar;

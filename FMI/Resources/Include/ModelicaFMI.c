@@ -43,7 +43,7 @@ static void logFunctionCall(FMIInstance* instance, FMIStatus status, const char*
         break;
     }
 
-    if (instance->userData) {
+    if (instance->userData && ((FMU_UserData*)instance->userData)->logFile) {
 
         FILE* logFile = ((FMU_UserData*)instance->userData)->logFile;
         
@@ -116,23 +116,23 @@ void* FMU_load(
     } else {
         status = interfaceType == FMIModelExchange ?
             FMI3InstantiateModelExchange(
-                S,                  // instance,
-                instantiationToken, // instantiationToken,
-                resourcePath,       // resourcePath,
-                visible,            // visible,
-                loggingOn           // loggingOn
+                S,                  /* instance, */
+                instantiationToken, /* instantiationToken, */
+                resourcePath,       /* resourcePath, */
+                visible,            /* visible, */
+                loggingOn           /* loggingOn */
             ) :
             FMI3InstantiateCoSimulation(
-                S,                  // instance,
-                instantiationToken, // instantiationToken,
-                resourcePath,       // resourcePath,
-                visible,            // visible,
-                loggingOn,          // loggingOn,
-                fmi3False,          // eventModeUsed,
-                fmi3False,          // earlyReturnAllowed,
-                NULL,               // requiredIntermediateVariables[],
-                0,                  // nRequiredIntermediateVariables,
-                NULL                // intermediateUpdate
+                S,                  /* instance, */
+                instantiationToken, /* instantiationToken, */
+                resourcePath,       /* resourcePath, */
+                visible,            /* visible, */
+                loggingOn,          /* loggingOn, */
+                fmi3False,          /* eventModeUsed, */
+                fmi3False,          /* earlyReturnAllowed, */
+                NULL,               /* requiredIntermediateVariables[], */
+                0,                  /* nRequiredIntermediateVariables, */
+                NULL                /* intermediateUpdate */
             );
     }
 
@@ -145,7 +145,7 @@ void* FMU_load(
 
 void FMU_free(void* instance) {
 
-    // TODO: terminate
+    /* TODO: terminate */
 
     FMIInstance* S = (FMIInstance*)instance;
 
@@ -161,4 +161,23 @@ void FMU_free(void* instance) {
     }
 
     FMIFreeInstance(S);
+}
+
+void* FMU_getBuffer(void* instance, size_t size) {
+
+    FMU_UserData* userData = ((FMIInstance*)instance)->userData;
+
+    if (userData->valueBufferSize < size) {
+
+        void* temp = realloc(userData->valueBuffer, size);
+        
+        if (!temp) {
+            ModelicaFormatError("Failed to allocate memory for value buffer.");
+        }
+        
+        userData->valueBuffer = (char*)temp;
+        userData->valueBufferSize = size;
+    }
+
+    return userData->valueBuffer;
 }

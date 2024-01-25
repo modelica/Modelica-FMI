@@ -1,8 +1,12 @@
 within FMI.FMI2.Functions;
 impure function FMI2SetInteger
+  extends Modelica.Icons.Function;
+
   input Internal.ExternalFMU externalFMU;
-    input Integer vr[nvr];
-    input Integer nvr;
-    input Integer value[nvr];
-    external"C" FMU_FMI2SetInteger(externalFMU, vr, nvr, value) annotation (Include="#include \"ModelicaFMI.h\"");
+  input FMI.FMI2.Types.FMI2ValueReference valueReferences[nValues];
+  input Integer nValues;
+  input FMI.FMI2.Types.FMI2Integer values[nValues];
+
+  external"C" FMU_FMI2SetInteger(externalFMU, valueReferences, nValues, values) annotation (Include="#include \"ModelicaFMI.h\"");
+
 end FMI2SetInteger;

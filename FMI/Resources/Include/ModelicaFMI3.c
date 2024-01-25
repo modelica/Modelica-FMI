@@ -1,4 +1,5 @@
 #include <math.h>
+#include <limits.h>
 #include <float.h>
 
 #include "ModelicaUtilities.h"
@@ -38,73 +39,120 @@ void FMU_FMI3EnterEventMode(void* instance) {
     CALL(FMI3EnterEventMode((FMIInstance*)instance));
 }
 
-void FMU_FMI3GetFloat32(void* instance, const int valueReferences[], int nValueReferences, double values[]) {
+void FMU_FMI3EnterConfigurationMode(void* instance) {
+    CALL(FMI3EnterConfigurationMode((FMIInstance*)instance));
+}
 
-    if (nValueReferences == 0) return;
+void FMU_FMI3ExitConfigurationMode(void* instance) {
+    CALL(FMI3ExitConfigurationMode((FMIInstance*)instance));
+}
 
-    FMU_UserData* userData = ((FMIInstance*)instance)->userData;
+void FMU_FMI3GetFloat32(void* instance, int valueReference, double values[], int nValues) {
 
-    if (userData->valueBufferSize < nValueReferences * sizeof(fmi3Float32)) {
-        userData->valueBuffer = (char*)realloc(userData->valueBuffer, nValueReferences * sizeof(fmi3Float32));
-        userData->valueBufferSize = nValueReferences * sizeof(fmi3Float32);
+    size_t i;
+
+    const fmi3ValueReference vr = valueReference;
+
+    fmi3Float32* buffer = (fmi3Float32*)FMU_getBuffer((FMIInstance*)instance, nValues * sizeof(fmi3Float32));
+
+    CALL(FMI3GetFloat32((FMIInstance*)instance, &vr, 1, buffer, nValues));
+
+    for (i = 0; i < nValues; i++) {
+        values[i] = buffer[i];
     }
+}
 
-    CALL(FMI3GetFloat32((FMIInstance*)instance, valueReferences, nValueReferences, (fmi3Float32*)userData->valueBuffer, nValueReferences));
+void FMU_FMI3GetFloat64(void* instance, int valueReference, double values[], int nValues) {
+    const fmi3ValueReference vr = valueReference;
+    CALL(FMI3GetFloat64((FMIInstance*)instance, &vr, 1, values, nValues));
+}
 
-    for (size_t i = 0; i < nValueReferences; i++) {
-        values[i] = ((fmi3Float32*)userData->valueBuffer)[i];
+void FMU_FMI3GetInt32(void* instance, int valueReference, int values[], int nValues) {
+    const fmi3ValueReference vr = valueReference;
+    CALL(FMI3GetInt32((FMIInstance*)instance, &vr, 1, values, nValues));
+}
+
+void FMU_FMI3GetInt64(void* instance, int valueReference, int values[], int nValues) {
+
+    size_t i;
+
+    const fmi3ValueReference vr = valueReference;
+
+    fmi3Int64* buffer = (fmi3Int64*)FMU_getBuffer((FMIInstance*)instance, nValues * sizeof(fmi3Int64));
+
+    CALL(FMI3GetInt64((FMIInstance*)instance, &vr, 1, buffer, nValues));
+
+    for (i = 0; i < nValues; i++) {
+        const fmi3Int64 value = buffer[i];
+        if (value < INT_MIN || value > INT_MAX) {
+            ModelicaFormatError("Value exceeds allowed range of Integer.");
+        }
+        values[i] = (int)value;
     }
 }
 
-void FMU_FMI3GetFloat64(void* instance, const int valueReferences[], int nValueReferences, double values[]) {
-    if (nValueReferences > 0) CALL(FMI3GetFloat64((FMIInstance*)instance, valueReferences, nValueReferences, values, nValueReferences));
-}
+void FMU_FMI3GetBoolean(void* instance, int valueReference, int values[], int nValues) {
 
-void FMU_FMI3GetInt32(void* instance, const int valueReferences[], int nValueReferences, int values[]) {
-    if (nValueReferences > 0) CALL(FMI3GetInt32((FMIInstance*)instance, valueReferences, nValueReferences, values, nValueReferences));
-}
+    size_t i;
 
-void FMU_FMI3GetBoolean(void* instance, const int valueReferences[], int nValueReferences, int values[]) {
-    if (nValueReferences > 0) CALL(FMI3GetBoolean((FMIInstance*)instance, valueReferences, nValueReferences, (fmi3Boolean*)values, nValueReferences));
-}
+    const fmi3ValueReference vr = valueReference;
 
-void FMU_FMI3SetFloat32(void* instance, const int valueReferences[], int nValueReferences, const double values[]) {
+    fmi3Boolean* buffer = (fmi3Boolean*)FMU_getBuffer((FMIInstance*)instance, nValues * sizeof(fmi3Boolean));
 
-    if (nValueReferences == 0) return;
+    CALL(FMI3GetBoolean((FMIInstance*)instance, &vr, 1, (fmi3Boolean*)values, nValues));
 
-    FMU_UserData* userData = ((FMIInstance*)instance)->userData;
-
-    if (userData->valueBufferSize < nValueReferences * sizeof(fmi3Float32)) {
-        userData->valueBuffer = (char*)realloc(userData->valueBuffer, nValueReferences * sizeof(fmi3Float32));
-        userData->valueBufferSize = nValueReferences * sizeof(fmi3Float32);
+    for (i = 0; i < nValues; i++) {
+        values[i] = buffer[i];
     }
+}
 
-    for (size_t i = 0; i < nValueReferences; i++) {
+void FMU_FMI3SetFloat32(void* instance, int valueReferences[], int nValueReferences, const double values[], int nValues) {
 
-        if (values[i] < -FLT_MAX || values[i] > FLT_MAX) {
+    size_t i;
+
+    fmi3Float32* buffer = (fmi3Float32*)FMU_getBuffer((FMIInstance*)instance, nValues * sizeof(fmi3Float32));
+
+    for (i = 0; i < nValues; i++) {
+
+        const double value = values[i];
+
+        if (value < -FLT_MAX || value > FLT_MAX) {
             ModelicaFormatError("Value exceeds allowed range of fmi3Float32.");
         }
 
-        ((fmi3Float32*)userData->valueBuffer)[i] = (fmi3Float32)values[i];
+        buffer[i] = (fmi3Float32)value;
     }
 
-    CALL(FMI3SetFloat32((FMIInstance*)instance, valueReferences, nValueReferences, (fmi3Float32*)userData->valueBuffer, nValueReferences));
+    CALL(FMI3SetFloat32((FMIInstance*)instance, valueReferences, nValueReferences, buffer, nValues));
 }
 
-void FMU_FMI3SetFloat64(void* instance, const int valueReferences[], int nValueReferences, const double values[]) {
-    if (nValueReferences > 0) CALL(FMI3SetFloat64((FMIInstance*)instance, valueReferences, nValueReferences, values, nValueReferences));
+void FMU_FMI3SetFloat64(void* instance, int valueReferences[], int nValueReferences, const double values[], int nValues) {
+    CALL(FMI3SetFloat64((FMIInstance*)instance, valueReferences, nValueReferences, values, nValues));
 }
 
-void FMU_FMI3SetInt32(void* instance, const int valueReferences[], int nValueReferences, const int values[]) {
-    if (nValueReferences > 0) CALL(FMI3SetInt32((FMIInstance*)instance, valueReferences, nValueReferences, values, nValueReferences));
+void FMU_FMI3SetInt32(void* instance, int valueReferences[], int nValueReferences, const int values[], int nValues) {
+    CALL(FMI3SetInt32((FMIInstance*)instance, valueReferences, nValueReferences, values, nValues));
 }
 
-void FMU_FMI3SetBoolean(void* instance, const int valueReferences[], int nValueReferences, const int values[]) {
-    if (nValueReferences > 0) CALL(FMI3SetBoolean((FMIInstance*)instance, valueReferences, nValueReferences, (fmi3Boolean*)values, nValueReferences));
+void FMU_FMI3SetInt64(void* instance, int valueReferences[], int nValueReferences, const int values[], int nValues) {
+
+    size_t i;
+
+    fmi3Int64* buffer = (fmi3Int64*)FMU_getBuffer((FMIInstance*)instance, nValues * sizeof(fmi3Int64));
+
+    for (i = 0; i < nValues; i++) {
+        buffer[i] = values[i];
+    }
+
+    CALL(FMI3SetInt64((FMIInstance*)instance, valueReferences, nValueReferences, buffer, nValues));
 }
 
-void FMU_FMI3SetString(void* instance, const int valueReferences[], int nValueReferences, const char* values[]) {
-    if (nValueReferences > 0) CALL(FMI3SetString((FMIInstance*)instance, valueReferences, nValueReferences, (fmi3String*)values, nValueReferences));
+void FMU_FMI3SetBoolean(void* instance, int valueReferences[], int nValueReferences, const int values[], int nValues) {
+    CALL(FMI3SetBoolean((FMIInstance*)instance, valueReferences, nValueReferences, (fmi3Boolean*)values, nValues));
+}
+
+void FMU_FMI3SetString(void* instance, int valueReferences[], int nValueReferences, const char* values[], int nValues) {
+    CALL(FMI3SetString((FMIInstance*)instance, valueReferences, nValueReferences, (fmi3String*)values, nValues));
 }
 
 void FMU_FMI3UpdateDiscreteStates(void* instance, int* valuesOfContinuousStatesChanged, double* nextEventTime) {
@@ -129,7 +177,7 @@ void FMU_FMI3UpdateDiscreteStates(void* instance, int* valuesOfContinuousStatesC
     } while (_discreteStatesNeedUpdate);
 
     *valuesOfContinuousStatesChanged = _valuesOfContinuousStatesChanged;
-    *nextEventTime = _nextEventTimeDefined ? _nextEventTime : INFINITY;
+    *nextEventTime = _nextEventTimeDefined ? _nextEventTime : HUGE_VAL;
 }
 
 /***************************************************

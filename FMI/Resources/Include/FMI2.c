@@ -1,7 +1,7 @@
 #ifdef _WIN32
 #include <direct.h>
 #define strdup _strdup
-#define INTERNET_MAX_URL_LENGTH 2083 // from wininet.h
+#define INTERNET_MAX_URL_LENGTH 2083 /* from wininet.h */
 #else
 #include <stdarg.h>
 #include <dlfcn.h>

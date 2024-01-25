@@ -31,6 +31,8 @@ EXPORT void* FMU_load(
 
 EXPORT void FMU_free(void* instance);
 
+void* FMU_getBuffer(void* instance, size_t size);
+
 #include "FMI.c"
 #include "FMI2.c"
 #include "FMI3.c"
