@@ -3,7 +3,7 @@ function ImportFMU
 
   input String filename annotation(Dialog(__Dymola_loadSelector(filter="Functional Mock-up Units (*.fmu)", caption="Select FMU to import")));
   input String packageFile annotation(Dialog(__Dymola_saveSelector(filter="Modelica File (*.mo)", caption="Modelica file to generate")));
-  input String interfaceType = "CoSimulation";
+  input String interfaceType = "CoSimulation" annotation(Dialog(choices(choice="CoSimulation" "FMI for Co-Simulation (CS)", choice="ModelExchange" "FMI for Model Exchange (ME)", choice="ScheduledExecution" "FMI for Scheduled Execution (SE)")));
   output Boolean success;
 
 algorithm
