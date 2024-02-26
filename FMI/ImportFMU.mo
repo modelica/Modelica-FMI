@@ -4,7 +4,7 @@ function ImportFMU
 
   input String filename annotation(Dialog(loadSelector(filter="Functional Mock-up Units (*.fmu)", caption="Select FMU to import")));
   input String packageFile annotation(Dialog(saveSelector(filter="Modelica File (*.mo)", caption="Modelica file to generate")));
-  input String interfaceType = "CoSimulation";
+  input String interfaceType = "CoSimulation" annotation(Dialog(choices(choice="CoSimulation" "Co-Simulation", choice="ModelExchange" "Model Exchange")));;
   output Boolean success;
 
 algorithm
