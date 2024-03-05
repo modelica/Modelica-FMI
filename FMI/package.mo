@@ -2,6 +2,7 @@ within ;
 package FMI
   extends Modelica.Icons.Package;
 
-annotation (uses(Modelica(version="4.0.0")), Icon(graphics={Bitmap(extent={{-80,-60},
-            {80,60}},        fileName="modelica://FMI/Resources/FMI_bare.png")}));
+annotation (version="0.0.0", uses(Modelica(version="4.0.0")), Icon(graphics={Bitmap(extent={{-80,-60},
+            {80,60}},        fileName="modelica://FMI/Resources/FMI_bare.png")}),
+    conversion(from(version="0.0.10 Intermediate", to="Intermediate")));
 end FMI;
