@@ -22,7 +22,8 @@ int main() {
         0,
         1,
         0,
-        NULL
+        NULL,
+        0
     );
 
     FMU_FMI2SetReal(instance, &vr_g, 1, &g);

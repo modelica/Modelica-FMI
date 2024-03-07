@@ -10,6 +10,8 @@
 
 typedef struct {
 
+    const char* tempBinaryDir;
+    const char* tempBinaryPath;
     FILE* logFile;
     char* valueBuffer;
     size_t valueBufferSize;
@@ -27,7 +29,8 @@ EXPORT void* FMU_load(
     int loggingOn,
     int logFMICalls,
     int logToFile,
-    const char* logFile);
+    const char* logFile,
+    int copyPlatformBinary);
 
 EXPORT void FMU_free(void* instance);
 

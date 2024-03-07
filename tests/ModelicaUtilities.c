@@ -15,6 +15,19 @@ void ModelicaVFormatMessage(const char* string, va_list vl) {
 	vprintf(string, vl);
 }
 
+void ModelicaError(const char* string) {
+	printf(string);
+	exit(1);
+}
+
+
+void ModelicaFormatWarning(const char* string, ...) {
+	va_list vl;
+	va_start(vl, string);
+	vprintf(string, vl);
+	va_end(vl);
+}
+
 void ModelicaFormatError(const char* string, ...) {
 	va_list vl;
 	va_start(vl, string);

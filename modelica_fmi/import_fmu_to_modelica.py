@@ -28,9 +28,11 @@ def import_fmu_to_modelica(fmu_path, model_path, interface_type, variables=None)
 
     if interface_type == 'ModelExchange':
         model_identifier = model_description.modelExchange.modelIdentifier
+        copyPlatformBinary = model_description.modelExchange.canBeInstantiatedOnlyOncePerProcess
         IT = 'ME'
     elif interface_type == 'CoSimulation':
         model_identifier = model_description.coSimulation.modelIdentifier
+        copyPlatformBinary = model_description.coSimulation.canBeInstantiatedOnlyOncePerProcess
         IT = 'CS'
     else:
         raise Exception(f"interface_type must be 'ModelExchange' or 'CoSimulation', but was '{interface_type}'.")
@@ -360,7 +362,8 @@ def import_fmu_to_modelica(fmu_path, model_path, interface_type, variables=None)
         integerInputs=[v.name for v in inputs if v.type == 'Integer'],
         booleanInputVRs=[str(v.valueReference) for v in inputs if v.type == 'Boolean'],
         booleanInputs=[v.name for v in inputs if v.type == 'Boolean'],
-        stopTime=stopTime
+        stopTime=stopTime,
+        copyPlatformBinary=copyPlatformBinary
     )
 
     with open(model_path, 'w') as f:

@@ -53,7 +53,8 @@ protected
     loggingOn,
     logFMICalls,
     logToFile,
-    logFile);
+    logFile,
+    @@ if copyPlatformBinary @@true@@ else @@false@@ endif @@);
 @@ block equations @@
 @@ endblock @@
 

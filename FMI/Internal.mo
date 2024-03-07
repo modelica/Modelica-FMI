@@ -17,9 +17,10 @@ package Internal
         input Boolean logFMICalls;
         input Boolean logToFile;
         input String logFile;
+        input Boolean copyPlatformBinary;
         output ExternalFMU externalFMU;
     external"C" externalFMU =
-          FMU_load(unzipdir, fmiVersion, modelIdentifier, instanceName, interfaceType, instantiationToken, visible, loggingOn, logFMICalls, logToFile, logFile) annotation (Include="#include \"ModelicaFMI.h\"");
+          FMU_load(unzipdir, fmiVersion, modelIdentifier, instanceName, interfaceType, instantiationToken, visible, loggingOn, logFMICalls, logToFile, logFile, copyPlatformBinary) annotation (Include="#include \"ModelicaFMI.h\"");
 
     end constructor;
 
