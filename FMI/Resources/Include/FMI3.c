@@ -121,8 +121,6 @@ FMIStatus FMI3SetDebugLogging(FMIInstance *instance,
 
 static FMIStatus loadSymbols3(FMIInstance *instance) {
 
-#if !defined(FMI_VERSION) || FMI_VERSION == 3
-
     instance->fmi3Functions = calloc(1, sizeof(FMI3Functions));
 
     if (!instance->fmi3Functions) {
@@ -244,12 +242,6 @@ static FMIStatus loadSymbols3(FMIInstance *instance) {
     instance->state = FMI2StartAndEndState;
 
     return FMIOK;
-
-#else
-
-    return FMIError;
-
-#endif
 }
 
 /* Creation and destruction of FMU instances and setting debug status */
