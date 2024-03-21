@@ -13,6 +13,7 @@
 protected
 
   parameter Real startTime(fixed=false);
+  parameter Boolean startValuesSet(start=false, fixed=false);
   Boolean initialized(start=false, fixed=true);
 
   record OutputVariables
@@ -25,18 +26,18 @@ protected
 
 initial algorithm
 
-  startTime := time;
-
+  if not startValuesSet then
+    startTime := time;
 @@ for variable in parameters @@
-  FMI2Set@=fmi_type(variable)=@(instance, {@=variable.valueReference=@}, 1, {@=name(variable)=@});
+    FMI2Set@=fmi_type(variable)=@(instance, {@=variable.valueReference=@}, 1, {@=name(variable)=@});
 @@ endfor @@
-
-  FMI2SetupExperiment(instance, tolerance > 0.0, tolerance, startTime, stopTime < Modelica.Constants.inf, stopTime);
-  FMI2EnterInitializationMode(instance);
-
+    FMI2SetupExperiment(instance, tolerance > 0.0, tolerance, startTime, stopTime < Modelica.Constants.inf, stopTime);
+    FMI2EnterInitializationMode(instance);
 @@ for variable in inputs @@
-  FMI2Set@=fmi_type(variable)=@(instance, {@=variable.valueReference=@}, 1, {@=name(variable, '_start')=@});
+    FMI2Set@=fmi_type(variable)=@(instance, {@=variable.valueReference=@}, 1, {@=name(variable, '_start')=@});
 @@ endfor @@
+    startValuesSet := true;
+  end if;
 
 algorithm
 

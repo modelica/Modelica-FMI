@@ -13,6 +13,7 @@
 protected
 
   parameter Real startTime(fixed=false);
+  parameter Boolean startValuesSet(start=false, fixed=false);
   Boolean initialized(start=false, fixed=true);
 
   record OutputVariables
@@ -25,29 +26,29 @@ protected
 
 initial algorithm
 
-  startTime := time;
-
+  if not startValuesSet then
+    startTime := time;
 @@ for variable in parameters @@
 @@ if not variable.dimensions @@
-  FMI3Set@=fmi_type(variable)=@(instance, {@=variable.valueReference=@}, {@=name(variable)=@});
+    FMI3Set@=fmi_type(variable)=@(instance, {@=variable.valueReference=@}, {@=name(variable)=@});
 @@ elif variable.dimensions|length == 1 @@
-  FMI3Set@=fmi_type(variable)=@(instance, {@=variable.valueReference=@}, @=name(variable)=@);
+    FMI3Set@=fmi_type(variable)=@(instance, {@=variable.valueReference=@}, @=name(variable)=@);
 @@ else @@
-  FMI3Set@=fmi_type(variable)=@Matrix(instance, {@=variable.valueReference=@}, @=name(variable)=@, @=numel(variable)=@);
+    FMI3Set@=fmi_type(variable)=@Matrix(instance, {@=variable.valueReference=@}, @=name(variable)=@, @=numel(variable)=@);
 @@ endif @@
 @@ endfor @@
-
-  FMI3EnterInitializationMode(instance, tolerance > 0.0, tolerance, startTime, stopTime < Modelica.Constants.inf, stopTime);
-
+    FMI3EnterInitializationMode(instance, tolerance > 0.0, tolerance, startTime, stopTime < Modelica.Constants.inf, stopTime);
 @@ for variable in inputs @@
 @@ if not variable.dimensions @@
-  FMI3Set@=fmi_type(variable)=@(instance, {@=variable.valueReference=@}, {@=name(variable, '_start')=@});
+    FMI3Set@=fmi_type(variable)=@(instance, {@=variable.valueReference=@}, {@=name(variable, '_start')=@});
 @@ elif variable.dimensions|length == 1 @@
-  FMI3Set@=fmi_type(variable)=@(instance, {@=variable.valueReference=@}, @=name(variable, '_start')=@);
+    FMI3Set@=fmi_type(variable)=@(instance, {@=variable.valueReference=@}, @=name(variable, '_start')=@);
 @@ else @@
-  FMI3Set@=fmi_type(variable)=@Matrix(instance, {@=variable.valueReference=@}, @=name(variable, '_start')=@, @=numel(variable)=@);
+    FMI3Set@=fmi_type(variable)=@Matrix(instance, {@=variable.valueReference=@}, @=name(variable, '_start')=@, @=numel(variable)=@);
 @@ endif @@
 @@ endfor @@
+    startValuesSet := true;
+  end if;
 
 algorithm
 
