@@ -2,3 +2,6 @@
 *.bak-mo
 __pycache__
 *.zip
+build/
+dist/
+*.egg-info/
