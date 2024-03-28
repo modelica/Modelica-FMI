@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ModelicaFMI2.h"
+#include <stdio.h>
 
 #ifdef _MSC_VER
 #define EXPORT __declspec(dllexport)
