@@ -5,6 +5,7 @@ def import_fmu_to_modelica(fmu_path, model_path, interface_type, variables=None)
 
     from os import makedirs
     from pathlib import Path
+    from . import __version__ as library_version
 
     import jinja2
     from fmpy import extract, read_model_description
@@ -334,6 +335,7 @@ def import_fmu_to_modelica(fmu_path, model_path, interface_type, variables=None)
 
     class_text = template.render(
         hash=hash,
+        libraryVersion=library_version,
         rootPackage=package_root.name,
         package=package,
         description=model_description.description,
