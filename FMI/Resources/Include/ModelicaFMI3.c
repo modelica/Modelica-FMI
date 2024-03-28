@@ -106,7 +106,7 @@ void FMU_FMI3GetBoolean(void* instance, int valueReference, int values[], int nV
     }
 }
 
-void FMU_FMI3SetFloat32(void* instance, int valueReferences[], int nValueReferences, const double values[], int nValues) {
+void FMU_FMI3SetFloat32(void* instance, const int valueReferences[], int nValueReferences, const double values[], int nValues) {
 
     size_t i;
 
@@ -126,15 +126,15 @@ void FMU_FMI3SetFloat32(void* instance, int valueReferences[], int nValueReferen
     CALL(FMI3SetFloat32((FMIInstance*)instance, valueReferences, nValueReferences, buffer, nValues));
 }
 
-void FMU_FMI3SetFloat64(void* instance, int valueReferences[], int nValueReferences, const double values[], int nValues) {
+void FMU_FMI3SetFloat64(void* instance, const int valueReferences[], int nValueReferences, const double values[], int nValues) {
     CALL(FMI3SetFloat64((FMIInstance*)instance, valueReferences, nValueReferences, values, nValues));
 }
 
-void FMU_FMI3SetInt32(void* instance, int valueReferences[], int nValueReferences, const int values[], int nValues) {
+void FMU_FMI3SetInt32(void* instance, const int valueReferences[], int nValueReferences, const int values[], int nValues) {
     CALL(FMI3SetInt32((FMIInstance*)instance, valueReferences, nValueReferences, values, nValues));
 }
 
-void FMU_FMI3SetInt64(void* instance, int valueReferences[], int nValueReferences, const int values[], int nValues) {
+void FMU_FMI3SetInt64(void* instance, const int valueReferences[], int nValueReferences, const int values[], int nValues) {
 
     size_t i;
 
@@ -147,11 +147,11 @@ void FMU_FMI3SetInt64(void* instance, int valueReferences[], int nValueReference
     CALL(FMI3SetInt64((FMIInstance*)instance, valueReferences, nValueReferences, buffer, nValues));
 }
 
-void FMU_FMI3SetBoolean(void* instance, int valueReferences[], int nValueReferences, const int values[], int nValues) {
+void FMU_FMI3SetBoolean(void* instance, const int valueReferences[], int nValueReferences, const int values[], int nValues) {
     CALL(FMI3SetBoolean((FMIInstance*)instance, valueReferences, nValueReferences, (fmi3Boolean*)values, nValues));
 }
 
-void FMU_FMI3SetString(void* instance, int valueReferences[], int nValueReferences, const char* values[], int nValues) {
+void FMU_FMI3SetString(void* instance, const int valueReferences[], int nValueReferences, const char* values[], int nValues) {
     CALL(FMI3SetString((FMIInstance*)instance, valueReferences, nValueReferences, (fmi3String*)values, nValues));
 }
 
