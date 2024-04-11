@@ -83,7 +83,7 @@ algorithm
 
   if initial() then
 @@ for dependency in dependencies2(variable) @@
-    FMI2Set@=fmi_type(dependency)=@(instance, {@=dependency.valueReference=@}, {@=name(dependency)=@});
+    FMI2Set@=fmi_type(dependency)=@(instance, {@=dependency.valueReference=@}, 1, {@=name(dependency)=@});
 @@ endfor @@
     @=name(variable)=@ := FMI2Get@=fmi_type(variable)=@(instance, @=variable.valueReference=@);
   else
