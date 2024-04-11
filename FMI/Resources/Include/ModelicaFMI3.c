@@ -103,7 +103,7 @@ void FMU_FMI3GetUInt64(void* instance, int valueReference, int values[], int nVa
 
     for (i = 0; i < nValues; i++) {
         const fmi3UInt64 value = buffer[i];
-        if (value < INT_MIN || value > INT_MAX) {
+        if (value > INT_MAX) {
             ModelicaFormatError("Value exceeds allowed range of Integer.");
         }
         values[i] = (int)value;
