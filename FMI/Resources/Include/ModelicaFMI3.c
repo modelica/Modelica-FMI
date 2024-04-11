@@ -91,6 +91,25 @@ void FMU_FMI3GetInt64(void* instance, int valueReference, int values[], int nVal
     }
 }
 
+void FMU_FMI3GetUInt64(void* instance, int valueReference, int values[], int nValues) {
+
+    size_t i;
+
+    const fmi3ValueReference vr = valueReference;
+
+    fmi3UInt64* buffer = (fmi3UInt64*)FMU_getBuffer((FMIInstance*)instance, nValues * sizeof(fmi3UInt64));
+
+    CALL(FMI3GetUInt64((FMIInstance*)instance, &vr, 1, buffer, nValues));
+
+    for (i = 0; i < nValues; i++) {
+        const fmi3UInt64 value = buffer[i];
+        if (value < INT_MIN || value > INT_MAX) {
+            ModelicaFormatError("Value exceeds allowed range of Integer.");
+        }
+        values[i] = (int)value;
+    }
+}
+
 void FMU_FMI3GetBoolean(void* instance, int valueReference, int values[], int nValues) {
 
     size_t i;
@@ -145,6 +164,19 @@ void FMU_FMI3SetInt64(void* instance, const int valueReferences[], int nValueRef
     }
 
     CALL(FMI3SetInt64((FMIInstance*)instance, valueReferences, nValueReferences, buffer, nValues));
+}
+
+void FMU_FMI3SetUInt64(void* instance, const int valueReferences[], int nValueReferences, const int values[], int nValues) {
+
+    size_t i;
+
+    fmi3UInt64* buffer = (fmi3UInt64*)FMU_getBuffer((FMIInstance*)instance, nValues * sizeof(fmi3UInt64));
+
+    for (i = 0; i < nValues; i++) {
+        buffer[i] = values[i];
+    }
+
+    CALL(FMI3SetUInt64((FMIInstance*)instance, valueReferences, nValueReferences, buffer, nValues));
 }
 
 void FMU_FMI3SetBoolean(void* instance, const int valueReferences[], int nValueReferences, const int values[], int nValues) {

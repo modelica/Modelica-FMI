@@ -43,7 +43,7 @@ for variable_type, prefix in product(['Real', 'Integer', 'Boolean', 'String'], [
 fmi3_functions_dir = Path(__file__).parent.parent / 'FMI' / 'FMI3' / 'Functions'
 
 for variable_type, (prefix, suffix) in product(
-        ['Float32', 'Float64', 'Int32', 'Int64', 'Boolean', 'String'],
+        ['Float32', 'Float64', 'Int32', 'Int64', 'UInt64', 'Boolean', 'String'],
         [('Get', ''), ('Set', ''), ('Get', 'Matrix'), ('Set', 'Matrix')]
 ):
 

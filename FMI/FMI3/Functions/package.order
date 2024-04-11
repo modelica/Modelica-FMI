@@ -38,3 +38,7 @@ FMI3SetStringMatrix
 FMI3SetTime
 FMI3UpdateDiscreteStates
 matrix2vector
+FMI3GetUInt64
+FMI3SetUInt64
+FMI3GetUInt64Matrix
+FMI3SetUInt64Matrix

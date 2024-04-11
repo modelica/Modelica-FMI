@@ -4,5 +4,9 @@ FMI3Float64Input
 FMI3Float64Output
 FMI3Int32Input
 FMI3Int32Output
+FMI3Int64Input
+FMI3Int64Output
+FMI3UInt64Input
+FMI3UInt64Output
 FMI3BooleanInput
 FMI3BooleanOutput
