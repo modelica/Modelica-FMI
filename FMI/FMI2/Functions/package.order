@@ -1,10 +1,7 @@
 FMI2SetupExperiment
 FMI2GetReal
-FMI2GetRealScalar
 FMI2GetInteger
-FMI2GetIntegerScalar
 FMI2GetBoolean
-FMI2GetBooleanScalar
 FMI2SetReal
 FMI2SetInteger
 FMI2SetBoolean
