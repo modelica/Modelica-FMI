@@ -12,6 +12,8 @@ FMI3GetContinuousStates
 FMI3GetEventIndicators
 FMI3GetFloat32
 FMI3GetFloat32Matrix
+FMI3GetInitialFloat32
+FMI3GetInitialFloat32Matrix
 FMI3GetFloat64
 FMI3GetFloat64Matrix
 FMI3GetInitialFloat64

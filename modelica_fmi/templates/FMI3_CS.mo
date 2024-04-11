@@ -92,19 +92,19 @@ equation
 
   if initial() then
 @@ if not variable.dimensions @@
-    @=name(variable)=@ = scalar(FMI3GetInitialFloat64(instance, startTime,
+    @=name(variable)=@ = scalar(FMI3GetInitial@=fmi_type(variable)=@(instance, startTime,
         @=dependencies3(variable, 'Float64')=@,
         @=dependencies3(variable, 'Int32')=@,
         @=dependencies3(variable, 'Boolean')=@,
         @=variable.valueReference=@, 1));
 @@ elif variable.dimensions|length == 1 @@
-    @=name(variable)=@ = FMI3GetInitialFloat64(instance, startTime,
+    @=name(variable)=@ = FMI3GetInitial@=fmi_type(variable)=@(instance, startTime,
         @=dependencies3(variable, 'Float64')=@,
         @=dependencies3(variable, 'Int32')=@,
         @=dependencies3(variable, 'Boolean')=@,
         @=variable.valueReference=@, size(@=name(variable)=@, 1));
 @@ else @@
-    @=name(variable)=@ = FMI3GetInitialFloat64Matrix(instance, startTime,
+    @=name(variable)=@ = FMI3GetInitial@=fmi_type(variable)=@Matrix(instance, startTime,
         @=dependencies3(variable, 'Float64')=@,
         @=dependencies3(variable, 'Int32')=@,
         @=dependencies3(variable, 'Boolean')=@,

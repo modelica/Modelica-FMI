@@ -1,11 +1,12 @@
 within FMI.FMI3.Functions;
-impure function FMI3GetInitialFloat64Matrix
+impure function FMI3GetInitialFloat32
   extends Modelica.Icons.Function;
 
   import FMI.FMI3.Types.*;
   import FMI.FMI3.Functions.*;
 
   input Internal.ExternalFMU instance;
+
   input Real _time;
 
   input FMI3ValueReference Float64ValueReferences[:];
@@ -18,10 +19,8 @@ impure function FMI3GetInitialFloat64Matrix
   input FMI3Boolean BooleanValues[:];
 
   input FMI3ValueReference valueReference;
-  input Integer m;
-  input Integer n;
   input Integer nValues;
-  output FMI3Float64 values[m, n];
+  output FMI3Float32 values[nValues];
 
 algorithm
 
@@ -29,6 +28,6 @@ algorithm
   FMI3SetInt32(instance, Int32ValueReferences, Int32Values);
   FMI3SetBoolean(instance, BooleanValueReferences, BooleanValues);
 
-  values := FMI3.Functions.FMI3GetFloat64Matrix(instance, valueReference, m, n, nValues);
+  values := FMI3GetFloat32(instance, valueReference, nValues);
 
-end FMI3GetInitialFloat64Matrix;
+end FMI3GetInitialFloat32;
