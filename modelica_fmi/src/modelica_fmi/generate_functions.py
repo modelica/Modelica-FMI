@@ -14,8 +14,9 @@ environment = jinja2.Environment(
     variable_end_string='=@'
 )
 
+package_dir = Path(__file__).parent.parent.parent.parent / 'FMI'
 
-fmi2_functions_dir = Path(__file__).parent.parent / 'FMI' / 'FMI2' / 'Functions'
+fmi2_functions_dir = package_dir / 'FMI2' / 'Functions'
 
 for variable_type, prefix in product(['Real', 'Integer', 'Boolean', 'String'], ['Get', 'Set']):
 
@@ -30,7 +31,7 @@ for variable_type, prefix in product(['Real', 'Integer', 'Boolean', 'String'], [
     with open(fmi2_functions_dir / f'{function_name}.mo', 'w') as f:
         f.write(class_text)
 
-    package_order_file = Path(fmi2_functions_dir / 'package.order')
+    package_order_file = fmi2_functions_dir / 'package.order'
 
     with open(package_order_file, 'r') as f:
         package_order = list(map(lambda l: l.strip(), f.readlines()))
@@ -40,7 +41,7 @@ for variable_type, prefix in product(['Real', 'Integer', 'Boolean', 'String'], [
             f.write(function_name + '\n')
 
 
-fmi3_functions_dir = Path(__file__).parent.parent / 'FMI' / 'FMI3' / 'Functions'
+fmi3_functions_dir = package_dir / 'FMI3' / 'Functions'
 
 for variable_type, (prefix, suffix) in product(
         ['Float32', 'Float64', 'Int32', 'Int64', 'UInt64', 'Boolean', 'String'],

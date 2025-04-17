@@ -13,8 +13,8 @@ def pytest_addoption(parser):
 
 
 @pytest.fixture(scope='session')
-def root_dir():
-    yield Path(__file__).parent.parent
+def package_dir():
+    yield Path(__file__).parent.parent.parent / 'FMI'
 
 
 @pytest.fixture(scope='session')

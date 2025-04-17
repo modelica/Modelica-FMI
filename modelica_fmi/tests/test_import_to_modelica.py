@@ -31,21 +31,20 @@ def om_available():
     return 'OPENMODELICAHOME' in os.environ
 
 
-def test_import_fmu_to_modelica(root_dir, reference_fmus_dist_dir):
-
+def test_import_fmu_to_modelica():
     generate_examples()
 
 
 @pytest.mark.skipif(not om_available() or not pymola_available(), reason="OpenModelica and/or Pymola was not found")
 @pytest.mark.parametrize('fmi_version, interface_type, model', product(fmi_versions, interface_types, models))
-def test_run_examples_in_om(root_dir, reference_fmus_dist_dir, work_dir, fmi_version, interface_type, model):
+def test_run_examples_in_om(package_dir, reference_fmus_dist_dir, work_dir, fmi_version, interface_type, model):
 
     from OMPython import OMCSessionZMQ
     from pymola import Dsres
 
     omc = OMCSessionZMQ()
 
-    package = root_dir / 'FMI' / 'package.mo'
+    package = package_dir / 'package.mo'
 
     assert omc.sendExpression(f'cd("{work_dir.as_posix()}")')
 
@@ -84,9 +83,9 @@ def test_run_examples_in_om(root_dir, reference_fmus_dist_dir, work_dir, fmi_ver
 
 @pytest.mark.skipif(not pymola_available(), reason="Pymola was not found")
 @pytest.mark.parametrize('fmi_version, interface_type, model', product(fmi_versions, interface_types, models))
-def test_run_examples_in_dymola(dymola, root_dir, reference_fmus_dist_dir, fmi_version, interface_type, model):
+def test_run_examples_in_dymola(dymola, package_dir, reference_fmus_dist_dir, fmi_version, interface_type, model):
 
-    dymola.loadClass(root_dir / 'FMI' / 'package.mo')
+    dymola.loadClass(package_dir / 'package.mo')
 
     start_values = {}
     stop_time = None
