@@ -2,7 +2,7 @@ within FMI.FMI3.Functions;
 impure function FMI3GetStringMatrix
   extends Modelica.Icons.Function;
 
-  input Internal.ExternalFMU externalFMU;
+  input Internal.ExternalFMU instance;
   input Integer valueReference;
   input Integer m;
   input Integer n;
@@ -10,6 +10,10 @@ impure function FMI3GetStringMatrix
 
   output FMI.FMI3.Types.FMI3String values[m, n];
 
-  external"C" FMU_FMI3GetString(externalFMU, valueReference, values, nValues) annotation (Include="#include \"ModelicaFMI.h\"");
+algorithm
+
+  values := FMI.Internal.FMI3.FMI3GetStringMatrix(instance, valueReference, m, n, nValues);
+
+  FMI.Internal.Logging.logMessages(instance);
 
 end FMI3GetStringMatrix;

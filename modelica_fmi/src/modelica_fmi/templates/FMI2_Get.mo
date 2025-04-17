@@ -7,7 +7,11 @@ impure function FMI2Get@=variable_type=@
 
   output FMI.FMI2.Types.FMI2@=variable_type=@ value;
 
-  external"C" FMU_FMI2Get@=variable_type=@(instance, valueReference, value) annotation (Include="#include \"ModelicaFMI.h\"");
+algorithm
+
+  value := FMI.Internal.FMI2.FMI2Get@=variable_type=@(instance, valueReference);
+
+  FMI.Internal.Logging.logMessages(instance);
 
 end FMI2Get@=variable_type=@;
 

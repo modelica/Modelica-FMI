@@ -7,6 +7,10 @@ impure function FMI2GetBoolean
 
   output FMI.FMI2.Types.FMI2Boolean value;
 
-  external"C" FMU_FMI2GetBoolean(instance, valueReference, value) annotation (Include="#include \"ModelicaFMI.h\"");
+algorithm
+
+  value := FMI.Internal.FMI2.FMI2GetBoolean(instance, valueReference);
+
+  FMI.Internal.Logging.logMessages(instance);
 
 end FMI2GetBoolean;

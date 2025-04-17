@@ -7,6 +7,10 @@ impure function FMI2GetString
 
   output FMI.FMI2.Types.FMI2String value;
 
-  external"C" FMU_FMI2GetString(instance, valueReference, value) annotation (Include="#include \"ModelicaFMI.h\"");
+algorithm
+
+  value := FMI.Internal.FMI2.FMI2GetString(instance, valueReference);
+
+  FMI.Internal.Logging.logMessages(instance);
 
 end FMI2GetString;

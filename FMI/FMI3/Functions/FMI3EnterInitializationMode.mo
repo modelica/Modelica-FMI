@@ -1,11 +1,24 @@
 within FMI.FMI3.Functions;
 impure function FMI3EnterInitializationMode
   extends Modelica.Icons.Function;
-  input Internal.ExternalFMU externalFMU;
+
+  input Internal.ExternalFMU instance;
   input Boolean toleranceDefined;
   input Real tolerance;
   input Real startTime;
   input Boolean stopTimeDefined;
   input Real stopTime;
-  external"C" FMU_FMI3EnterInitializationMode(externalFMU, toleranceDefined, tolerance, startTime, stopTimeDefined, stopTime) annotation (Include="#include \"ModelicaFMI.h\"");
+
+algorithm
+
+  FMI.Internal.FMI3.FMI3EnterInitializationMode(
+    instance,
+    toleranceDefined,
+    tolerance,
+    startTime,
+    stopTimeDefined,
+    stopTime);
+
+  FMI.Internal.Logging.logMessages(instance);
+
 end FMI3EnterInitializationMode;

@@ -14,56 +14,66 @@ environment = jinja2.Environment(
     variable_end_string='=@'
 )
 
-package_dir = Path(__file__).parent.parent.parent.parent / 'FMI'
+library_dir = Path(__file__).parent.parent.parent.parent / 'FMI'
 
-fmi2_functions_dir = package_dir / 'FMI2' / 'Functions'
+# fmi2_functions_dir = library_dir / 'FMI2' / 'Functions'
 
 for variable_type, prefix in product(['Real', 'Integer', 'Boolean', 'String'], ['Get', 'Set']):
 
-    template = environment.get_template(f'FMI2_{prefix}.mo')
+    for package, level in [
+        (library_dir / 'FMI2' / 'Functions', ''),
+        (library_dir / 'Internal' / 'FMI2', 'Internal')
+    ]:
 
-    class_text = template.render(
-        variable_type=variable_type
-    )
+        template = environment.get_template(f'FMI2_{level}{prefix}.mo')
 
-    function_name = f'FMI2{prefix}{variable_type}'
+        class_text = template.render(
+            variable_type=variable_type
+        )
 
-    with open(fmi2_functions_dir / f'{function_name}.mo', 'w') as f:
-        f.write(class_text)
+        function_name = f'FMI2{prefix}{variable_type}'
 
-    package_order_file = fmi2_functions_dir / 'package.order'
+        with open(package / f'{function_name}.mo', 'w') as f:
+            f.write(class_text)
 
-    with open(package_order_file, 'r') as f:
-        package_order = list(map(lambda l: l.strip(), f.readlines()))
+        package_order_file = package / 'package.order'
 
-    if function_name not in package_order:
-        with open(package_order_file, 'a') as f:
-            f.write(function_name + '\n')
+        with open(package_order_file, 'r') as f:
+            package_order = list(map(lambda l: l.strip(), f.readlines()))
+
+        if function_name not in package_order:
+            with open(package_order_file, 'a') as f:
+                f.write(function_name + '\n')
 
 
-fmi3_functions_dir = package_dir / 'FMI3' / 'Functions'
+# fmi3_functions_dir = library_dir / 'FMI3' / 'Functions'
 
 for variable_type, (prefix, suffix) in product(
         ['Float32', 'Float64', 'Int32', 'Int64', 'UInt64', 'Boolean', 'String'],
         [('Get', ''), ('Set', ''), ('Get', 'Matrix'), ('Set', 'Matrix')]
 ):
 
-    template = environment.get_template(f'FMI3_{prefix}{suffix}.mo')
+    for package, level in [
+        (library_dir / 'FMI3' / 'Functions', ''),
+        (library_dir / 'Internal' / 'FMI3', 'Internal')
+    ]:
 
-    class_text = template.render(
-        variable_type=variable_type
-    )
+        template = environment.get_template(f'FMI3_{level}{prefix}{suffix}.mo')
 
-    function_name = f'FMI3{prefix}{variable_type}{suffix}'
+        class_text = template.render(
+            variable_type=variable_type
+        )
 
-    with open(fmi3_functions_dir / f'{function_name}.mo', 'w') as f:
-        f.write(class_text)
+        function_name = f'FMI3{prefix}{variable_type}{suffix}'
 
-    package_order_file = Path(fmi3_functions_dir / 'package.order')
+        with open(package / f'{function_name}.mo', 'w') as f:
+            f.write(class_text)
 
-    with open(package_order_file, 'r') as f:
-        package_order = list(map(lambda l: l.strip(), f.readlines()))
+        package_order_file = package / 'package.order'
 
-    if function_name not in package_order:
-        with open(package_order_file, 'a') as f:
-            f.write(function_name + '\n')
+        with open(package_order_file, 'r') as f:
+            package_order = list(map(lambda l: l.strip(), f.readlines()))
+
+        if function_name not in package_order:
+            with open(package_order_file, 'a') as f:
+                f.write(function_name + '\n')

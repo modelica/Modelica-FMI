@@ -7,6 +7,10 @@ impure function FMI2GetInteger
 
   output FMI.FMI2.Types.FMI2Integer value;
 
-  external"C" FMU_FMI2GetInteger(instance, valueReference, value) annotation (Include="#include \"ModelicaFMI.h\"");
+algorithm
+
+  value := FMI.Internal.FMI2.FMI2GetInteger(instance, valueReference);
+
+  FMI.Internal.Logging.logMessages(instance);
 
 end FMI2GetInteger;

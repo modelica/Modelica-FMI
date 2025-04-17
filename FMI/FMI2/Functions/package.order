@@ -9,13 +9,5 @@ FMI2SetString
 FMI2EnterInitializationMode
 FMI2ExitInitializationMode
 FMI2DoStep
-FMI2EnterContinuousTimeMode
-FMI2EnterEventMode
-FMI2SetTime
-FMI2NewDiscreteStates
-FMI2SetContinuousStates
-FMI2GetDerivatives
-FMI2GetEventIndicators
-FMI2GetContinuousStates
 FMI2GetInitialReal
 FMI2GetString

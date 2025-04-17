@@ -26,6 +26,8 @@ protected
 
 initial algorithm
 
+  FMI.Internal.Logging.logMessages(instance);
+
   if not startValuesSet then
     startTime := time;
 @@ for variable in parameters @@

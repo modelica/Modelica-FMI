@@ -1,8 +1,0 @@
-within FMI.FMI3.Functions;
-impure function FMI3GetEventIndicators
-  extends Modelica.Icons.Function;
-  input Internal.ExternalFMU instance;
-  input Integer nEventIndicators;
-  output Real eventIndicators[nEventIndicators];
-  external"C" FMU_FMI3GetEventIndicators(instance, eventIndicators, nEventIndicators) annotation (Include="#include \"ModelicaFMI.h\"");
-end FMI3GetEventIndicators;

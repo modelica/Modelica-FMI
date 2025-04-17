@@ -7,6 +7,10 @@ impure function FMI2GetReal
 
   output FMI.FMI2.Types.FMI2Real value;
 
-  external"C" FMU_FMI2GetReal(instance, valueReference, value) annotation (Include="#include \"ModelicaFMI.h\"");
+algorithm
+
+  value := FMI.Internal.FMI2.FMI2GetReal(instance, valueReference);
+
+  FMI.Internal.Logging.logMessages(instance);
 
 end FMI2GetReal;

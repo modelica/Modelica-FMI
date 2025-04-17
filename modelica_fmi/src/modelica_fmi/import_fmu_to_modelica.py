@@ -1,6 +1,3 @@
-from itertools import combinations
-
-
 def import_fmu_to_modelica(fmu_path, model_path, interface_type, variables=None):
 
     from os import makedirs
@@ -380,20 +377,3 @@ def import_fmu_to_modelica(fmu_path, model_path, interface_type, variables=None)
     if model_name not in package_order:
         with open(package_dir / 'package.order', 'a') as f:
             f.write(model_name + '\n')
-
-
-if __name__ == '__main__':
-
-    import argparse
-
-    parser = argparse.ArgumentParser(formatter_class=argparse.RawDescriptionHelpFormatter)
-
-    parser.add_argument('filename', help="filename of the FMU")
-    parser.add_argument('package', help="filename of the package.mo")
-    parser.add_argument('interfaceType', help="interface type")
-
-    args = parser.parse_args()
-
-    print(args)
-
-    import_fmu_to_modelica(fmu_path=args.filename, model_path=args.package, interface_type=args.interfaceType)

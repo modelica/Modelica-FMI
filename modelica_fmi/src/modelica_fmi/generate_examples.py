@@ -14,13 +14,18 @@ def generate_examples():
     examples_dir = Path(__file__).parent.parent.parent.parent / 'FMI' / 'Examples'
 
     for fmi_version in [2, 3]:
-        for interface_type in ['CoSimulation']:  # , 'ModelExchange']:
-            for model in ['BouncingBall', 'Dahlquist', 'Feedthrough', 'Stair', 'Resource', 'VanDerPol']:
-                import_fmu_to_modelica(
-                    fmu_path=dist / f'{fmi_version}.0' / f'{model}.fmu',
-                    model_path=examples_dir / f'FMI{fmi_version}' / interface_type / f'{model}.mo',
-                    interface_type=interface_type,
-                )
+
+        models = ['BouncingBall', 'Dahlquist', 'Feedthrough', 'Stair', 'Resource', 'VanDerPol']
+
+        if fmi_version == 3:
+            models.append('StateSpace')
+
+        for model in models:
+            import_fmu_to_modelica(
+                fmu_path=dist / f'{fmi_version}.0' / f'{model}.fmu',
+                model_path=examples_dir / f'FMI{fmi_version}' / f'{model}.mo',
+                interface_type='CoSimulation',
+            )
 
 
 if __name__ == '__main__':

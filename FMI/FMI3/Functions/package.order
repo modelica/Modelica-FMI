@@ -1,15 +1,11 @@
+matrix2vector
 FMI3DoStep
 FMI3EnterConfigurationMode
-FMI3EnterContinuousTimeMode
-FMI3EnterEventMode
-FMI3EnterInitializationMode
 FMI3ExitConfigurationMode
+FMI3EnterInitializationMode
 FMI3ExitInitializationMode
 FMI3GetBoolean
 FMI3GetBooleanMatrix
-FMI3GetContinuousStateDerivatives
-FMI3GetContinuousStates
-FMI3GetEventIndicators
 FMI3GetFloat32
 FMI3GetFloat32Matrix
 FMI3GetInitialFloat32
@@ -26,7 +22,6 @@ FMI3GetString
 FMI3GetStringMatrix
 FMI3SetBoolean
 FMI3SetBooleanMatrix
-FMI3SetContinuousStates
 FMI3SetFloat32
 FMI3SetFloat32Matrix
 FMI3SetFloat64
@@ -38,8 +33,6 @@ FMI3SetInt64Matrix
 FMI3SetString
 FMI3SetStringMatrix
 FMI3SetTime
-FMI3UpdateDiscreteStates
-matrix2vector
 FMI3GetUInt64
 FMI3SetUInt64
 FMI3GetUInt64Matrix
