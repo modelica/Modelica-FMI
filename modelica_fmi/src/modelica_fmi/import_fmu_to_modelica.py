@@ -24,16 +24,14 @@ def import_fmu_to_modelica(fmu_path, model_path, interface_type, variables=None)
     else:
         communicationStepSize = '1e-2'
 
-    if interface_type == 'ModelExchange':
-        model_identifier = model_description.modelExchange.modelIdentifier
-        copyPlatformBinary = model_description.modelExchange.canBeInstantiatedOnlyOncePerProcess
-        IT = 'ME'
-    elif interface_type == 'CoSimulation':
+    if interface_type == 'CoSimulation':
+        if model_description.coSimulation is None:
+            raise Exception(f"The FMU does not support Co-Simulation.")
         model_identifier = model_description.coSimulation.modelIdentifier
         copyPlatformBinary = model_description.coSimulation.canBeInstantiatedOnlyOncePerProcess
         IT = 'CS'
     else:
-        raise Exception(f"interface_type must be 'ModelExchange' or 'CoSimulation', but was '{interface_type}'.")
+        raise Exception(f"interface_type must be 'CoSimulation', but was '{interface_type}'.")
 
     package_root = package_dir
 
@@ -292,20 +290,23 @@ def import_fmu_to_modelica(fmu_path, model_path, interface_type, variables=None)
         vrs = []
         values = []
         for dependency in unknown.dependencies:
-            if dependency.type == type:
-                vrs.append(str(dependency.valueReference))
-                s = shape(dependency)
-                if not s:
-                    values.append(name(dependency))
-                elif len(s) == 1:
-                    for i in range(1, numel(dependency) + 1):
-                        values.append(f'{name(dependency)}[{i}]')
-                elif len(s) == 2:
-                    for i in range(1, s[0] + 1):
-                        for j in range(1, s[1] + 1):
-                            values.append(f'{name(dependency)}[{i},{j}]')
-                else:
-                    pass
+            if dependency.type != type:
+                continue
+            if dependency.causality != 'input':
+                continue
+            vrs.append(str(dependency.valueReference))
+            s = shape(dependency)
+            if not s:
+                values.append(name(dependency))
+            elif len(s) == 1:
+                for i in range(1, numel(dependency) + 1):
+                    values.append(f'{name(dependency)}[{i}]')
+            elif len(s) == 2:
+                for i in range(1, s[0] + 1):
+                    for j in range(1, s[1] + 1):
+                        values.append(f'{name(dependency)}[{i},{j}]')
+            else:
+                pass
 
         if not vrs:
             return default
