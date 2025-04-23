@@ -28,9 +28,9 @@ jobs:
         name: win64
         path: ./FMI/Resources/Library/win64/ModelicaFMI.dll
         if-no-files-found: error
-  build-wheel:
+  build-modelica-library:
     runs-on: ubuntu-22.04
-    needs: [ build-win64-binaries ]
+    needs: [build-win32-binaries, build-win64-binaries]
     steps:
     - uses: actions/checkout@v4
     - uses: actions/download-artifact@v4

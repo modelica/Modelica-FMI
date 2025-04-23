@@ -2,6 +2,20 @@ cmake_minimum_required (VERSION 3.17)
 
 project (ModelicaFMI)
 
+if (WIN32)
+    set(MODELICA_PLATFORM win)
+elseif (APPLE)
+    set(MODELICA_PLATFORM darwin)
+else ()
+    set(MODELICA_PLATFORM linux)
+endif ()
+
+if (${CMAKE_HOST_SYSTEM_PROCESSOR} MATCHES "AMD64|x86_64|aarch64")
+    set(MODELICA_PLATFORM "${MODELICA_PLATFORM}64")
+else ()
+    set(MODELICA_PLATFORM "${MODELICA_PLATFORM}32")
+endif ()
+
 # set(UNZIP_DIR "" CACHE PATH "Path to the extracted FMU")
 # set(INSTANTIATION_TOKEN "" CACHE STRING "Instantiation token of the FMU")
 # set(FMI_VERSION 3 CACHE STRING "FMI Version")
@@ -30,7 +44,7 @@ target_include_directories(ModelicaFMI PRIVATE
 
 set_property(TARGET ModelicaFMI PROPERTY MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
 
-install(TARGETS ModelicaFMI DESTINATION ${CMAKE_CURRENT_SOURCE_DIR}/../FMI/Resources/Library/win64)
+install(TARGETS ModelicaFMI DESTINATION ${CMAKE_CURRENT_SOURCE_DIR}/../FMI/Resources/Library/${MODELICA_PLATFORM})
 
 # add_executable(ModelicaFMI_tests
 #     tests/simulate_fmi${FMI_VERSION}_cs.c
