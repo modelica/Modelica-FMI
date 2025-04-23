@@ -245,7 +245,7 @@ wheels = [
 [[package]]
 name = "modelica-fmi"
 version = "0.0.0"
-source = { virtual = "." }
+source = { editable = "." }
 dependencies = [
     { name = "fmpy" },
     { name = "jinja2" },
