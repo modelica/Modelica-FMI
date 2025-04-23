@@ -28,9 +28,31 @@ jobs:
         name: win64
         path: ./FMI/Resources/Library/win64/ModelicaFMI.dll
         if-no-files-found: error
+  build-linux64-binaries:
+    runs-on: ubuntu-22.04
+    steps:
+    - uses: actions/checkout@v4
+    - run: cmake -S ./runtime -B ./runtime/linux64
+    - run: cmake --build ./runtime/linux64 --target install
+    - uses: actions/upload-artifact@v4
+      with:
+        name: linux64
+        path: ./FMI/Resources/Library/linux64/libModelicaFMI.so
+        if-no-files-found: error
+  build-darwin64-binaries:
+    runs-on: macos-13
+    steps:
+    - uses: actions/checkout@v4
+    - run: cmake -S ./runtime -B ./runtime/darwin64 -D CMAKE_OSX_ARCHITECTURES=arm64;x86_64
+    - run: cmake --build ./runtime/darwin64 --target install
+    - uses: actions/upload-artifact@v4
+      with:
+        name: darwin64
+        path: ./FMI/Resources/Library/darwin64/libModelicaFMI.dylib
+        if-no-files-found: error
   build-modelica-library:
     runs-on: ubuntu-22.04
-    needs: [build-win32-binaries, build-win64-binaries]
+    needs: [build-win32-binaries, build-win64-binaries, build-linux64-binaries, build-darwin64-binaries]
     steps:
     - uses: actions/checkout@v4
     - uses: actions/download-artifact@v4
@@ -41,6 +63,14 @@ jobs:
       with:
         name: win64
         path: ./FMI/Resources/Library/win64/
+    - uses: actions/download-artifact@v4
+      with:
+        name: linux64
+        path: ./FMI/Resources/Library/linux64/
+    - uses: actions/download-artifact@v4
+      with:
+        name: darwin64
+        path: ./FMI/Resources/Library/darwin64/
     - run: tree
     - uses: actions/upload-artifact@v4
       with:
@@ -48,5 +78,5 @@ jobs:
         path: |
           FMI/
           LICENSE
-          READDME.md
+          README.md
         if-no-files-found: error
