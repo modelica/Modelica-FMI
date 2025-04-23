@@ -2,9 +2,9 @@ cmake_minimum_required (VERSION 3.17)
 
 project (ModelicaFMI)
 
-if (CMAKE_GENERATOR_PLATFORM STREQUAL "Win32")
+if (WIN32 AND CMAKE_GENERATOR_PLATFORM STREQUAL "Win32")
     set(MODELICA_PLATFORM "win32")
-elseif (CMAKE_GENERATOR_PLATFORM STREQUAL "x64")
+elseif (WIN32)
     set(MODELICA_PLATFORM "win64")
 elseif (APPLE)
     set(MODELICA_PLATFORM "darwin64")

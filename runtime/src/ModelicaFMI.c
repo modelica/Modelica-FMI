@@ -125,7 +125,7 @@ void* FMU_load(
 
     char platformBinaryPath[2048] = "";
 
-    FMIPlatformBinaryPath(unzipdir, modelIdentifier, (FMIVersion)fmiVersion, platformBinaryPath, 2048);
+    FMIPlatformBinaryPath(unzipdir, modelIdentifier, (FMIMajorVersion)fmiVersion, platformBinaryPath, 2048);
 
     FMU_UserData* userData = (FMU_UserData*)calloc(1, sizeof(FMU_UserData));
 
@@ -179,13 +179,20 @@ void* FMU_load(
 
     FMIInstance* S = FMICreateInstance(
         instanceName, 
-        copyPlatformBinary ? userData->tempBinaryPath : platformBinaryPath,
         logMessage, 
         logFMICalls ? ((FMILogFunctionCall*)logFunctionCall) : NULL
     );
 
     if (!S) {
-        ModelicaFormatError("Failed to load platform binary %s.", platformBinaryPath);
+        ModelicaFormatError("Failed to create instance.");
+        return NULL;
+    }
+
+    FMILoadPlatformBinary(S, copyPlatformBinary ? userData->tempBinaryPath : platformBinaryPath);
+
+    if (!S->libraryHandle) {
+        ModelicaFormatError("Failed to load platform binary2 %s.", platformBinaryPath);
+        return NULL;
     }
 
     S->userData = userData;
@@ -211,7 +218,7 @@ void* FMU_load(
 
     FMIStatus status = FMIFatal;
 
-    if (fmiVersion == FMIVersion2) {
+    if (fmiVersion == FMIMajorVersion2) {
         char resourceURI[4096] = "";
         FMIPathToURI(resourcePath, resourceURI, 4096);
         status = FMI2Instantiate(S, resourceURI, (fmi2Type)interfaceType, instantiationToken, visible, loggingOn);

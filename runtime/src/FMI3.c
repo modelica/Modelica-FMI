@@ -37,7 +37,7 @@ do { \
     instance->fmi3Functions->fmi3 ## f = (fmi3 ## f ## TYPE*)GetProcAddress(instance->libraryHandle, "fmi3" #f); \
     if (!instance->fmi3Functions->fmi3 ## f) { \
         instance->logMessage(instance, FMIFatal, "fatal", "Symbol fmi3" #f " is missing in shared library."); \
-        return fmi3Fatal; \
+        return FMIFatal; \
     } \
 } while (0)
 #else
@@ -121,13 +121,15 @@ FMIStatus FMI3SetDebugLogging(FMIInstance *instance,
 
 static FMIStatus loadSymbols3(FMIInstance *instance) {
 
+#if !defined(FMI_VERSION) || FMI_VERSION == 3
+
     instance->fmi3Functions = calloc(1, sizeof(FMI3Functions));
 
     if (!instance->fmi3Functions) {
         return FMIError;
     }
 
-    instance->fmiVersion = FMIVersion3;
+    instance->fmiMajorVersion = FMIMajorVersion3;
 
     /***************************************************
     Common Functions
@@ -239,9 +241,15 @@ static FMIStatus loadSymbols3(FMIInstance *instance) {
     LOAD_SYMBOL(DoStep);
     LOAD_SYMBOL(ActivateModelPartition);
 
-    instance->state = FMI2StartAndEndState;
+    instance->state = FMIStartAndEndState;
 
     return FMIOK;
+
+#else
+
+    return FMIError;
+
+#endif
 }
 
 /* Creation and destruction of FMU instances and setting debug status */
@@ -284,7 +292,7 @@ FMIStatus FMI3InstantiateModelExchange(
     }
 
     instance->interfaceType = FMIModelExchange;
-    instance->state = FMI2InstantiatedState;
+    instance->state = FMIInstantiatedState;
 
     return status;
 }
@@ -359,7 +367,7 @@ FMIStatus FMI3InstantiateCoSimulation(
     }
 
     instance->interfaceType = FMICoSimulation;
-    instance->state = FMI2InstantiatedState;
+    instance->state = FMIInstantiatedState;
 
     return FMIOK;
 }
@@ -426,7 +434,7 @@ FMIStatus FMI3InstantiateScheduledExecution(
     }
 
     instance->interfaceType = FMIScheduledExecution;
-    instance->state = FMI2InstantiatedState;
+    instance->state = FMIInstantiatedState;
 
     return FMIOK;
 }
@@ -456,38 +464,38 @@ FMIStatus FMI3EnterInitializationMode(FMIInstance *instance,
     fmi3Boolean stopTimeDefined,
     fmi3Float64 stopTime) {
 
-    instance->state = FMI2InitializationModeState;
-
-    instance->time = startTime;
+    instance->state = FMIInitializationModeState;
 
     CALL_ARGS(EnterInitializationMode,
-        "fmi3EnterInitializationMode(toleranceDefined=%d, tolerance=%.16g, startTime=%.16g, stopTimeDefined=%d, stopTime=%.16g)",
+        "toleranceDefined=%d, tolerance=%.16g, startTime=%.16g, stopTimeDefined=%d, stopTime=%.16g",
         toleranceDefined, tolerance, startTime, stopTimeDefined, stopTime);
 }
 
 FMIStatus FMI3ExitInitializationMode(FMIInstance *instance) {
 
-    if (instance->interfaceType == FMIModelExchange || (instance->fmiVersion == FMIVersion3 && instance->interfaceType == FMICoSimulation && instance->fmi3Functions->eventModeUsed)) {
-        instance->state = FMI2EventModeState;
+    if (instance->interfaceType == FMIModelExchange) {
+        instance->state = FMIEventModeState;
+    } else if (instance->interfaceType == FMICoSimulation) {
+        instance->state = instance->fmi3Functions->eventModeUsed ? FMIEventModeState : FMIStepModeState;
     } else {
-        instance->state = FMI2StepCompleteState;
+        instance->state = FMIClockActivationMode;
     }
 
     CALL(ExitInitializationMode);
 }
 
 FMIStatus FMI3EnterEventMode(FMIInstance *instance) {
-    instance->state = FMI2EventModeState;
+    instance->state = FMIEventModeState;
     CALL(EnterEventMode);
 }
 
 FMIStatus FMI3Terminate(FMIInstance *instance) {
-    instance->state = FMI2TerminatedState;
+    instance->state = FMITerminatedState;
     CALL(Terminate);
 }
 
 FMIStatus FMI3Reset(FMIInstance *instance) {
-    instance->state = FMI2InstantiatedState;
+    instance->state = FMIInstantiatedState;
     CALL(Reset);
 }
 
@@ -864,10 +872,32 @@ FMIStatus FMI3GetAdjointDerivative(FMIInstance *instance,
 
 /* Entering and exiting the Configuration or Reconfiguration Mode */
 FMIStatus FMI3EnterConfigurationMode(FMIInstance *instance) {
+    instance->state = instance->state == FMIInstantiatedState ? FMIConfigurationModeState: FMIReconfigurationModeState;
     CALL(EnterConfigurationMode);
 }
 
 FMIStatus FMI3ExitConfigurationMode(FMIInstance *instance) {
+
+    if (instance->state == FMIConfigurationModeState) {
+
+        instance->state = FMIInstantiatedState;
+
+    } else if (instance->state == FMIReconfigurationModeState) {
+
+        if (instance->interfaceType == FMIModelExchange) {
+            instance->state = FMIEventModeState;
+        } else if (instance->interfaceType == FMICoSimulation) {
+            instance->state = FMIStepModeState;
+        } else {
+            instance->state = FMIClockActivationMode;
+        }
+
+    } else {
+
+        return FMIError;
+
+    }
+
     CALL(ExitConfigurationMode);
 }
 
@@ -981,7 +1011,7 @@ Types for Functions for Model Exchange
 ****************************************************/
 
 FMIStatus FMI3EnterContinuousTimeMode(FMIInstance *instance) {
-    instance->state = FMI2ContinuousTimeModeState;
+    instance->state = FMIContinuousTimeModeState;
     CALL(EnterContinuousTimeMode);
 }
 
@@ -1005,7 +1035,6 @@ FMIStatus FMI3CompletedIntegratorStep(FMIInstance *instance,
 
 /* Providing independent variables and re-initialization of caching */
 FMIStatus FMI3SetTime(FMIInstance *instance, fmi3Float64 time) {
-    instance->time = time;
     CALL_ARGS(SetTime, "time=%.16g", time);
 }
 
@@ -1131,22 +1160,20 @@ FMIStatus FMI3DoStep(FMIInstance *instance,
     fmi3Float64 currentCommunicationPoint,
     fmi3Float64 communicationStepSize,
     fmi3Boolean noSetFMUStatePriorToCurrentPoint,
-    fmi3Boolean* eventEncountered,
-    fmi3Boolean* terminate,
+    fmi3Boolean* eventHandlingNeeded,
+    fmi3Boolean* terminateSimulation,
     fmi3Boolean* earlyReturn,
     fmi3Float64* lastSuccessfulTime) {
 
-    const FMIStatus status = (FMIStatus)instance->fmi3Functions->fmi3DoStep(instance->component, currentCommunicationPoint, communicationStepSize, noSetFMUStatePriorToCurrentPoint, eventEncountered, terminate, earlyReturn, lastSuccessfulTime);
+    const FMIStatus status = (FMIStatus)instance->fmi3Functions->fmi3DoStep(instance->component, currentCommunicationPoint, communicationStepSize, noSetFMUStatePriorToCurrentPoint, eventHandlingNeeded, terminateSimulation, earlyReturn, lastSuccessfulTime);
 
     if (instance->logFunctionCall) {
         FMIClearLogMessageBuffer(instance);
         FMIAppendToLogMessageBuffer(instance,
-            "fmi3DoStep(currentCommunicationPoint=%.16g, communicationStepSize=%.16g, noSetFMUStatePriorToCurrentPoint=%d, eventEncountered=%d, terminate=%d, earlyReturn=%d, lastSuccessfulTime=%.16g)",
-            currentCommunicationPoint, communicationStepSize, noSetFMUStatePriorToCurrentPoint, *eventEncountered, *terminate, *earlyReturn, *lastSuccessfulTime);
+            "fmi3DoStep(currentCommunicationPoint=%.16g, communicationStepSize=%.16g, noSetFMUStatePriorToCurrentPoint=%d, eventHandlingNeeded=%d, terminateSimulation=%d, earlyReturn=%d, lastSuccessfulTime=%.16g)",
+            currentCommunicationPoint, communicationStepSize, noSetFMUStatePriorToCurrentPoint, *eventHandlingNeeded, *terminateSimulation, *earlyReturn, *lastSuccessfulTime);
         instance->logFunctionCall(instance, status, instance->logMessageBuffer);
     }
-
-    instance->time = *lastSuccessfulTime;
 
     return status;
 }

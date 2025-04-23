@@ -1,7 +1,7 @@
 #ifdef _WIN32
 #include <direct.h>
 #define strdup _strdup
-#define INTERNET_MAX_URL_LENGTH 2083 /* from wininet.h */
+#define INTERNET_MAX_URL_LENGTH 2083 // from wininet.h
 #else
 #include <stdarg.h>
 #include <dlfcn.h>
@@ -45,7 +45,7 @@ do { \
     instance->fmi2Functions->fmi2 ## f = (fmi2 ## f ## TYPE*)GetProcAddress(instance->libraryHandle, "fmi2" #f); \
     if (!instance->fmi2Functions->fmi2 ## f) { \
         instance->logMessage(instance, FMIFatal, "fatal", "Symbol fmi2" #f " is missing in shared library."); \
-        return fmi2Fatal; \
+        return FMIFatal; \
     }\
 } while (0)
 #else
@@ -136,7 +136,7 @@ FMIStatus FMI2SetDebugLogging(FMIInstance *instance, fmi2Boolean loggingOn, size
 FMIStatus FMI2Instantiate(FMIInstance *instance, const char *fmuResourceLocation, fmi2Type fmuType, fmi2String fmuGUID,
     fmi2Boolean visible, fmi2Boolean loggingOn) {
 
-    instance->fmiVersion = FMIVersion2;
+    instance->fmiMajorVersion = FMIMajorVersion2;
 
     instance->fmi2Functions = calloc(1, sizeof(FMI2Functions));
 
@@ -144,14 +144,9 @@ FMIStatus FMI2Instantiate(FMIInstance *instance, const char *fmuResourceLocation
         return FMIError;
     }
 
-    instance->fmi2Functions->eventInfo.newDiscreteStatesNeeded           = fmi2False;
-    instance->fmi2Functions->eventInfo.terminateSimulation               = fmi2False;
-    instance->fmi2Functions->eventInfo.nominalsOfContinuousStatesChanged = fmi2False;
-    instance->fmi2Functions->eventInfo.valuesOfContinuousStatesChanged   = fmi2False;
-    instance->fmi2Functions->eventInfo.nextEventTimeDefined              = fmi2False;
-    instance->fmi2Functions->eventInfo.nextEventTime                     = 0.0;
+    instance->state = FMIStartAndEndState;
 
-    instance->state = FMI2StartAndEndState;
+#if !defined(FMI_VERSION) || FMI_VERSION == 2
 
     /***************************************************
     Common Functions
@@ -187,7 +182,7 @@ FMIStatus FMI2Instantiate(FMIInstance *instance, const char *fmuResourceLocation
     LOAD_SYMBOL(GetDirectionalDerivative);
 
     if (fmuType == fmi2ModelExchange) {
-
+#ifndef CO_SIMULATION
         /***************************************************
         Model Exchange
         ****************************************************/
@@ -202,9 +197,9 @@ FMIStatus FMI2Instantiate(FMIInstance *instance, const char *fmuResourceLocation
         LOAD_SYMBOL(GetEventIndicators);
         LOAD_SYMBOL(GetContinuousStates);
         LOAD_SYMBOL(GetNominalsOfContinuousStates);
-
+#endif
     } else {
-
+#ifndef MODEL_EXCHANGE
         /***************************************************
         Co-Simulation
         ****************************************************/
@@ -218,7 +213,10 @@ FMIStatus FMI2Instantiate(FMIInstance *instance, const char *fmuResourceLocation
         LOAD_SYMBOL(GetIntegerStatus);
         LOAD_SYMBOL(GetBooleanStatus);
         LOAD_SYMBOL(GetStringStatus);
+#endif
     }
+
+#endif
 
     instance->fmi2Functions->callbacks.logger               = cb_logMessage2;
     instance->fmi2Functions->callbacks.allocateMemory       = calloc;
@@ -241,7 +239,7 @@ FMIStatus FMI2Instantiate(FMIInstance *instance, const char *fmuResourceLocation
     }
 
     instance->interfaceType = (FMIInterfaceType)fmuType;
-    instance->state = FMI2InstantiatedState;
+    instance->state = FMIInstantiatedState;
 
     return FMIOK;
 }
@@ -266,29 +264,26 @@ FMIStatus FMI2SetupExperiment(FMIInstance *instance,
     fmi2Real startTime,
     fmi2Boolean stopTimeDefined,
     fmi2Real stopTime) {
-
-    instance->time = startTime;
-
     CALL_ARGS(SetupExperiment, "toleranceDefined=%d, tolerance=%.16g, startTime=%.16g, stopTimeDefined=%d, stopTime=%.16g", toleranceDefined, tolerance, startTime, stopTimeDefined, stopTime);
 }
 
 FMIStatus FMI2EnterInitializationMode(FMIInstance *instance) {
-    instance->state = FMI2InitializationModeState;
+    instance->state = FMIInitializationModeState;
     CALL(EnterInitializationMode);
 }
 
 FMIStatus FMI2ExitInitializationMode(FMIInstance *instance) {
-    instance->state = instance->interfaceType == FMIModelExchange ? FMI2EventModeState : FMI2StepCompleteState;
+    instance->state = instance->interfaceType == FMIModelExchange ? FMIEventModeState : FMIStepModeState;
     CALL(ExitInitializationMode);
 }
 
 FMIStatus FMI2Terminate(FMIInstance *instance) {
-    instance->state = FMI2TerminatedState;
+    instance->state = FMITerminatedState;
     CALL(Terminate);
 }
 
 FMIStatus FMI2Reset(FMIInstance *instance) {
-    instance->state = FMI2InstantiatedState;
+    instance->state = FMIInstantiatedState;
     CALL(Reset);
 }
 
@@ -391,7 +386,7 @@ Model Exchange
 
 /* Enter and exit the different modes */
 FMIStatus FMI2EnterEventMode(FMIInstance *instance) {
-    instance->state = FMI2EventModeState;
+    instance->state = FMIEventModeState;
     CALL(EnterEventMode);
 }
 
@@ -411,7 +406,7 @@ FMIStatus FMI2NewDiscreteStates(FMIInstance *instance, fmi2EventInfo *eventInfo)
 }
 
 FMIStatus FMI2EnterContinuousTimeMode(FMIInstance *instance) {
-    instance->state = FMI2ContinuousTimeModeState;
+    instance->state = FMIContinuousTimeModeState;
     CALL(EnterContinuousTimeMode);
 }
 
@@ -435,7 +430,6 @@ FMIStatus FMI2CompletedIntegratorStep(FMIInstance *instance,
 
 /* Providing independent variables and re-initialization of caching */
 FMIStatus FMI2SetTime(FMIInstance* instance, fmi2Real time) {
-    instance->time = time;
     CALL_ARGS(SetTime, "time=%.16g", time);
 }
 
@@ -538,9 +532,6 @@ FMIStatus FMI2DoStep(FMIInstance *instance,
     fmi2Real      currentCommunicationPoint,
     fmi2Real      communicationStepSize,
     fmi2Boolean   noSetFMUStatePriorToCurrentPoint) {
-
-    instance->time = currentCommunicationPoint + communicationStepSize;
-
     CALL_ARGS(DoStep, "currentCommunicationPoint=%.16g, communicationStepSize=%.16g, noSetFMUStatePriorToCurrentPoint=%d",
         currentCommunicationPoint, communicationStepSize, noSetFMUStatePriorToCurrentPoint);
 }

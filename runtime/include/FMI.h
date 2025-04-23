@@ -13,6 +13,7 @@ extern "C" {
 
 #include <stdbool.h>
 #include <stddef.h>
+#include <stdarg.h>
 
 #ifndef FMI_MAX_MESSAGE_LENGTH
 #define FMI_MAX_MESSAGE_LENGTH 4096
@@ -21,6 +22,42 @@ extern "C" {
 #ifndef FMI_STATIC
 #define FMI_STATIC
 #endif
+
+#if defined(_WIN32)
+#define FMI_SYSTEM "windows"
+#define FMI_PLATFORM_SYSTEM "win"
+#define FMI_FILE_SEPARATOR "\\"
+#define FMI_SHARED_LIBRARY_EXTENSION ".dll"
+#elif defined(__APPLE__)
+#define FMI_SYSTEM "darwin"
+#define FMI_PLATFORM_SYSTEM "darwin"
+#define FMI_FILE_SEPARATOR "/"
+#define FMI_SHARED_LIBRARY_EXTENSION ".dylib"
+#elif defined(__linux__)
+#define FMI_SYSTEM "linux"
+#define FMI_PLATFORM_SYSTEM "linux"
+#define FMI_FILE_SEPARATOR "/"
+#define FMI_SHARED_LIBRARY_EXTENSION ".so"
+#else
+#error "Unknown system"
+#endif
+
+#if defined(__aarch64__) || defined(_M_ARM64)
+#define FMI_ARCHITECTURE "aarch64"
+#define FMI_PLATFORM_BITS "64"
+#elif defined(__x86_64__) || defined(_M_X64)
+#define FMI_ARCHITECTURE "x86_64"
+#define FMI_PLATFORM_BITS "64"
+#elif defined(i386) || defined(__i386__) || defined(__i386) || defined(_M_IX86)
+#define FMI_ARCHITECTURE "x86"
+#define FMI_PLATFORM_BITS "32"
+#else
+#error "Unknown architecture"
+#endif
+
+#define FMI_PLATFORM FMI_PLATFORM_SYSTEM FMI_PLATFORM_BITS
+#define FMI_PLATFORM_TUPLE FMI_ARCHITECTURE "-" FMI_SYSTEM
+
 
 typedef enum {
     FMIOK,
@@ -33,11 +70,9 @@ typedef enum {
 
 typedef enum {
 
-    /* FMI 3.0 variable types */
+    // FMI 3.0 variable types
     FMIFloat32Type,
-    FMIDiscreteFloat32Type,
     FMIFloat64Type,
-    FMIDiscreteFloat64Type,
     FMIInt8Type,
     FMIUInt8Type,
     FMIInt16Type,
@@ -51,22 +86,21 @@ typedef enum {
     FMIBinaryType,
     FMIClockType,
 
-    /* non-variable types used as parameters */
+    // non-variable types used as parameters
     FMIValueReferenceType,
     FMISizeTType,
 
-    /* aliases for FMI 1.0 and 2.0 variable types */
+    // aliases for FMI 1.0 and 2.0 variable types
     FMIRealType         = FMIFloat64Type,
-    FMIDiscreteRealType = FMIDiscreteFloat64Type,
     FMIIntegerType      = FMIInt32Type,
 
 } FMIVariableType;
 
 typedef enum {
-    FMIVersion1 = 1,
-    FMIVersion2 = 2,
-    FMIVersion3 = 3
-} FMIVersion;
+    FMIMajorVersion1 = 1,
+    FMIMajorVersion2 = 2,
+    FMIMajorVersion3 = 3
+} FMIMajorVersion;
 
 typedef enum {
     FMIModelExchange,
@@ -75,24 +109,19 @@ typedef enum {
 } FMIInterfaceType;
 
 typedef enum {
-    FMI2StartAndEndState        = 1 << 0,
-    FMI2InstantiatedState       = 1 << 1,
-    FMI2InitializationModeState = 1 << 2,
 
-    /* model exchange states */
-    FMI2EventModeState          = 1 << 3,
-    FMI2ContinuousTimeModeState = 1 << 4,
+    FMIStartAndEndState         = 1 << 0,
+    FMIInstantiatedState        = 1 << 1,
+    FMIInitializationModeState  = 1 << 2,
+    FMITerminatedState          = 1 << 3,
+    FMIConfigurationModeState   = 1 << 4,
+    FMIReconfigurationModeState = 1 << 5,
+    FMIEventModeState           = 1 << 6,
+    FMIContinuousTimeModeState  = 1 << 7,
+    FMIStepModeState            = 1 << 8,
+    FMIClockActivationMode      = 1 << 9
 
-    /* co-simulation states */
-    FMI2StepCompleteState       = 1 << 5,
-    FMI2StepInProgressState     = 1 << 6,
-    FMI2StepFailedState         = 1 << 7,
-    FMI2StepCanceledState       = 1 << 8,
-
-    FMI2TerminatedState         = 1 << 9,
-    FMI2ErrorState              = 1 << 10,
-    FMI2FatalState              = 1 << 11,
-} FMI2State;
+} FMIState;
 
 typedef unsigned int FMIValueReference;
 
@@ -107,6 +136,10 @@ typedef struct FMI3Functions_ FMI3Functions;
 typedef void FMILogFunctionCall(FMIInstance *instance, FMIStatus status, const char *message);
 
 typedef void FMILogMessage(FMIInstance *instance, FMIStatus status, const char *category, const char *message);
+
+typedef void FMILogErrorMessage(const char* message, va_list args);
+
+extern FMILogErrorMessage* logErrorMessage;
 
 struct FMIInstance_ {
 
@@ -125,8 +158,6 @@ struct FMIInstance_ {
     FMILogMessage      *logMessage;
     FMILogFunctionCall *logFunctionCall;
 
-    double time;
-
     char* logMessageBuffer;
     size_t logMessageBufferSize;
     size_t logMessageBufferPosition;
@@ -137,17 +168,29 @@ struct FMIInstance_ {
 
     bool logFMICalls;
 
-    FMI2State state;
+    FMIState state;
 
     FMIStatus status;
 
-    FMIVersion fmiVersion;
+    FMIMajorVersion fmiMajorVersion;
 
     FMIInterfaceType interfaceType;
 
 };
 
-FMI_STATIC FMIInstance* FMICreateInstance(const char* instanceName, const char* libraryPath, FMILogMessage* logMessage, FMILogFunctionCall* logFunctionCall);
+FMI_STATIC void FMIPrintToStdErr(const char* message, va_list args);
+
+FMI_STATIC void FMILogError(const char* message, ...);
+
+FMI_STATIC FMIStatus FMICalloc(void** memory, size_t count, size_t size);
+
+FMI_STATIC FMIStatus FMIRealloc(void** memory, size_t size);
+
+FMI_STATIC void FMIFree(void** memory);
+
+FMI_STATIC FMIInstance* FMICreateInstance(const char* instanceName, FMILogMessage* logMessage, FMILogFunctionCall* logFunctionCall);
+
+FMI_STATIC FMIStatus FMILoadPlatformBinary(FMIInstance* instance, const char* libraryPath);
 
 FMI_STATIC void FMIFreeInstance(FMIInstance *instance);
 
@@ -159,7 +202,7 @@ FMI_STATIC void FMIAppendArrayToLogMessageBuffer(FMIInstance* instance, const vo
 
 FMI_STATIC FMIStatus FMIPathToURI(const char *path, char *uri, const size_t uriLength);
 
-FMI_STATIC FMIStatus FMIPlatformBinaryPath(const char *unzipdir, const char *modelIdentifier, FMIVersion fmiVersion, char *platformBinaryPath, size_t size);
+FMI_STATIC FMIStatus FMIPlatformBinaryPath(const char *unzipdir, const char *modelIdentifier, FMIMajorVersion fmiMajorVersion, char *platformBinaryPath, size_t size);
 
 #ifdef __cplusplus
 }  /* end of extern "C" { */

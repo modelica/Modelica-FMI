@@ -9,80 +9,151 @@
 #include <dlfcn.h>
 #endif
 
+#ifdef _MSC_VER
+#define strdup _strdup
+#endif
 
 #include "FMI.h"
 
 
-FMIInstance *FMICreateInstance(const char *instanceName, const char *libraryPath, FMILogMessage *logMessage, FMILogFunctionCall *logFunctionCall) {
+void FMIPrintToStdErr(const char* message, va_list args) {
+    vfprintf(stderr, message, args);
+    fputs("\n", stderr);
+}
 
-#define FMI_ASSERT_NOT_NULL(c) \
-    if (!c) { \
-        status = FMIError; \
-        goto TERMINATE; \
+FMILogErrorMessage* logErrorMessage = FMIPrintToStdErr;
+
+void FMILogError(const char* message, ...) {
+    va_list args;
+    va_start(args, message);
+    logErrorMessage(message, args);
+    va_end(args);
+}
+
+FMIStatus FMICalloc(void** memory, size_t count, size_t size) {
+
+    if (!memory) {
+        FMILogError("Pointer to memory must not be NULL.");
+        return FMIError;
     }
 
-    FMIStatus status = FMIOK;
+    if (count == 0 || size == 0) {
+        *memory = NULL;
+        return FMIOK;
+    }
+
+    *memory = calloc(count, size);
+
+    if (!*memory) {
+        FMILogError("Failed to reallocate memory.");
+        return FMIError;
+    }
+
+    return FMIOK;
+}
+
+FMIStatus FMIRealloc(void** memory, size_t size) {
+
+    if (!memory) {
+        FMILogError("Pointer to memory must not be NULL.");
+        return FMIError;
+    }
+
+    if (size == 0) {
+
+        if (*memory) {
+            free(*memory);
+            *memory = NULL;
+        }
+
+    } else {
+
+        void* temp = realloc(*memory, size);
+
+        if (!temp) {
+            FMILogError("Failed to reallocate memory.");
+            return FMIError;
+        }
+
+        *memory = temp;
+    }
+
+    return FMIOK;
+}
+
+void FMIFree(void** memory) {
+
+    if (*memory) {
+        free(*memory);
+        *memory = NULL;
+    }
+}
+
+FMIInstance *FMICreateInstance(const char *instanceName, FMILogMessage *logMessage, FMILogFunctionCall *logFunctionCall) {
 
     FMIInstance* instance = (FMIInstance*)calloc(1, sizeof(FMIInstance));
 
-    FMI_ASSERT_NOT_NULL(instance);
-
-# ifdef _WIN32
-    TCHAR Buffer[1024];
-    GetCurrentDirectory(1024, Buffer);
-
-    WCHAR dllDirectory[MAX_PATH];
-
-    /* convert path to unicode */
-    mbstowcs(dllDirectory, libraryPath, MAX_PATH);
-
-    /* add the binaries directory temporarily to the DLL path to allow discovery of dependencies */
-    DLL_DIRECTORY_COOKIE dllDirectoryCookie = AddDllDirectory(dllDirectory);
-
-    /* TODO: log getLastSystemError() */
-
-    instance->libraryHandle = LoadLibraryExA(libraryPath, NULL, LOAD_LIBRARY_SEARCH_DEFAULT_DIRS);
-
-    /* remove the binaries directory from the DLL path */
-    if (dllDirectoryCookie) {
-        RemoveDllDirectory(dllDirectoryCookie);
+    if (!instance) {
+        return NULL;
     }
 
-    /* TODO: log error */
-# else
-    instance->libraryHandle = dlopen(libraryPath, RTLD_LAZY);
-# endif
-
-    FMI_ASSERT_NOT_NULL(instance->libraryHandle);
+    instance->libraryHandle = NULL;
 
     instance->logMessage = logMessage;
     instance->logFunctionCall = logFunctionCall;
 
     instance->logMessageBufferSize = 1024;
-    instance->logMessageBufferPosition = 0;
     instance->logMessageBuffer = (char*)calloc(instance->logMessageBufferSize, sizeof(char));
-    FMI_ASSERT_NOT_NULL(instance->logMessageBuffer);
+    instance->logMessageBufferPosition = 0;
 
-    FMI_ASSERT_NOT_NULL(instanceName);
-
-    instance->name = (char*)malloc(strlen(instanceName) + 1);
-
-    FMI_ASSERT_NOT_NULL(instance->name);
-    
-    strcpy((char*)instance->name, instanceName);
+    instance->name = strdup(instanceName);
 
     instance->status = FMIOK;
 
-TERMINATE:
+    return instance;
+}
 
-    if (status != FMIOK) {
-        FMIFreeInstance(instance);
-        return NULL;
+FMIStatus FMILoadPlatformBinary(FMIInstance* instance, const char* libraryPath) {
+
+# ifdef _WIN32
+    WCHAR dllDirectory[MAX_PATH];
+
+    // convert path to unicode
+    mbstowcs(dllDirectory, libraryPath, MAX_PATH);
+
+    // replace forward slashes with backslashes
+    for (size_t i = 0; i < wcslen(dllDirectory); i++) {
+        if (dllDirectory[i] == L'/') {
+            dllDirectory[i] = L'\\';
+        }
     }
 
-    return instance;
+    wchar_t* last = wcsrchr(dllDirectory, L'\\');
 
-#undef FMI_ASSERT_NOT_NULL
+    // remove the file spec
+    if (last) {
+        *last = L'\0';
+    }
+
+    // add the binaries directory temporarily to the DLL path to allow discovery of dependencies
+    DLL_DIRECTORY_COOKIE dllDirectoryCookie = AddDllDirectory(dllDirectory);
+
+    instance->libraryHandle = LoadLibraryExA(libraryPath, NULL, LOAD_LIBRARY_SEARCH_DEFAULT_DIRS);
+
+    // remove the binaries directory from the DLL path
+    if (dllDirectoryCookie) {
+        RemoveDllDirectory(dllDirectoryCookie);
+    }
+# else
+    instance->libraryHandle = dlopen(libraryPath, RTLD_LAZY);
+# endif
+
+    if (!instance->libraryHandle) {
+        FMILogError("Failed to load shared library %s.", libraryPath);
+        return FMIError;
+    }
+
+    return FMIOK;
 }
 
 void FMIFreeInstance(FMIInstance *instance) {
@@ -91,7 +162,7 @@ void FMIFreeInstance(FMIInstance *instance) {
         return;
     }
 
-    /* unload the shared library */
+    // unload the shared library
     if (instance->libraryHandle) {
 # ifdef _WIN32
         FreeLibrary(instance->libraryHandle);
@@ -101,20 +172,24 @@ void FMIFreeInstance(FMIInstance *instance) {
         instance->libraryHandle = NULL;
     }
 
-    free(instance->logMessageBuffer);
+    FMIFree((void**)&instance->logMessageBuffer);
 
-    free((void*)instance->name);
+    FMIFree((void**)&instance->name);
 
-    free(instance->fmi1Functions);
-    free(instance->fmi2Functions);
-    free(instance->fmi3Functions);
+    FMIFree((void**)&instance->fmi1Functions);
+    FMIFree((void**)&instance->fmi2Functions);
+    FMIFree((void**)&instance->fmi3Functions);
 
-    free(instance);
+    FMIFree((void**)&instance);
 }
 
 void FMIClearLogMessageBuffer(FMIInstance* instance) {
+
     instance->logMessageBufferPosition = 0;
-    snprintf(instance->logMessageBuffer, instance->logMessageBufferSize, "");
+
+    if (instance->logMessageBufferSize > 0) {
+        instance->logMessageBuffer[0] = '\0';
+    }
 }
 
 void FMIAppendToLogMessageBuffer(FMIInstance* instance, const char* format, ...) {
@@ -135,7 +210,9 @@ void FMIAppendToLogMessageBuffer(FMIInstance* instance, const char* format, ...)
             instance->logMessageBufferSize *= 2;
         }
 
-        instance->logMessageBuffer = realloc(instance->logMessageBuffer, instance->logMessageBufferSize);
+        if (FMIRealloc((void**)&instance->logMessageBuffer, instance->logMessageBufferSize) != FMIOK) {
+            return;
+        }
 
         va_start(args, format);
         instance->logMessageBufferPosition += vsnprintf(&instance->logMessageBuffer[instance->logMessageBufferPosition], instance->logMessageBufferSize - instance->logMessageBufferPosition, format, args);
@@ -146,25 +223,21 @@ void FMIAppendToLogMessageBuffer(FMIInstance* instance, const char* format, ...)
 
 void FMIAppendArrayToLogMessageBuffer(FMIInstance* instance, const void* values, size_t nValues, const size_t sizes[], FMIVariableType variableType) {
 
-    size_t i, j;
+    for (size_t i = 0; i < nValues;) {
 
-    for (i = 0; i < nValues;) {
-
-        /* pointer to the last byte (terminator) */
+        // pointer to the last byte (terminator)
         char* s = &instance->logMessageBuffer[instance->logMessageBufferPosition];
 
-        /* remaining bytes in the buffer */
+        // remaining bytes in the buffer
         size_t n = instance->logMessageBufferSize - instance->logMessageBufferPosition;
 
         int length;
 
         switch (variableType) {
         case FMIFloat32Type:
-        case FMIDiscreteFloat32Type:
             length = snprintf(s, n, "%.7g", ((float*)values)[i]);
             break;
         case FMIFloat64Type:
-        case FMIDiscreteFloat64Type:
             length = snprintf(s, n, "%.16g", ((double*)values)[i]);
             break;
         case FMIInt8Type:
@@ -192,14 +265,14 @@ void FMIAppendArrayToLogMessageBuffer(FMIInstance* instance, const void* values,
             length = snprintf(s, n, "%" PRIu64, ((uint64_t *)values)[i]);
             break;
         case FMIBooleanType:
-            switch (instance->fmiVersion) {
-                case FMIVersion1:
+            switch (instance->fmiMajorVersion) {
+                case FMIMajorVersion1:
                     length = snprintf(s, n, "%d", ((char*)values)[i]);
                     break;
-                case FMIVersion2:
+                case FMIMajorVersion2:
                     length = snprintf(s, n, "%d", ((int*)values)[i]);
                     break;
-                case FMIVersion3:
+                case FMIMajorVersion3:
                     length = snprintf(s, n, "%d", ((bool*)values)[i]);
                     break;
             }
@@ -215,7 +288,7 @@ void FMIAppendArrayToLogMessageBuffer(FMIInstance* instance, const void* values,
                 snprintf(s, n, "0x");
                 s += 2;
                 n -= 2;
-                for (j = 0; j < size; j++) {
+                for (size_t j = 0; j < size; j++) {
                     snprintf(s, n, "%02hhx", v[j]);
                     s += 2;
                     n -= 2;
@@ -237,18 +310,22 @@ void FMIAppendArrayToLogMessageBuffer(FMIInstance* instance, const void* values,
             continue;
         }
 
-        if (length + sizeof(", ") < instance->logMessageBufferSize - instance->logMessageBufferPosition) {
+        const size_t requiredCharacters = length + sizeof(", ");
+
+        if (requiredCharacters < instance->logMessageBufferSize - instance->logMessageBufferPosition) {
 
             instance->logMessageBufferPosition += length;
             i++;
 
         } else {
 
-            while (instance->logMessageBufferSize < instance->logMessageBufferPosition + length) {
+            while (instance->logMessageBufferSize < instance->logMessageBufferPosition + requiredCharacters) {
                 instance->logMessageBufferSize *= 2;
             }
 
-            instance->logMessageBuffer = realloc(instance->logMessageBuffer, instance->logMessageBufferSize);
+            if (FMIRealloc((void**)&instance->logMessageBuffer, instance->logMessageBufferSize) != FMIOK) {
+                return;
+            }
 
             continue;
         }
@@ -262,8 +339,6 @@ void FMIAppendArrayToLogMessageBuffer(FMIInstance* instance, const void* values,
 }
 
 FMIStatus FMIPathToURI(const char *path, char *uri, const size_t uriLength) {
-
-    size_t i, j;
 
     const size_t pathLen = strlen(path);
 
@@ -281,8 +356,8 @@ FMIStatus FMIPathToURI(const char *path, char *uri, const size_t uriLength) {
 
     size_t p = strlen(scheme);
 
-    /* percent encode special characters */
-    for (i = 0; i < pathLen; i++) {
+    // percent encode special characters
+    for (size_t i = 0; i < pathLen; i++) {
 
         if (uriLength < p + 4) {
             return FMIError;
@@ -300,7 +375,7 @@ FMIStatus FMIPathToURI(const char *path, char *uri, const size_t uriLength) {
 
         const char* legal = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~:/?#[]@!$&'()*+,;=";
 
-        for (j = 0; j < 84; j++) {
+        for (size_t j = 0; j < 84; j++) {
             if (c == legal[j]) {
                 encode = false;
                 break;
@@ -321,45 +396,20 @@ FMIStatus FMIPathToURI(const char *path, char *uri, const size_t uriLength) {
     return FMIOK;
 }
 
-FMIStatus FMIPlatformBinaryPath(const char *unzipdir, const char *modelIdentifier, FMIVersion fmiVersion, char *platformBinaryPath, size_t size) {
+FMIStatus FMIPlatformBinaryPath(const char *unzipdir, const char *modelIdentifier, FMIMajorVersion fmiMajorVersion, char *platformBinaryPath, size_t size) {
 
-#if defined(_WIN32)
-    const char *platform = "win";
-    const char *system   = "windows";
-    const char sep       = '\\';
-    const char *ext      = ".dll";
-#elif defined(__APPLE__)
-    const char *platform = "darwin";
-    const char *system   = "darwin";
-    const char sep       = '/';
-    const char *ext      = ".dylib";
-#else
-    const char *platform = "linux";
-    const char *system   = "linux";
-    const char sep       = '/';
-    const char *ext      = ".so";
-#endif
+    char* separator = ""; // optional separator after the unzipdir
 
-#if defined(_WIN64) || defined(__x86_64__)
-    const char *bits = "64";
-    const char *arch = "x86_64";
-#else
-    const char *bits = "32";
-    const char *arch = "x86";
-#endif
-    const char* bin = "binaries";
-    char optSep[2] = "";
-    int rc;
+    const char last = unzipdir[strlen(unzipdir) - 1];
 
-    if (unzipdir[strlen(unzipdir) - 1] != sep) {
-        optSep[0] = sep;
+    if (last != '/' && last != '\\') {
+        separator = FMI_FILE_SEPARATOR;
     }
-    if (fmiVersion == 3) {
-        rc = snprintf(platformBinaryPath, size, "%s%s%s%c%s-%s%c%s%s", unzipdir, optSep, bin, sep, arch, system, sep, modelIdentifier, ext);
-    }
-    else {
-        rc = snprintf(platformBinaryPath, size, "%s%s%s%c%s%s%c%s%s", unzipdir, optSep, bin, sep, platform, bits, sep, modelIdentifier, ext);
-    }
+
+    const char* platform = fmiMajorVersion < FMIMajorVersion3 ? FMI_PLATFORM : FMI_PLATFORM_TUPLE;
+
+    const int rc = snprintf(platformBinaryPath, size, "%s%sbinaries" FMI_FILE_SEPARATOR "%s" FMI_FILE_SEPARATOR "%s" FMI_SHARED_LIBRARY_EXTENSION,
+        unzipdir, separator, platform, modelIdentifier);
 
     if (rc >= size) {
         return FMIError;
