@@ -43,7 +43,7 @@ jobs:
     runs-on: macos-13
     steps:
     - uses: actions/checkout@v4
-    - run: cmake -S ./runtime -B ./runtime/darwin64 -D CMAKE_OSX_ARCHITECTURES=arm64;x86_64
+    - run: cmake -S ./runtime -B ./runtime/darwin64 -D "CMAKE_OSX_ARCHITECTURES=arm64;x86_64"
     - run: cmake --build ./runtime/darwin64 --target install
     - uses: actions/upload-artifact@v4
       with:
