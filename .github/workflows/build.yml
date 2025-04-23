@@ -89,5 +89,5 @@ jobs:
     - uses: actions/upload-artifact@v4
       with:
         name: Modelica-FMI
-        path: dist/*.whl
+        path: modelica_fmi/dist/*.whl
         if-no-files-found: error
