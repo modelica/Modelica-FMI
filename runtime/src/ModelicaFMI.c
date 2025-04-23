@@ -3,6 +3,11 @@
 #include <stdarg.h>
 #include <math.h>
 
+#if defined(__APPLE__)
+#define _DARWIN_C_SOURCE
+#include <unistd.h>
+#endif
+
 #include "ModelicaUtilities.h"
 #include "ModelicaFMI.h"
 #include "FMI2.h"
