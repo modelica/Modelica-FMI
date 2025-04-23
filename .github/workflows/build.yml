@@ -80,3 +80,14 @@ jobs:
           LICENSE
           README.md
         if-no-files-found: error
+  build-python-wheel:
+    runs-on: ubuntu-22.04
+    steps:
+    - uses: actions/checkout@v4
+    - uses: astral-sh/setup-uv@v4
+    - run: uv build modelica_fmi
+    - uses: actions/upload-artifact@v4
+      with:
+        name: Modelica-FMI
+        path: dist/*.whl
+        if-no-files-found: error
