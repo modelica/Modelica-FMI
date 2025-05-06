@@ -47,11 +47,13 @@ void FMULogWarning(FMUInstance* userData, const char* message);
 
 void FMULogError(FMUInstance* userData, const char* message, ...);
 
-EXPORT FMUInstance* FMUCreate();
+void* FMUGetBuffer(FMUInstance* instance, size_t size);
 
-EXPORT void FMUFree(FMUInstance* instance);
+EXPORT FMUInstance* FMU_Create();
 
-EXPORT void FMULoad(
+EXPORT void FMU_Free(FMUInstance* instance);
+
+EXPORT void FMU_Load(
     FMUInstance* instance,
     const char* unzipdir,
     int fmiVersion,
@@ -72,5 +74,3 @@ EXPORT const char* FMU_getInfoMessage(FMUInstance* instance);
 EXPORT const char* FMU_getWarningMessage(FMUInstance* instance);
 
 EXPORT const char* FMU_getErrorMessage(FMUInstance* instance);
-
-void* FMU_getBuffer(FMUInstance* instance, size_t size);

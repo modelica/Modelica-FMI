@@ -11,9 +11,9 @@ int main() {
     const int vr_g = 5;
     const int vr_h = 1;
 
-    FMUInstance* instance = FMUCreate();
+    FMUInstance* instance = FMU_Create();
         
-    FMULoad(
+    FMU_Load(
         instance,
         UNZIP_DIR,
         2,
@@ -44,7 +44,7 @@ int main() {
         FMU_FMI2DoStep(instance, i * 0.1, 0.1, 1);
     }
 
-    FMUFree(instance);
+    FMU_Free(instance);
 
     return 0;
 }

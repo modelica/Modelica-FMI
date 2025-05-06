@@ -55,7 +55,7 @@ void FMU_FMI3GetFloat32(FMUInstance* instance, int valueReference, double values
 
     const fmi3ValueReference vr = valueReference;
 
-    fmi3Float32* buffer = (fmi3Float32*)FMU_getBuffer(instance, nValues * sizeof(fmi3Float32));
+    fmi3Float32* buffer = (fmi3Float32*)FMUGetBuffer(instance, nValues * sizeof(fmi3Float32));
 
     CALL(FMI3GetFloat32(instance->instance, &vr, 1, buffer, nValues));
 
@@ -78,7 +78,7 @@ void FMU_FMI3GetInt64(FMUInstance* instance, int valueReference, int values[], i
 
     const fmi3ValueReference vr = valueReference;
 
-    fmi3Int64* buffer = (fmi3Int64*)FMU_getBuffer(instance, nValues * sizeof(fmi3Int64));
+    fmi3Int64* buffer = (fmi3Int64*)FMUGetBuffer(instance, nValues * sizeof(fmi3Int64));
 
     CALL(FMI3GetInt64(instance->instance, &vr, 1, buffer, nValues));
 
@@ -95,7 +95,7 @@ void FMU_FMI3GetUInt64(FMUInstance* instance, int valueReference, int values[], 
 
     const fmi3ValueReference vr = valueReference;
 
-    fmi3UInt64* buffer = (fmi3UInt64*)FMU_getBuffer(instance, nValues * sizeof(fmi3UInt64));
+    fmi3UInt64* buffer = (fmi3UInt64*)FMUGetBuffer(instance, nValues * sizeof(fmi3UInt64));
 
     CALL(FMI3GetUInt64(instance->instance, &vr, 1, buffer, nValues));
 
@@ -114,7 +114,7 @@ void FMU_FMI3GetBoolean(FMUInstance* instance, int valueReference, int values[],
 
     const fmi3ValueReference vr = valueReference;
 
-    fmi3Boolean* buffer = (fmi3Boolean*)FMU_getBuffer(instance, nValues * sizeof(fmi3Boolean));
+    fmi3Boolean* buffer = (fmi3Boolean*)FMUGetBuffer(instance, nValues * sizeof(fmi3Boolean));
 
     CALL(FMI3GetBoolean(instance->instance, &vr, 1, (fmi3Boolean*)values, nValues));
 
@@ -125,7 +125,7 @@ void FMU_FMI3GetBoolean(FMUInstance* instance, int valueReference, int values[],
 
 void FMU_FMI3SetFloat32(FMUInstance* instance, const int valueReferences[], int nValueReferences, const double values[], int nValues) {
 
-    fmi3Float32* buffer = (fmi3Float32*)FMU_getBuffer(instance, nValues * sizeof(fmi3Float32));
+    fmi3Float32* buffer = (fmi3Float32*)FMUGetBuffer(instance, nValues * sizeof(fmi3Float32));
 
     for (size_t i = 0; i < nValues; i++) {
 
@@ -153,7 +153,7 @@ void FMU_FMI3SetInt64(FMUInstance* instance, const int valueReferences[], int nV
 
     size_t i;
 
-    fmi3Int64* buffer = (fmi3Int64*)FMU_getBuffer(instance, nValues * sizeof(fmi3Int64));
+    fmi3Int64* buffer = (fmi3Int64*)FMUGetBuffer(instance, nValues * sizeof(fmi3Int64));
 
     for (i = 0; i < nValues; i++) {
         buffer[i] = values[i];
@@ -166,7 +166,7 @@ void FMU_FMI3SetUInt64(FMUInstance* instance, const int valueReferences[], int n
 
     size_t i;
 
-    fmi3UInt64* buffer = (fmi3UInt64*)FMU_getBuffer(instance, nValues * sizeof(fmi3UInt64));
+    fmi3UInt64* buffer = (fmi3UInt64*)FMUGetBuffer(instance, nValues * sizeof(fmi3UInt64));
 
     for (i = 0; i < nValues; i++) {
         buffer[i] = values[i];

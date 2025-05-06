@@ -15,6 +15,6 @@ impure function loadFMU
   input String logFile;
   input Boolean copyPlatformBinary;
 
-external"C" FMULoad(instance, unzipdir, fmiVersion, modelIdentifier, instanceName, interfaceType, instantiationToken, visible, loggingOn, logFMICalls, logToFile, logFile, copyPlatformBinary) annotation (Library={"ModelicaFMI"});
+external"C" FMU_Load(instance, unzipdir, fmiVersion, modelIdentifier, instanceName, interfaceType, instantiationToken, visible, loggingOn, logFMICalls, logToFile, logFile, copyPlatformBinary) annotation (Library={"ModelicaFMI"});
 
 end loadFMU;

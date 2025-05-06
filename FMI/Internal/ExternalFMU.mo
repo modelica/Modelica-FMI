@@ -4,12 +4,12 @@ class ExternalFMU
 
   impure function constructor
       output ExternalFMU externalFMU;
-  external"C" externalFMU = FMUCreate() annotation (Library={"ModelicaFMI"});
+  external"C" externalFMU = FMU_Create() annotation (Library={"ModelicaFMI"});
   end constructor;
 
   impure function destructor
     input ExternalFMU externalFMU;
-  external"C" FMUFree(externalFMU) annotation (Library={"ModelicaFMI"});
+  external"C" FMU_Free(externalFMU) annotation (Library={"ModelicaFMI"});
   end destructor;
 
   annotation (Icon(coordinateSystem(preserveAspectRatio=false), graphics={

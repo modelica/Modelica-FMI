@@ -179,7 +179,7 @@ static void logFunctionCall(FMIInstance* instance, FMIStatus status, const char*
     }
 }
 
-FMUInstance* FMUCreate() {
+FMUInstance* FMU_Create() {
 
     FMUInstance* instance = (FMUInstance*)calloc(1, sizeof(FMUInstance));
 
@@ -189,7 +189,7 @@ FMUInstance* FMUCreate() {
     return instance;
 }
 
-void FMUFree(FMUInstance* instance) {
+void FMU_Free(FMUInstance* instance) {
 
     /* TODO: terminate? */
 
@@ -222,7 +222,7 @@ void FMUFree(FMUInstance* instance) {
     free(instance);
 }
 
-void FMULoad(
+void FMU_Load(
     FMUInstance* instance,
     const char* unzipdir,
     int fmiVersion, 
@@ -387,7 +387,7 @@ const char* FMU_getErrorMessage(FMUInstance* instance) {
     return "";
 }
 
-void* FMU_getBuffer(FMUInstance* instance, size_t size) {
+void* FMUGetBuffer(FMUInstance* instance, size_t size) {
 
     if (instance->valueBufferSize < size) {
 
