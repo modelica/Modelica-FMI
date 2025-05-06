@@ -11,7 +11,10 @@ int main() {
     const int vr_g = 5;
     const int vr_h = 1;
 
-    void* instance = FMU_load(
+    FMUInstance* instance = FMUCreate();
+        
+    FMULoad(
+        instance,
         UNZIP_DIR,
         2,
         "BouncingBall",
@@ -41,7 +44,7 @@ int main() {
         FMU_FMI2DoStep(instance, i * 0.1, 0.1, 1);
     }
 
-    FMU_free(instance);
+    FMUFree(instance);
 
     return 0;
 }

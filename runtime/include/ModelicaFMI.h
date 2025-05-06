@@ -10,22 +10,49 @@
 
 typedef struct {
 
+    char** messages;
+    size_t size;
+    size_t capacity;
+    size_t next;
+
+} FMUMessageList;
+
+typedef struct FMIInstance_ FMIInstance;
+
+typedef struct {
+
+    FMIInstance* instance;
+
     const char* tempBinaryDir;
     const char* tempBinaryPath;
     FILE* logFile;
     char* valueBuffer;
     size_t valueBufferSize;
 
+    FMUMessageList* infoMessages;
+    FMUMessageList* warningMessages;
     char* errorMessage;
 
-    char** infoMessages;
-    size_t infoMessagesSize;
-    size_t infoMessagesCapacity;
-    size_t nextInfoMessage;
+} FMUInstance;
 
-} FMU_UserData;
+void FMUAppendMessage(FMUMessageList* list, const char* message);
 
-EXPORT void* FMU_load(
+const char* FMUGetMessage(FMUMessageList* list);
+
+void FMUFreeMessageList(FMUMessageList* list);
+
+void FMULogInfo(FMUInstance* userData, const char* message);
+
+void FMULogWarning(FMUInstance* userData, const char* message);
+
+void FMULogError(FMUInstance* userData, const char* message, ...);
+
+EXPORT FMUInstance* FMUCreate();
+
+EXPORT void FMUFree(FMUInstance* instance);
+
+EXPORT void FMULoad(
+    FMUInstance* instance,
     const char* unzipdir,
     int fmiVersion,
     const char* modelIdentifier,
@@ -40,16 +67,10 @@ EXPORT void* FMU_load(
     int copyPlatformBinary
 );
 
-EXPORT void FMU_free(void* instance);
+EXPORT const char* FMU_getInfoMessage(FMUInstance* instance);
 
-EXPORT const char* FMU_getInfoMessage(void* instance);
+EXPORT const char* FMU_getWarningMessage(FMUInstance* instance);
 
-EXPORT const char* FMU_getWarningMessage(void* instance);
+EXPORT const char* FMU_getErrorMessage(FMUInstance* instance);
 
-//EXPORT size_t FMU_getErrorMessagesSize(void* instance);
-//
-//EXPORT const char** FMU_getErrorMessages(void* instance);
-
-EXPORT const char* FMU_getErrorMessage(void* instance);
-
-void* FMU_getBuffer(void* instance, size_t size);
+void* FMU_getBuffer(FMUInstance* instance, size_t size);

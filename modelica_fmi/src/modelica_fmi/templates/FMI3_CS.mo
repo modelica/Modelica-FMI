@@ -26,6 +26,21 @@ protected
 
 initial algorithm
 
+  FMI.Internal.loadFMU(
+    instance,
+    Modelica.Utilities.Files.loadResource("modelica://@=rootPackage=@/Resources/FMUs/@=hash=@"),
+    @=fmiMajorVersion=@,
+    "@=modelIdentifier=@",
+    getInstanceName(),
+    @=interfaceType=@,
+    "@=instantiationToken=@",
+    visible,
+    loggingOn,
+    logFMICalls,
+    logToFile,
+    logFile,
+    @@ if copyPlatformBinary @@true@@ else @@false@@ endif @@);
+
   FMI.Internal.Logging.logMessages(instance);
 
   if not startValuesSet then

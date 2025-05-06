@@ -8,50 +8,118 @@
 #include <unistd.h>
 #endif
 
-#include "ModelicaUtilities.h"
 #include "ModelicaFMI.h"
 #include "FMI2.h"
 #include "FMI3.h"
 
 
-static void append(char*** messages, size_t* size, size_t* capacity, const char* message) {
-
-    if (*capacity < *size + 1) {
-        *messages = realloc(*messages, (++(*capacity)) * sizeof(char*));
-    }
-
-    (*messages)[(*size)++] = strdup(message);
-}
-
-
 static void logMessage(FMIInstance* instance, FMIStatus status, const char* category, const char* message) {
 
-    FMU_UserData* userData = (FMU_UserData*)instance->userData;
-
-    switch (status) {
-    case FMIError:
-        userData->errorMessage = strdup(message);
-    default:
+    if (!instance || !instance->userData) {
         return;
     }
 
-    //if (userData->errorMessagesCapacity < userData->errorMessagesSize + 1) {
-    //    userData->errorMessages = realloc(userData->errorMessages, (++userData->errorMessagesCapacity) * sizeof(char*));
-    //}
+    FMUInstance* externalObject = (FMUInstance*)instance->userData;
 
-    //userData->errorMessages[userData->errorMessagesSize++] = strdup(message);
-
-    //userData->infoMessage = strdup(message);
-
-    //strncat(userData->infoMessage, message, userData->infoMessageSize);
-
-    //ModelicaFormatMessage("%s\n", message);
+    switch (status) {
+    case FMIOK:
+        FMULogInfo(externalObject, message);
+        break;
+    case FMIWarning:
+        FMULogWarning(externalObject, message);
+        break;
+    case FMIDiscard:
+    case FMIError:
+    case FMIFatal:
+    case FMIPending:
+        FMULogError(externalObject, message);
+        break;
+    }
 }
 
-static void logFunctionCall(FMIInstance* instance, FMIStatus status, const char* message, ...) {
+void FMUAppendMessage(FMUMessageList* list, const char* message) {
 
-    va_list args;
-    va_start(args, message);
+    if (!list || !message) {
+        return;
+    }
+
+    if (list->capacity < list->size + 1) {
+        list->messages = realloc(list->messages, (++(list->capacity)) * sizeof(char*));
+    }
+
+    if (list->messages) {
+        (list->messages)[(list->size)++] = strdup(message);
+    }
+}
+
+const char* FMUGetMessage(FMUMessageList* list) {
+
+    if (!list) {
+        return "";
+    }
+
+    if (list->next < list->size) {
+        return list->messages[list->next++];
+    }
+
+    for (size_t i = 0; i < list->size; i++) {
+        free(list->messages[i]);
+        list->messages[i] = NULL;
+    }
+
+    list->size = 0;
+    list->next = 0;
+
+    return "";
+}
+
+static void FMUFreeMessageList(FMUMessageList* list) {
+    
+    if (list) {
+
+        if (list->messages) {
+
+            for (size_t i = 0; i < list->capacity; i++) {
+                free(list->messages[i]);
+            }
+
+            free(list->messages);
+        }
+
+        free(list);
+    }
+}
+
+void FMULogInfo(FMUInstance* instance, const char* message) {
+    FMUAppendMessage(instance->infoMessages, message);
+}
+
+void FMULogWarning(FMUInstance* instance, const char* message) {
+    FMUAppendMessage(instance->warningMessages, message);
+}
+
+void FMULogError(FMUInstance* instance, const char* format, ...) {
+
+    va_list args1, args2;
+
+    va_start(args1, format);
+    va_copy(args2, args1);
+
+    const size_t origMessageLength = instance->errorMessage ? strlen(instance->errorMessage) : 0;
+
+    const size_t newMessageLength = origMessageLength + sizeof('\n') + vsnprintf(NULL, 0, format, args1);
+
+    instance->errorMessage = realloc(instance->errorMessage, newMessageLength);
+
+    if (instance->errorMessage) {
+        vsnprintf(&instance->errorMessage[origMessageLength], newMessageLength, format, args2);
+    }
+
+    va_end(args1);
+    va_end(args2);
+}
+
+static void logFunctionCall(FMIInstance* instance, FMIStatus status, const char* call) {
 
     const char* suffix;
 
@@ -79,37 +147,83 @@ static void logFunctionCall(FMIInstance* instance, FMIStatus status, const char*
         break;
     }
 
-    FMU_UserData* userData = instance->userData;
+    FMUInstance* object = (FMUInstance*)instance->userData;
 
-    if (userData && userData->logFile) {
+    if (object && object->logFile) {
 
-        FILE* logFile = userData->logFile;
+        FILE* logFile = object->logFile;
         
         if (logFile) {
             fprintf(logFile, "[%s] ", instance->name);
-            vfprintf(logFile, message, args);
+            fprintf(logFile, call);
             fprintf(logFile, suffix);
         }
 
     } else {
 
-        append(&userData->infoMessages, &userData->infoMessagesSize, &userData->infoMessagesCapacity, message);
+        switch (status) {
+        case FMIOK:
+            FMULogInfo(object, call);
+            break;
+        case FMIWarning:
+            FMULogWarning(object, call);
+            break;
+        case FMIDiscard:
+        case FMIError:
+        case FMIFatal:
+        case FMIPending:
+            FMULogError(object, call);
+            break;
+        }
 
-        //if (userData->infoMessagesCapacity < userData->infoMessagesSize + 1) {
-        //    userData->infoMessages = realloc(userData->infoMessages, (++userData->infoMessagesCapacity) * sizeof(char*));
-        //}
-
-        //userData->infoMessages[userData->infoMessagesSize++] = strdup(message);
-
-        //ModelicaFormatMessage("[%s] ", instance->name);
-        //ModelicaVFormatMessage(message, args);
-        //ModelicaFormatMessage(suffix);
     }
-    
-    va_end(args);
 }
 
-void* FMU_load(
+FMUInstance* FMUCreate() {
+
+    FMUInstance* instance = (FMUInstance*)calloc(1, sizeof(FMUInstance));
+
+    instance->infoMessages = calloc(1, sizeof(FMUMessageList));
+    instance->warningMessages = calloc(1, sizeof(FMUMessageList));
+
+    return instance;
+}
+
+void FMUFree(FMUInstance* instance) {
+
+    /* TODO: terminate? */
+
+    char command[4096];
+
+    // TODO: call FMI{2|3}FreeInstance()
+
+    FMIFreeInstance(instance->instance);
+
+    if (instance->tempBinaryPath) {
+#ifdef WIN32
+        snprintf(command, 4096, "rmdir /s /q \"%s\"", instance->tempBinaryDir);
+#else
+        snprintf(command, 4096, "rm -rf \"%s\"", instance->tempBinaryDir);
+#endif
+        if (system(command)) {
+            FMULogError(instance, "Failed to remove temporary directory.");
+        }
+
+        free((void*)instance->tempBinaryPath);
+    }
+
+    FMUFreeMessageList(instance->infoMessages);
+    FMUFreeMessageList(instance->warningMessages);
+
+    if (instance->valueBuffer) {
+        free(instance->valueBuffer);
+    }
+
+    free(instance);
+}
+
+void FMULoad(
+    FMUInstance* instance,
     const char* unzipdir,
     int fmiVersion, 
     const char* modelIdentifier, 
@@ -127,8 +241,6 @@ void* FMU_load(
 
     FMIPlatformBinaryPath(unzipdir, modelIdentifier, (FMIMajorVersion)fmiVersion, platformBinaryPath, 2048);
 
-    FMU_UserData* userData = (FMU_UserData*)calloc(1, sizeof(FMU_UserData));
-
 #if defined(_WIN32)
     const char* separator = "\\";
     const char* extension = ".dll";
@@ -143,65 +255,63 @@ void* FMU_load(
     const char* copyCommand = "cp";
 #endif
 
+    FMIInstance* S = FMICreateInstance(
+        instanceName,
+        logMessage,
+        logFMICalls ? ((FMILogFunctionCall*)logFunctionCall) : NULL
+    );
+
+    S->userData = instance;
+
     char command[4096];
 
     if (copyPlatformBinary) {
 #ifdef WIN32
-        userData->tempBinaryDir = _tempnam(NULL, NULL);
+        instance->tempBinaryDir = _tempnam(NULL, NULL);
 #else
-        userData->tempBinaryDir = (char*)calloc(1, 2048);
+        instance->tempBinaryDir = (char*)calloc(1, 2048);
 
-        sprintf(userData->tempBinaryDir, "/tmp/fmusim.XXXXXX");
+        sprintf(instance->tempBinaryDir, "/tmp/fmusim.XXXXXX");
 
-        mkdtemp(userData->tempBinaryDir);
+        mkdtemp(instance->tempBinaryDir);
 #endif
-        if (!userData->tempBinaryDir) {
-            ModelicaError("Failed to create temporary directory path.");
+        if (!instance->tempBinaryDir) {
+            FMULogError(instance, "Failed to create temporary directory path.");
         }
 
-        snprintf(command, 4096, "mkdir \"%s\"", userData->tempBinaryDir);
+        snprintf(command, 4096, "mkdir \"%s\"", instance->tempBinaryDir);
 
         if (system(command)) {
-            ModelicaFormatError("Failed to create temporary directory. Command: %s", command);
+            FMULogError(instance, "Failed to create temporary directory. Command: %s", command);
         }
 
-        userData->tempBinaryPath = (char*)calloc(1, strlen(userData->tempBinaryDir) + strlen(separator) + strlen(modelIdentifier) + strlen(extension) + 1);
+        instance->tempBinaryPath = (char*)calloc(1, strlen(instance->tempBinaryDir) + strlen(separator) + strlen(modelIdentifier) + strlen(extension) + 1);
         
-        sprintf((char*)userData->tempBinaryPath, "%s%s%s%s", userData->tempBinaryDir, separator, modelIdentifier, extension);
+        sprintf((char*)instance->tempBinaryPath, "%s%s%s%s", instance->tempBinaryDir, separator, modelIdentifier, extension);
         
-
-        snprintf(command, 4096, "%s \"%s\" \"%s\"", copyCommand, platformBinaryPath, userData->tempBinaryDir);
+        snprintf(command, 4096, "%s \"%s\" \"%s\"", copyCommand, platformBinaryPath, instance->tempBinaryDir);
 
         if (system(command)) {
-            ModelicaFormatError("Failed to copy platform binary. Command: %s", command);
+            FMULogError(instance, "Failed to copy platform binary. Command: %s", command);
         }
     }
-
-    FMIInstance* S = FMICreateInstance(
-        instanceName, 
-        logMessage, 
-        logFMICalls ? ((FMILogFunctionCall*)logFunctionCall) : NULL
-    );
 
     if (!S) {
-        ModelicaFormatError("Failed to create instance.");
-        return NULL;
+        FMULogError(instance, "Failed to create instance.");
+        return;
     }
 
-    FMILoadPlatformBinary(S, copyPlatformBinary ? userData->tempBinaryPath : platformBinaryPath);
+    FMILoadPlatformBinary(S, copyPlatformBinary ? instance->tempBinaryPath : platformBinaryPath);
 
     if (!S->libraryHandle) {
-        ModelicaFormatError("Failed to load platform binary2 %s.", platformBinaryPath);
-        return NULL;
+        FMULogError(instance, "Failed to load platform binary %s.", platformBinaryPath);
+        return;
     }
 
-    S->userData = userData;
+    instance->instance = S;
 
     if (logToFile && logFile) {
-
-        FMU_UserData* userData = (FMU_UserData*)S->userData;
-
-        userData->logFile = fopen(logFile, "w");
+        instance->logFile = fopen(logFile, "w");
     }
 
     char resourcePath[4096] = "";
@@ -246,119 +356,50 @@ void* FMU_load(
     }
 
     if (status > FMIOK) {
-        ModelicaFormatError("Failed to instantiate FMU %s.", platformBinaryPath);
-    }
-	
-	return S;
-}
-
-void FMU_free(void* instance) {
-
-    /* TODO: terminate? */
-
-    FMIInstance* S = (FMIInstance*)instance;
-
-    FMU_UserData* userData = (FMU_UserData*)S->userData;
-
-    char command[4096];
-
-    // TODO: call FMI{2|3}FreeInstance()
-
-    FMIFreeInstance(S);
-
-    if (userData) {
-
-        if (userData->tempBinaryPath) {
-#ifdef WIN32
-            snprintf(command, 4096, "rmdir /s /q \"%s\"", userData->tempBinaryDir);
-#else
-            snprintf(command, 4096, "rm -rf \"%s\"", userData->tempBinaryDir);
-#endif
-            if (system(command)) {
-                ModelicaFormatWarning("Failed to remove temporary directory. Command: %s", command);
-            }
-
-            free((void*)userData->tempBinaryPath);
-        }
-
-        if (userData->valueBuffer) {
-            free(userData->valueBuffer);
-        }
-
-        free(userData);
+        FMULogError(instance, "Failed to instantiate FMU %s.", platformBinaryPath);
     }
 }
 
-const char* FMU_getInfoMessage(void* instance) {
+const char* FMU_getInfoMessage(FMUInstance* instance) {
 
-    FMU_UserData* userData = ((FMIInstance*)instance)->userData;
-
-    if (userData->nextInfoMessage < userData->infoMessagesSize) {
-        return userData->infoMessages[userData->nextInfoMessage++];
-    }
-
-    for (size_t i = 0; i < userData->infoMessagesSize; i++) {
-        free(userData->infoMessages[i]);
-        userData->infoMessages[i] = NULL;
-    }
+    if (!instance) {
+        return "";
+    }    
     
-    userData->infoMessagesSize = 0;
-    userData->nextInfoMessage = 0;
-
-    //if (userData->infoMessagesSize > 0) {
-    //    userData->infoMessagesSize--;
-    //    return userData->infoMessages[userData->infoMessagesSize];
-    //}
-
-    return ""; // "Info message from FMU";
+    return FMUGetMessage(instance->infoMessages);
 }
 
-const char* FMU_getWarningMessage(void* instance) {
-    return ""; //"Warning message from FMU";
+const char* FMU_getWarningMessage(FMUInstance* instance) {
+
+    if (!instance) {
+        return "";
+    }
+
+    return FMUGetMessage(instance->warningMessages);
 }
 
-//EXPORT size_t FMU_getErrorMessagesSize(void* instance) {
-//
-//    FMU_UserData* userData = ((FMIInstance*)instance)->userData;
-//
-//    return userData->errorMessagesSize;
-//}
-//
-//EXPORT const char** FMU_getErrorMessages(void* instance) {
-//
-//    FMU_UserData* userData = ((FMIInstance*)instance)->userData;
-//
-//    return userData->errorMessages;
-//}
-
-const char* FMU_getErrorMessage(void* instance) {
-
-    //return "d'oh!";
+const char* FMU_getErrorMessage(FMUInstance* instance) {
     
-    FMU_UserData* userData = ((FMIInstance*)instance)->userData;
-
-    if (userData->errorMessage) {
-        return userData->errorMessage;
+    if (instance->errorMessage) {
+        return instance->errorMessage;
     }
 
     return "";
 }
 
-void* FMU_getBuffer(void* instance, size_t size) {
+void* FMU_getBuffer(FMUInstance* instance, size_t size) {
 
-    FMU_UserData* userData = (FMU_UserData*)((FMIInstance*)instance)->userData;
+    if (instance->valueBufferSize < size) {
 
-    if (userData->valueBufferSize < size) {
-
-        void* temp = realloc(userData->valueBuffer, size);
+        void* temp = realloc(instance->valueBuffer, size);
         
         if (!temp) {
-            ModelicaFormatError("Failed to allocate memory for value buffer.");
+            FMULogError(instance, "Failed to allocate memory for value buffer.");
         }
         
-        userData->valueBuffer = (char*)temp;
-        userData->valueBufferSize = size;
+        instance->valueBuffer = (char*)temp;
+        instance->valueBufferSize = size;
     }
 
-    return userData->valueBuffer;
+    return instance->valueBuffer;
 }

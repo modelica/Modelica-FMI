@@ -42,19 +42,7 @@ model @=modelName=@
 
 protected
 
-  FMI.Internal.ExternalFMU instance = FMI.Internal.ExternalFMU(
-    Modelica.Utilities.Files.loadResource("modelica://@=rootPackage=@/Resources/FMUs/@=hash=@"),
-    @=fmiMajorVersion=@,
-    "@=modelIdentifier=@",
-    getInstanceName(),
-    @=interfaceType=@,
-    "@=instantiationToken=@",
-    visible,
-    loggingOn,
-    logFMICalls,
-    logToFile,
-    logFile,
-    @@ if copyPlatformBinary @@true@@ else @@false@@ endif @@);
+  FMI.Internal.ExternalFMU instance = FMI.Internal.ExternalFMU();
 @@ block equations @@
 @@ endblock @@
 
