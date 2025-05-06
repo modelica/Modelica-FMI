@@ -73,7 +73,7 @@ const char* FMUGetMessage(FMUMessageList* list) {
     return "";
 }
 
-static void FMUFreeMessageList(FMUMessageList* list) {
+void FMUFreeMessageList(FMUMessageList* list) {
     
     if (list) {
 
