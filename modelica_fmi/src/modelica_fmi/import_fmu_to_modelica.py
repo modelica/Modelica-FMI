@@ -1,4 +1,4 @@
-def import_fmu_to_modelica(fmu_path, model_path, interface_type, variables=None):
+def import_fmu_to_modelica(fmu_path, model_path, interface_type='CoSimulation', variables=None):
 
     from os import makedirs
     from pathlib import Path
