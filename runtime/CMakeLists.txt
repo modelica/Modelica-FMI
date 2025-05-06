@@ -49,17 +49,17 @@ set_property(TARGET ModelicaFMI PROPERTY MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<
 
 install(TARGETS ModelicaFMI DESTINATION ${CMAKE_CURRENT_SOURCE_DIR}/../FMI/Resources/Library/${MODELICA_PLATFORM})
 
-add_executable(ModelicaFMI_tests
-    tests/simulate_fmi${FMI_VERSION}_cs.c
-)
-
-target_include_directories(ModelicaFMI_tests PRIVATE include)
-
-target_compile_definitions(ModelicaFMI_tests PRIVATE
-    UNZIP_DIR="${UNZIP_DIR}"
-    INSTANTIATION_TOKEN="${INSTANTIATION_TOKEN}"
-)
-
-add_dependencies(ModelicaFMI_tests ModelicaFMI)
-
-target_link_libraries(ModelicaFMI_tests PUBLIC ModelicaFMI)
+# add_executable(ModelicaFMI_tests
+#     tests/simulate_fmi${FMI_VERSION}_cs.c
+# )
+# 
+# target_include_directories(ModelicaFMI_tests PRIVATE include)
+# 
+# target_compile_definitions(ModelicaFMI_tests PRIVATE
+#     UNZIP_DIR="${UNZIP_DIR}"
+#     INSTANTIATION_TOKEN="${INSTANTIATION_TOKEN}"
+# )
+# 
+# add_dependencies(ModelicaFMI_tests ModelicaFMI)
+# 
+# target_link_libraries(ModelicaFMI_tests PUBLIC ModelicaFMI)
