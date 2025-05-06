@@ -27,28 +27,33 @@ protected
 initial algorithm
 
   FMI.Internal.loadFMU(
-    instance,
-    Modelica.Utilities.Files.loadResource("modelica://@=rootPackage=@/Resources/FMUs/@=hash=@"),
-    @=fmiMajorVersion=@,
-    "@=modelIdentifier=@",
-    getInstanceName(),
-    @=interfaceType=@,
-    "@=instantiationToken=@",
-    visible,
-    loggingOn,
-    logFMICalls,
-    logToFile,
-    logFile,
-    @@ if copyPlatformBinary @@true@@ else @@false@@ endif @@);
+    instance=instance,
+    unzipdir=Modelica.Utilities.Files.loadResource("modelica://@=rootPackage=@/Resources/FMUs/@=hash=@"),
+    fmiVersion=@=fmiMajorVersion=@,
+    modelIdentifier="@=modelIdentifier=@",
+    instanceName=getInstanceName(),
+    interfaceType=@=interfaceType=@,
+    instantiationToken="@=instantiationToken=@",
+    visible=visible,
+    loggingOn=loggingOn,
+    logFMICalls=logFMICalls,
+    logToFile=logToFile,
+    logFile=logFile,
+    copyPlatformBinary=@@ if copyPlatformBinary @@true@@ else @@false@@ endif @@);
 
   FMI.Internal.Logging.logMessages(instance);
 
   if not startValuesSet then
     startTime := time;
 @@ for variable in parameters @@
-    FMI2Set@=fmi_type(variable)=@(instance, {@=variable.valueReference=@}, 1, {@=name(variable)=@});
+    FMI2Set@=fmi_type(variable)=@(instance, valueReferences={@=variable.valueReference=@}, nValues=1, values={@=name(variable)=@});
 @@ endfor @@
-    FMI2SetupExperiment(instance, tolerance > 0.0, tolerance, startTime, stopTime < Modelica.Constants.inf, stopTime);
+    FMI2SetupExperiment(instance,
+      toleranceDefined=tolerance > 0.0,
+      tolerance=tolerance,
+      startTime=startTime,
+      stopTimeDefined=stopTime < Modelica.Constants.inf,
+      stopTime=stopTime);
     FMI2EnterInitializationMode(instance);
 @@ for variable in inputs @@
     FMI2Set@=fmi_type(variable)=@(instance, {@=variable.valueReference=@}, 1, {@=name(variable, '_start')=@});
@@ -70,12 +75,15 @@ algorithm
     end if;
 
     if time >= startTime + communicationStepSize then
-      FMI2DoStep(instance, time - communicationStepSize, communicationStepSize, true);
+      FMI2DoStep(instance,
+        currentCommunicationPoint=time - communicationStepSize,
+        communicationStepSize=communicationStepSize,
+        noSetFMUStatePriorToCurrentPoint=true);
     end if;
 
     if not initial() then
 @@ for variable in outputs @@
-      outputVariables.@=name(variable)=@ := FMI2Get@=fmi_type(variable)=@(instance, @=variable.valueReference=@);
+      outputVariables.@=name(variable)=@ := FMI2Get@=fmi_type(variable)=@(instance, valueReference=@=variable.valueReference=@);
 @@ endfor @@
     end if;
 
@@ -89,7 +97,7 @@ equation
         @=dependencies3(variable, 'Real')=@,
         @=dependencies3(variable, 'Integer')=@,
         @=dependencies3(variable, 'Boolean')=@,
-        @=variable.valueReference=@);
+        valueReference=@=variable.valueReference=@);
   else
     @=name(variable)=@ = outputVariables.@=name(variable)=@;
   end if;

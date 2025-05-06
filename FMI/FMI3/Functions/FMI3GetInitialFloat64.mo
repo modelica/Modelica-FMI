@@ -9,14 +9,14 @@ impure function FMI3GetInitialFloat64
 
   input Real _time;
 
-  input FMI3ValueReference Float64ValueReferences[:];
-  input FMI3Float64 Float64Values[:];
+  input FMI3ValueReference float64InputValueReferences[:];
+  input FMI3Float64 float64InputValues[:];
 
-  input FMI3ValueReference Int32ValueReferences[:];
-  input FMI3Int32 Int32Values[:];
+  input FMI3ValueReference int32InputValueReferences[:];
+  input FMI3Int32 int32InputValues[:];
 
-  input FMI3ValueReference BooleanValueReferences[:];
-  input FMI3Boolean BooleanValues[:];
+  input FMI3ValueReference booleanInputValueReferences[:];
+  input FMI3Boolean booleanInputValues[:];
 
   input FMI3ValueReference valueReference;
   input Integer nValues;
@@ -24,9 +24,9 @@ impure function FMI3GetInitialFloat64
 
 algorithm
 
-  FMI3SetFloat64(instance, Float64ValueReferences, Float64Values);
-  FMI3SetInt32(instance, Int32ValueReferences, Int32Values);
-  FMI3SetBoolean(instance, BooleanValueReferences, BooleanValues);
+  FMI3SetFloat64(instance, float64InputValueReferences, float64InputValues);
+  FMI3SetInt32(instance, int32InputValueReferences, int32InputValues);
+  FMI3SetBoolean(instance, booleanInputValueReferences, booleanInputValues);
 
   values := FMI3GetFloat64(instance, valueReference, nValues);
 

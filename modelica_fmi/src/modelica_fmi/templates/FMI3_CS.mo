@@ -27,19 +27,19 @@ protected
 initial algorithm
 
   FMI.Internal.loadFMU(
-    instance,
-    Modelica.Utilities.Files.loadResource("modelica://@=rootPackage=@/Resources/FMUs/@=hash=@"),
-    @=fmiMajorVersion=@,
-    "@=modelIdentifier=@",
-    getInstanceName(),
-    @=interfaceType=@,
-    "@=instantiationToken=@",
-    visible,
-    loggingOn,
-    logFMICalls,
-    logToFile,
-    logFile,
-    @@ if copyPlatformBinary @@true@@ else @@false@@ endif @@);
+    instance=instance,
+    unzipdir=Modelica.Utilities.Files.loadResource("modelica://@=rootPackage=@/Resources/FMUs/@=hash=@"),
+    fmiVersion=@=fmiMajorVersion=@,
+    modelIdentifier="@=modelIdentifier=@",
+    instanceName=getInstanceName(),
+    interfaceType=@=interfaceType=@,
+    instantiationToken="@=instantiationToken=@",
+    visible=visible,
+    loggingOn=loggingOn,
+    logFMICalls=logFMICalls,
+    logToFile=logToFile,
+    logFile=logFile,
+    copyPlatformBinary=@@ if copyPlatformBinary @@true@@ else @@false@@ endif @@);
 
   FMI.Internal.Logging.logMessages(instance);
 
@@ -47,21 +47,26 @@ initial algorithm
     startTime := time;
 @@ for variable in parameters @@
 @@ if not variable.dimensions @@
-    FMI3Set@=fmi_type(variable)=@(instance, {@=variable.valueReference=@}, {@=name(variable)=@});
+    FMI3Set@=fmi_type(variable)=@(instance, valueReferences={@=variable.valueReference=@}, values={@=name(variable)=@});
 @@ elif variable.dimensions|length == 1 @@
-    FMI3Set@=fmi_type(variable)=@(instance, {@=variable.valueReference=@}, @=name(variable)=@);
+    FMI3Set@=fmi_type(variable)=@(instance, valueReferences={@=variable.valueReference=@}, values=@=name(variable)=@);
 @@ else @@
-    FMI3Set@=fmi_type(variable)=@Matrix(instance, {@=variable.valueReference=@}, @=name(variable)=@, @=numel(variable)=@);
+    FMI3Set@=fmi_type(variable)=@Matrix(instance, valueReferences={@=variable.valueReference=@}, values=@=name(variable)=@, nValues=@=numel(variable)=@);
 @@ endif @@
 @@ endfor @@
-    FMI3EnterInitializationMode(instance, tolerance > 0.0, tolerance, startTime, stopTime < Modelica.Constants.inf, stopTime);
+    FMI3EnterInitializationMode(instance,
+        toleranceDefined=tolerance > 0.0,
+        tolerance=tolerance,
+        startTime=startTime,
+        stopTimeDefined=stopTime < Modelica.Constants.inf,
+        stopTime=stopTime);
 @@ for variable in inputs @@
 @@ if not variable.dimensions @@
-    FMI3Set@=fmi_type(variable)=@(instance, {@=variable.valueReference=@}, {@=name(variable, '_start')=@});
+    FMI3Set@=fmi_type(variable)=@(instance, valueReferences={@=variable.valueReference=@}, values={@=name(variable, '_start')=@});
 @@ elif variable.dimensions|length == 1 @@
-    FMI3Set@=fmi_type(variable)=@(instance, {@=variable.valueReference=@}, @=name(variable, '_start')=@);
+    FMI3Set@=fmi_type(variable)=@(instance, valueReferences={@=variable.valueReference=@}, values=@=name(variable, '_start')=@);
 @@ else @@
-    FMI3Set@=fmi_type(variable)=@Matrix(instance, {@=variable.valueReference=@}, @=name(variable, '_start')=@, @=numel(variable)=@);
+    FMI3Set@=fmi_type(variable)=@Matrix(instance, valueReferences={@=variable.valueReference=@}, values=@=name(variable, '_start')=@, nValues=@=numel(variable)=@);
 @@ endif @@
 @@ endfor @@
     startValuesSet := true;
@@ -73,11 +78,11 @@ algorithm
 
 @@ for variable in inputs @@
 @@ if not variable.dimensions @@
-    FMI3Set@=fmi_type(variable)=@(instance, {@=variable.valueReference=@}, {pre(@=name(variable)=@)});
+    FMI3Set@=fmi_type(variable)=@(instance, valueReferences={@=variable.valueReference=@}, values={pre(@=name(variable)=@)});
 @@ elif variable.dimensions|length == 1 @@
-    FMI3Set@=fmi_type(variable)=@(instance, {@=variable.valueReference=@}, pre(@=name(variable)=@));
+    FMI3Set@=fmi_type(variable)=@(instance, valueReferences={@=variable.valueReference=@}, values=pre(@=name(variable)=@));
 @@ else @@
-    FMI3Set@=fmi_type(variable)=@Matrix(instance, {@=variable.valueReference=@}, pre(@=name(variable)=@), @=numel(variable)=@);
+    FMI3Set@=fmi_type(variable)=@Matrix(instance, valueReferences={@=variable.valueReference=@}, values=pre(@=name(variable)=@), nValues=@=numel(variable)=@);
 @@ endif @@
 @@ endfor @@
 
@@ -87,17 +92,19 @@ algorithm
     end if;
 
     if time >= startTime + communicationStepSize then
-      FMI3DoStep(instance, time - communicationStepSize, communicationStepSize);
+      FMI3DoStep(instance,
+        currentCommunicationPoint=time - communicationStepSize,
+        communicationStepSize=communicationStepSize);
     end if;
 
     if not initial() then
 @@ for variable in outputs @@
 @@ if not variable.dimensions @@
-      outputVariables.@=name(variable)=@ := scalar(FMI3Get@=fmi_type(variable)=@(instance, @=variable.valueReference=@, 1));
+      outputVariables.@=name(variable)=@ := scalar(FMI3Get@=fmi_type(variable)=@(instance, valueReference=@=variable.valueReference=@, nValues=1));
 @@ elif variable.dimensions|length == 1 @@
-      outputVariables.@=name(variable)=@ := FMI3Get@=fmi_type(variable)=@(instance, @=variable.valueReference=@, @=numel(variable)=@);
+      outputVariables.@=name(variable)=@ := FMI3Get@=fmi_type(variable)=@(instance, valueReference=@=variable.valueReference=@, nValues=@=numel(variable)=@);
 @@ else @@
-      outputVariables.@=name(variable)=@ := FMI3Get@=fmi_type(variable)=@Matrix(instance, @=variable.valueReference=@, 2, 3, @=numel(variable)=@);
+      outputVariables.@=name(variable)=@ := FMI3Get@=fmi_type(variable)=@Matrix(instance, @=variable.valueReference=@, m=size(@=name(variable)=@, 1), n=size(@=name(variable)=@, 2), nValues=@=numel(variable)=@);
 @@ endif @@
 @@ endfor @@
     end if;
@@ -113,19 +120,24 @@ equation
         @=dependencies3(variable, 'Float64')=@,
         @=dependencies3(variable, 'Int32')=@,
         @=dependencies3(variable, 'Boolean')=@,
-        @=variable.valueReference=@, 1));
+        valueReference=@=variable.valueReference=@,
+        nValues=1));
 @@ elif variable.dimensions|length == 1 @@
     @=name(variable)=@ = FMI3GetInitial@=fmi_type(variable)=@(instance, startTime,
         @=dependencies3(variable, 'Float64')=@,
         @=dependencies3(variable, 'Int32')=@,
         @=dependencies3(variable, 'Boolean')=@,
-        @=variable.valueReference=@, size(@=name(variable)=@, 1));
+        valueReference=@=variable.valueReference=@,
+        nValues=size(@=name(variable)=@, 1));
 @@ else @@
     @=name(variable)=@ = FMI3GetInitial@=fmi_type(variable)=@Matrix(instance, startTime,
         @=dependencies3(variable, 'Float64')=@,
         @=dependencies3(variable, 'Int32')=@,
         @=dependencies3(variable, 'Boolean')=@,
-        @=variable.valueReference=@, size(@=name(variable)=@, 1), size(@=name(variable)=@, 2), product(size(@=name(variable)=@)));
+        valueReference=@=variable.valueReference=@,
+        m=size(@=name(variable)=@, 1),
+        n=size(@=name(variable)=@, 2),
+        nValues=product(size(@=name(variable)=@)));
 @@ endif @@
   else
     @=name(variable)=@ = outputVariables.@=name(variable)=@;

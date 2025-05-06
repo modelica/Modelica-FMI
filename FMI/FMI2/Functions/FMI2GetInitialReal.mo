@@ -3,20 +3,20 @@ impure function FMI2GetInitialReal
   extends Modelica.Icons.Function;
   input Internal.ExternalFMU instance;
   input Real _time;
-  input Integer realInputVRs[:];
+  input Integer realInputValueReferences[:];
   input Real realInputValues[:];
-  input Integer integerInputVRs[:];
+  input Integer integerInputValueReferences[:];
   input Integer integerInputValues[:];
-  input Integer booleanInputVRs[:];
+  input Integer booleanInputValueReferences[:];
   input Boolean booleanInputValues[:];
   input Integer valueReference;
   output Real value;
 algorithm
-  FMI2SetReal(instance, realInputVRs, size(realInputVRs, 1), realInputValues);
+  FMI2SetReal(instance, realInputValueReferences, size(realInputValueReferences, 1), realInputValues);
   FMI.Internal.Logging.logMessages(instance);
-  FMI2SetInteger(instance, integerInputVRs, size(integerInputVRs, 1), integerInputValues);
+  FMI2SetInteger(instance, integerInputValueReferences, size(integerInputValueReferences, 1), integerInputValues);
   FMI.Internal.Logging.logMessages(instance);
-  FMI2SetBoolean(instance, booleanInputVRs, size(booleanInputVRs, 1), booleanInputValues);
+  FMI2SetBoolean(instance, booleanInputValueReferences, size(booleanInputValueReferences, 1), booleanInputValues);
   FMI.Internal.Logging.logMessages(instance);
   value := FMI2GetReal(instance, valueReference);
   FMI.Internal.Logging.logMessages(instance);

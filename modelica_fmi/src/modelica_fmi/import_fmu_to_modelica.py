@@ -274,11 +274,11 @@ def import_fmu_to_modelica(fmu_path, model_path, interface_type='CoSimulation', 
     def dependencies3(variable, type):
 
         if type == 'Boolean':
-            default = 'fill(0, 0), fill(false, 0)'
-        elif type in {'Float64', 'Float32', 'Real'}:
-            default = 'fill(0, 0), fill(0.0, 0)'
+            default = f'booleanInputValueReferences=fill(0, 0), booleanInputValues=fill(false, 0)'
+        elif type in {'Float64', 'Real'}:
+            default = f'{type.lower()}InputValueReferences=fill(0, 0), {type.lower()}InputValues=fill(0.0, 0)'
         else:
-            default = 'fill(0, 0), fill(0, 0)'
+            default = f'{type.lower()}InputValueReferences=fill(0, 0), {type.lower()}InputValues=fill(0, 0)'
 
         unknowns = list(filter(lambda u: u.variable.name == variable.name, model_description.initialUnknowns))
 
@@ -311,7 +311,7 @@ def import_fmu_to_modelica(fmu_path, model_path, interface_type='CoSimulation', 
         if not vrs:
             return default
 
-        return '{' + ', '.join(vrs) + '}, {' + ', '.join(values) + '}'
+        return f'{type.lower()}InputValueReferences' + '={' + ', '.join(vrs) + '}, ' + f'{type.lower()}InputValues=' + '{' + ', '.join(values) + '}'
 
     template.globals.update({
         'as_array': as_array,
