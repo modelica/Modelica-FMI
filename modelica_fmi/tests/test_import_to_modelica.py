@@ -61,7 +61,7 @@ def test_run_examples_in_om(package_dir, reference_fmus_dist_dir, work_dir, fmi_
     elif model == 'VanDerPol':
         stop_time = 20
 
-    info = omc.sendExpression(f'simulate(FMI.Examples.FMI{fmi_version}.{interface_type}.{model}, stopTime={stop_time})')
+    info = omc.sendExpression(f'simulate(FMI.Examples.FMI{fmi_version}.{model}, stopTime={stop_time})')
 
     result = Dsres(info['resultFile'])
 
@@ -108,7 +108,7 @@ def test_run_examples_in_dymola(dymola, package_dir, reference_fmus_dist_dir, fm
     intial_values = dict(map(lambda i: (i[0], i[1]), start_values.items()))
 
     result = dymola.simulate(
-        model=f'FMI.Examples.FMI{fmi_version}.{interface_type}.{model}',
+        model=f'FMI.Examples.FMI{fmi_version}.{model}',
         initialValues=intial_values,
         stopTime=stop_time
     )
