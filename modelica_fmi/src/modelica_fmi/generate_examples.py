@@ -5,8 +5,8 @@ def generate_examples():
     from pathlib import Path
     from .import_fmu_to_modelica import import_fmu_to_modelica
 
-    url = 'https://github.com/modelica/Reference-FMUs/releases/download/v0.0.29/Reference-FMUs-0.0.29.zip'
-    checksum = 'cf17e4e8ca0db0965afc5d4c968ab1a94d6328c8941e20496e69e5c0ee6836f1'
+    url = 'https://github.com/modelica/Reference-FMUs/releases/download/v0.0.38/Reference-FMUs-0.0.38.zip'
+    checksum = 'dc3d1467ddea24cf6d171f7eb4d790d7d6f3f7b8856cf76c0cd832c78e8e629a'
     archive = download_file(url=url, checksum=checksum)
 
     dist = Path(extract(archive))
