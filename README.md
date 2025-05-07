@@ -13,7 +13,7 @@ To import an FMU
 uv tool install --reinstall https://github.com/modelica/Modelica-FMI/releases/download/v0.0.1/modelica_fmi-0.0.1-py3-none-any.whl
 ```
 
-- download the [Modelica-FMI](https://github.com/modelica/Modelica-FMI/releases/download/v0.0.1/Modelica-FMI-0.0.1.zip), load it in your Modelica tool, and call 
+- download the [Modelica-FMI](https://github.com/modelica/Modelica-FMI/releases/download/v0.0.1/Modelica-FMI-0.0.1.zip) package, load it in your Modelica tool, and call 
 ```
 FMI.importFMU()
 ```
