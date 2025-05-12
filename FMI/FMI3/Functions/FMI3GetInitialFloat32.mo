@@ -9,6 +9,9 @@ impure function FMI3GetInitialFloat32
 
   input Real _time;
 
+  input FMI3ValueReference float32InputValueReferences[:] = fill(0, 0);
+  input FMI3Float32 float32InputValues[:] = fill(0.0, 0);
+
   input FMI3ValueReference float64InputValueReferences[:] = fill(0, 0);
   input FMI3Float64 float64InputValues[:] = fill(0.0, 0);
 
@@ -24,6 +27,7 @@ impure function FMI3GetInitialFloat32
 
 algorithm
 
+  FMI3SetFloat32(instance, float32InputValueReferences, float32InputValues);
   FMI3SetFloat64(instance, float64InputValueReferences, float64InputValues);
   FMI3SetInt32(instance, int32InputValueReferences, int32InputValues);
   FMI3SetBoolean(instance, booleanInputValueReferences, booleanInputValues);

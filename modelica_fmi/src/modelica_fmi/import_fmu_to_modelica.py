@@ -1,3 +1,6 @@
+from typing import Literal
+
+
 def import_fmu_to_modelica(fmu_path, model_path, interface_type='CoSimulation', variables=None):
 
     from os import makedirs
@@ -6,6 +9,7 @@ def import_fmu_to_modelica(fmu_path, model_path, interface_type='CoSimulation', 
 
     import jinja2
     from fmpy import extract, read_model_description
+    from fmpy.model_description import ScalarVariable
     from fmpy.util import sha256_checksum
 
     fmu_path = Path(fmu_path)
@@ -273,40 +277,44 @@ def import_fmu_to_modelica(fmu_path, model_path, interface_type='CoSimulation', 
             s.append(int(dimension.start if dimension.start else variables[dimension.valueReference].start))
         return tuple(s)
 
-    def dependencies3(variable, type):
+    def dependencies3(variable: ScalarVariable, types: list[str]):
 
-        unknowns = list(filter(lambda u: u.variable.name == variable.name, model_description.initialUnknowns))
+        arguments = []
 
-        if not unknowns:
-            return ''
+        for type in types:
 
-        unknown = unknowns[0]
+            unknowns = list(filter(lambda u: u.variable.name == variable.name, model_description.initialUnknowns))
 
-        vrs = []
-        values = []
-
-        for dependency in unknown.dependencies:
-
-            if dependency.type != type or dependency.causality != 'input':
+            if not unknowns:
                 continue
 
-            vrs.append(str(dependency.valueReference))
-            s = shape(dependency)
+            unknown = unknowns[0]
 
-            if not s:
-                values.append(name(dependency))
-            elif len(s) == 1:
-                for i in range(1, numel(dependency) + 1):
-                    values.append(f'{name(dependency)}[{i}]')
-            elif len(s) == 2:
-                for i in range(1, s[0] + 1):
-                    for j in range(1, s[1] + 1):
-                        values.append(f'{name(dependency)}[{i},{j}]')
+            vrs = []
+            values = []
 
-        if not vrs:
-            return ''
+            for dependency in unknown.dependencies:
 
-        return f'{type.lower()}InputValueReferences' + '={' + ', '.join(vrs) + '}, ' + f'{type.lower()}InputValues=' + '{' + ', '.join(values) + '}, '
+                if dependency.type != type or dependency.causality != 'input':
+                    continue
+
+                vrs.append(str(dependency.valueReference))
+                s = shape(dependency)
+
+                if not s:
+                    values.append(name(dependency))
+                elif len(s) == 1:
+                    for i in range(1, numel(dependency) + 1):
+                        values.append(f'{name(dependency)}[{i}]')
+                elif len(s) == 2:
+                    for i in range(1, s[0] + 1):
+                        for j in range(1, s[1] + 1):
+                            values.append(f'{name(dependency)}[{i},{j}]')
+
+            if vrs:
+                arguments.append(f'{type.lower()}InputValueReferences' + '={' + ', '.join(vrs) + '}, ' + f'{type.lower()}InputValues=' + '{' + ', '.join(values) + '}, ')
+
+        return ''.join(arguments)
 
     template.globals.update({
         'as_array': as_array,

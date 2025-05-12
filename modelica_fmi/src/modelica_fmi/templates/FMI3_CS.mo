@@ -116,11 +116,11 @@ equation
 
   if initial() then
 @@ if not variable.dimensions @@
-    @=name(variable)=@ = scalar(FMI3GetInitial@=fmi_type(variable)=@(instance, startTime, @=dependencies3(variable, 'Float64')=@@=dependencies3(variable, 'Int32')=@@=dependencies3(variable, 'Boolean')=@valueReference=@=variable.valueReference=@, nValues=1));
+    @=name(variable)=@ = scalar(FMI3GetInitial@=fmi_type(variable)=@(instance, startTime, @=dependencies3(variable, ['Float32', 'Float64', 'Int32', 'Boolean'])=@valueReference=@=variable.valueReference=@, nValues=1));
 @@ elif variable.dimensions|length == 1 @@
-    @=name(variable)=@ = FMI3GetInitial@=fmi_type(variable)=@(instance, startTime, @=dependencies3(variable, 'Float64')=@@=dependencies3(variable, 'Int32')=@@=dependencies3(variable, 'Boolean')=@valueReference=@=variable.valueReference=@, nValues=size(@=name(variable)=@, 1));
+    @=name(variable)=@ = FMI3GetInitial@=fmi_type(variable)=@(instance, startTime, @=dependencies3(variable, ['Float32', 'Float64', 'Int32', 'Boolean'])=@valueReference=@=variable.valueReference=@, nValues=size(@=name(variable)=@, 1));
 @@ else @@
-    @=name(variable)=@ = FMI3GetInitial@=fmi_type(variable)=@Matrix(instance, startTime, @=dependencies3(variable, 'Float64')=@@=dependencies3(variable, 'Int32')=@@=dependencies3(variable, 'Boolean')=@valueReference=@=variable.valueReference=@, m=size(@=name(variable)=@, 1), n=size(@=name(variable)=@, 2), nValues=product(size(@=name(variable)=@)));
+    @=name(variable)=@ = FMI3GetInitial@=fmi_type(variable)=@Matrix(instance, startTime, @=dependencies3(variable, ['Float32', 'Float64', 'Int32', 'Boolean'])=@valueReference=@=variable.valueReference=@, m=size(@=name(variable)=@, 1), n=size(@=name(variable)=@, 2), nValues=product(size(@=name(variable)=@)));
 @@ endif @@
   else
     @=name(variable)=@ = outputVariables.@=name(variable)=@;
