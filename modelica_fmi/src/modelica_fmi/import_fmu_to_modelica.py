@@ -190,7 +190,7 @@ def import_fmu_to_modelica(fmu_path: str | PathLike, model_path: str | PathLike,
         else:
             return f'{p}{variable.type}'
 
-    def attributes(variable, start=False):
+    def modifiers(variable, start=False):
 
         attrs = []
 
@@ -313,7 +313,7 @@ def import_fmu_to_modelica(fmu_path: str | PathLike, model_path: str | PathLike,
         'subscripts': subscripts,
         'modelica_type': modelica_type,
         'fmi_type': fmi2_type if fmiMajorVersion == 2 else fmi3_type,
-        'attributes': attributes,
+        'modifiers': modifiers,
         'choices': choices,
         'name': name,
         'dependencies': dependencies,

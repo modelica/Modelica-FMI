@@ -25,19 +25,19 @@ model @=modelName=@
 @@ endblock @@
 @@ for variable in parameters @@
 
-  parameter @=fmi_type(variable, prefix=True)=@ @=name(variable)=@@@ if variable.dimensions @@@=subscripts(variable)=@@@ endif @@@=attributes(variable)=@ = @=start_value(variable)=@@@ if variable.description @@ "@=variable.description=@"@@ endif @@@=choices(variable)=@;
+  parameter @=fmi_type(variable, prefix=True)=@ @=name(variable)=@@@ if variable.dimensions @@@=subscripts(variable)=@@@ endif @@@=modifiers(variable)=@ = @=start_value(variable)=@@@ if variable.description @@ "@=variable.description=@"@@ endif @@@=choices(variable)=@;
 @@ endfor @@
 @@ for variable in inputs @@
 
-  parameter @=fmi_type(variable, prefix=True)=@ @=name(variable, '_start')=@@=subscripts(variable)=@@=attributes(variable)=@ = @=start_value(variable)=@;
+  parameter @=fmi_type(variable, prefix=True)=@ @=name(variable, '_start')=@@=subscripts(variable)=@@=modifiers(variable)=@ = @=start_value(variable)=@;
 @@ endfor @@
 @@ for variable in inputs @@
 
-  @=fmi_type(variable, prefix=True)=@Input @=name(variable)=@@=subscripts(variable)=@@=attributes(variable, start=True)=@ @=annotations[variable.name]=@;
+  @=fmi_type(variable, prefix=True)=@Input @=name(variable)=@@=subscripts(variable)=@@=modifiers(variable, start=True)=@ @=annotations[variable.name]=@;
 @@ endfor @@
 @@ for variable in outputs @@
 
-  @=fmi_type(variable, prefix=True)=@Output @=name(variable)=@@=subscripts(variable)=@@=attributes(variable)=@ @=annotations[variable.name]=@;
+  @=fmi_type(variable, prefix=True)=@Output @=name(variable)=@@=subscripts(variable)=@@=modifiers(variable)=@ @=annotations[variable.name]=@;
 @@ endfor @@
 
 protected
