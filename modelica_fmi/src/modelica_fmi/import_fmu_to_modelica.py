@@ -132,7 +132,6 @@ def import_fmu_to_modelica(fmu_path, model_path, interface_type='CoSimulation', 
                 else:
                     v = variables[dimension.valueReference]
                     s.append(v.start)
-                    # s.append(name(v))
 
             return '[' + ','.join(s) + ']'
         else:
@@ -155,10 +154,6 @@ def import_fmu_to_modelica(fmu_path, model_path, interface_type='CoSimulation', 
                 else:
                     v = variables[variable.dimensions[1].valueReference]
                     n = int(v.start)
-                # s = []
-                # for i in range(m):
-                #     s.append('{' + ','.join(values[i*n:(i+1)*n]) + '}')
-                # return '{' + ', '.join(s) + '}'
                 s = []
                 for i in range(m):
                     s.append(', '.join(values[i*n:(i+1)*n]))
@@ -231,7 +226,6 @@ def import_fmu_to_modelica(fmu_path, model_path, interface_type='CoSimulation', 
         if ex.match(variable.name):
             return variable.name + suffix
         else:
-            # return f"'{variable.name}{suffix}'"
             return re.sub('[^0-9a-zA-Z]+', '_', f"{variable.name}{suffix}")
 
     def dependencies(variable, type, nValues=False):
@@ -244,11 +238,6 @@ def import_fmu_to_modelica(fmu_path, model_path, interface_type='CoSimulation', 
             l = variables.get(dependency.type, [])
             l.append((name(dependency), str(dependency.valueReference)))
             variables[dependency.type] = l
-
-        # default_values = {
-        #     'Real': '0.0', 'Integer': '0', 'Boolean': 'false',
-        #     'Float64': '0.0',
-        # }
 
         if type in variables:
             names, vrs = zip(*variables[type])
