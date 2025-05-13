@@ -10,10 +10,10 @@ To import an FMU
 
 - install the `modelica-fmi` command with
 ```
-uv tool install --reinstall https://github.com/modelica/Modelica-FMI/releases/download/v0.0.2/modelica_fmi-0.0.2-py3-none-any.whl
+uv tool install --reinstall https://github.com/modelica/Modelica-FMI/releases/download/v0.0.3/modelica_fmi-0.0.3-py3-none-any.whl
 ```
 
-- download the [Modelica-FMI](https://github.com/modelica/Modelica-FMI/releases/download/v0.0.2/Modelica-FMI-0.0.2.zip) package, load it in your Modelica tool, and call [FMI.importFMU()](FMI/importFMU.mo)
+- download the [Modelica-FMI](https://github.com/modelica/Modelica-FMI/releases/download/v0.0.3/Modelica-FMI-0.0.3.zip) package, load it in your Modelica tool, and call [FMI.importFMU()](FMI/importFMU.mo)
 
 ## Features
 
