@@ -1,7 +1,8 @@
-from typing import Literal
+from os import PathLike
+from typing import Literal, Iterable
 
 
-def import_fmu_to_modelica(fmu_path, model_path, interface_type='CoSimulation', variables=None):
+def import_fmu_to_modelica(fmu_path: str | PathLike, model_path: str | PathLike, interface_type=Literal['CoSimulation'], variables: Iterable[str] | None = None):
 
     from os import makedirs
     from pathlib import Path
