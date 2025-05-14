@@ -1,0 +1,15 @@
+within FMI.Internal.FMI3;
+impure function FMI3GetInt16Matrix
+  extends Modelica.Icons.Function;
+
+  input Internal.ExternalFMU externalFMU;
+  input Integer valueReference;
+  input Integer m;
+  input Integer n;
+  input Integer nValues;
+
+  output FMI.FMI3.Types.FMI3Int16 values[m, n];
+
+  external"C" FMU_FMI3GetInt16(externalFMU, valueReference, values, nValues) annotation (Library={"ModelicaFMI"});
+
+end FMI3GetInt16Matrix;

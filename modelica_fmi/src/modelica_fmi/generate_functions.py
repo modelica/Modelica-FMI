@@ -16,8 +16,6 @@ environment = jinja2.Environment(
 
 library_dir = Path(__file__).parent.parent.parent.parent / 'FMI'
 
-# fmi2_functions_dir = library_dir / 'FMI2' / 'Functions'
-
 for variable_type, prefix in product(['Real', 'Integer', 'Boolean', 'String'], ['Get', 'Set']):
 
     for package, level in [
@@ -45,11 +43,8 @@ for variable_type, prefix in product(['Real', 'Integer', 'Boolean', 'String'], [
             with open(package_order_file, 'a') as f:
                 f.write(function_name + '\n')
 
-
-# fmi3_functions_dir = library_dir / 'FMI3' / 'Functions'
-
 for variable_type, (prefix, suffix) in product(
-        ['Float32', 'Float64', 'Int32', 'Int64', 'UInt64', 'Boolean', 'String'],
+        ['Float32', 'Float64', 'Int8', 'UInt8', 'Int16', 'UInt16', 'Int32', 'UInt32', 'Int64', 'UInt64', 'Boolean', 'String'],
         [('Get', ''), ('Set', ''), ('Get', 'Matrix'), ('Set', 'Matrix')]
 ):
 

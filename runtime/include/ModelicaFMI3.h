@@ -30,7 +30,17 @@ EXPORT void FMU_FMI3GetFloat32(FMUInstance* instance, int valueReference, double
 
 EXPORT void FMU_FMI3GetFloat64(FMUInstance* instance, int valueReference, double values[], int nValues);
 
+EXPORT void FMU_FMI3GetInt8(FMUInstance* instance, int valueReference, int values[], int nValues);
+
+EXPORT void FMU_FMI3GetUInt8(FMUInstance* instance, int valueReference, int values[], int nValues);
+
+EXPORT void FMU_FMI3GetInt16(FMUInstance* instance, int valueReference, int values[], int nValues);
+
+EXPORT void FMU_FMI3GetUInt16(FMUInstance* instance, int valueReference, int values[], int nValues);
+
 EXPORT void FMU_FMI3GetInt32(FMUInstance* instance, int valueReference, int values[], int nValues);
+
+EXPORT void FMU_FMI3GetUInt32(FMUInstance* instance, int valueReference, int values[], int nValues);
 
 EXPORT void FMU_FMI3GetInt64(FMUInstance* instance, int valueReference, int values[], int nValues);
 
@@ -42,7 +52,17 @@ EXPORT void FMU_FMI3SetFloat32(FMUInstance* instance, const int valueReferences[
 
 EXPORT void FMU_FMI3SetFloat64(FMUInstance* instance, const int valueReferences[], int nValueReferences, const double values[], int nValues);
 
+EXPORT void FMU_FMI3SetInt8(FMUInstance* instance, const int valueReferences[], int nValueReferences, const int values[], int nValues);
+
+EXPORT void FMU_FMI3SetUInt8(FMUInstance* instance, const int valueReferences[], int nValueReferences, const int values[], int nValues);
+
+EXPORT void FMU_FMI3SetInt16(FMUInstance* instance, const int valueReferences[], int nValueReferences, const int values[], int nValues);
+
+EXPORT void FMU_FMI3SetUInt16(FMUInstance* instance, const int valueReferences[], int nValueReferences, const int values[], int nValues);
+
 EXPORT void FMU_FMI3SetInt32(FMUInstance* instance, const int valueReferences[], int nValueReferences, const int values[], int nValues);
+
+EXPORT void FMU_FMI3SetUInt32(FMUInstance* instance, const int valueReferences[], int nValueReferences, const int values[], int nValues);
 
 EXPORT void FMU_FMI3SetInt64(FMUInstance* instance, const int valueReferences[], int nValueReferences, const int values[], int nValues);
 

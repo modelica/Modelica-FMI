@@ -69,9 +69,81 @@ void FMU_FMI3GetFloat64(FMUInstance* instance, int valueReference, double values
     CALL(FMI3GetFloat64(instance->instance, &vr, 1, values, nValues));
 }
 
+void FMU_FMI3GetInt8(FMUInstance* instance, int valueReference, int values[], int nValues) {
+
+    const fmi3ValueReference vr = valueReference;
+
+    fmi3Int8* buffer = (fmi3Int8*)FMUGetBuffer(instance, nValues * sizeof(fmi3Int8));
+
+    CALL(FMI3GetInt8(instance->instance, &vr, 1, buffer, nValues));
+
+    for (size_t i = 0; i < nValues; i++) {
+        values[i] = (int)buffer[i];
+    }
+}
+
+void FMU_FMI3GetUInt8(FMUInstance* instance, int valueReference, int values[], int nValues) {
+
+    const fmi3ValueReference vr = valueReference;
+
+    fmi3UInt8* buffer = (fmi3UInt8*)FMUGetBuffer(instance, nValues * sizeof(fmi3UInt8));
+
+    CALL(FMI3GetUInt8(instance->instance, &vr, 1, buffer, nValues));
+
+    for (size_t i = 0; i < nValues; i++) {
+        values[i] = (int)buffer[i];
+    }
+}
+
+void FMU_FMI3GetInt16(FMUInstance* instance, int valueReference, int values[], int nValues) {
+
+    const fmi3ValueReference vr = valueReference;
+
+    fmi3Int16* buffer = (fmi3Int16*)FMUGetBuffer(instance, nValues * sizeof(fmi3Int16));
+
+    CALL(FMI3GetInt16(instance->instance, &vr, 1, buffer, nValues));
+
+    for (size_t i = 0; i < nValues; i++) {
+        values[i] = (int)buffer[i];
+    }
+}
+
+void FMU_FMI3GetUInt16(FMUInstance* instance, int valueReference, int values[], int nValues) {
+
+    const fmi3ValueReference vr = valueReference;
+
+    fmi3UInt16* buffer = (fmi3UInt16*)FMUGetBuffer(instance, nValues * sizeof(fmi3UInt16));
+
+    CALL(FMI3GetUInt16(instance->instance, &vr, 1, buffer, nValues));
+
+    for (size_t i = 0; i < nValues; i++) {
+        values[i] = (int)buffer[i];
+    }
+}
+
 void FMU_FMI3GetInt32(FMUInstance* instance, int valueReference, int values[], int nValues) {
     const fmi3ValueReference vr = valueReference;
     CALL(FMI3GetInt32(instance->instance, &vr, 1, values, nValues));
+}
+
+void FMU_FMI3GetUInt32(FMUInstance* instance, int valueReference, int values[], int nValues) {
+
+    const fmi3ValueReference vr = valueReference;
+
+    fmi3UInt32* buffer = (fmi3UInt32*)FMUGetBuffer(instance, nValues * sizeof(fmi3UInt32));
+
+    CALL(FMI3GetUInt32(instance->instance, &vr, 1, buffer, nValues));
+
+    for (size_t i = 0; i < nValues; i++) {
+
+        const fmi3UInt32 value = buffer[i];
+        
+        if (value > INT_MAX) {
+            FMULogError(instance, "Value exceeds allowed range of Integer.");
+        }
+        
+        values[i] = (int)value;
+    }
 }
 
 void FMU_FMI3GetInt64(FMUInstance* instance, int valueReference, int values[], int nValues) {
@@ -83,10 +155,13 @@ void FMU_FMI3GetInt64(FMUInstance* instance, int valueReference, int values[], i
     CALL(FMI3GetInt64(instance->instance, &vr, 1, buffer, nValues));
 
     for (size_t i = 0; i < nValues; i++) {
+        
         const fmi3Int64 value = buffer[i];
+        
         if (value < INT_MIN || value > INT_MAX) {
             FMULogError(instance, "Value exceeds allowed range of Integer.");
         }
+        
         values[i] = (int)value;
     }
 }
@@ -100,10 +175,13 @@ void FMU_FMI3GetUInt64(FMUInstance* instance, int valueReference, int values[], 
     CALL(FMI3GetUInt64(instance->instance, &vr, 1, buffer, nValues));
 
     for (size_t i = 0; i < nValues; i++) {
+        
         const fmi3UInt64 value = buffer[i];
+        
         if (value > INT_MAX) {
             FMULogError(instance, "Value exceeds allowed range of Integer.");
         }
+        
         values[i] = (int)value;
     }
 }
@@ -145,17 +223,105 @@ void FMU_FMI3SetFloat64(FMUInstance* instance, const int valueReferences[], int 
     CALL(FMI3SetFloat64(instance->instance, valueReferences, nValueReferences, values, nValues));
 }
 
+void FMU_FMI3SetInt8(FMUInstance* instance, const int valueReferences[], int nValueReferences, const int values[], int nValues) {
+
+    fmi3Int8* buffer = (fmi3Int8*)FMUGetBuffer(instance, nValues * sizeof(fmi3Int8));
+
+    for (size_t i = 0; i < nValues; i++) {
+
+        const int value = values[i];
+
+        if (value < INT8_MIN || value > INT8_MAX) {
+            FMULogError(instance, "Value exceeds allowed range of fmi3Int8.");
+        }
+
+        buffer[i] = (fmi3Int8)value;
+    }
+
+    CALL(FMI3SetInt8(instance->instance, valueReferences, nValueReferences, buffer, nValues));
+}
+
+void FMU_FMI3SetUInt8(FMUInstance* instance, const int valueReferences[], int nValueReferences, const int values[], int nValues) {
+
+    fmi3UInt8* buffer = (fmi3UInt8*)FMUGetBuffer(instance, nValues * sizeof(fmi3UInt8));
+
+    for (size_t i = 0; i < nValues; i++) {
+
+        const int value = values[i];
+
+        if (value < 0 || value > UINT8_MAX) {
+            FMULogError(instance, "Value exceeds allowed range of fmi3UInt8.");
+        }
+
+        buffer[i] = (fmi3UInt8)value;
+    }
+
+    CALL(FMI3SetUInt8(instance->instance, valueReferences, nValueReferences, buffer, nValues));
+}
+
+void FMU_FMI3SetInt16(FMUInstance* instance, const int valueReferences[], int nValueReferences, const int values[], int nValues) {
+
+    fmi3Int16* buffer = (fmi3Int16*)FMUGetBuffer(instance, nValues * sizeof(fmi3Int16));
+
+    for (size_t i = 0; i < nValues; i++) {
+
+        const int value = values[i];
+
+        if (value < INT16_MIN || value > INT16_MAX) {
+            FMULogError(instance, "Value exceeds allowed range of fmi3Int16.");
+        }
+
+        buffer[i] = (fmi3Int16)value;
+    }
+
+    CALL(FMI3SetInt16(instance->instance, valueReferences, nValueReferences, buffer, nValues));
+}
+
+void FMU_FMI3SetUInt16(FMUInstance* instance, const int valueReferences[], int nValueReferences, const int values[], int nValues) {
+
+    fmi3UInt16* buffer = (fmi3UInt16*)FMUGetBuffer(instance, nValues * sizeof(fmi3UInt16));
+
+    for (size_t i = 0; i < nValues; i++) {
+
+        const int value = values[i];
+
+        if (value < 0 || value > UINT16_MAX) {
+            FMULogError(instance, "Value exceeds allowed range of fmi3UInt16.");
+        }
+
+        buffer[i] = (fmi3UInt16)value;
+    }
+
+    CALL(FMI3SetUInt16(instance->instance, valueReferences, nValueReferences, buffer, nValues));
+}
+
 void FMU_FMI3SetInt32(FMUInstance* instance, const int valueReferences[], int nValueReferences, const int values[], int nValues) {
     CALL(FMI3SetInt32(instance->instance, valueReferences, nValueReferences, values, nValues));
 }
 
-void FMU_FMI3SetInt64(FMUInstance* instance, const int valueReferences[], int nValueReferences, const int values[], int nValues) {
+void FMU_FMI3SetUInt32(FMUInstance* instance, const int valueReferences[], int nValueReferences, const int values[], int nValues) {
 
-    size_t i;
+    fmi3UInt32* buffer = (fmi3UInt32*)FMUGetBuffer(instance, nValues * sizeof(fmi3UInt32));
+
+    for (size_t i = 0; i < nValues; i++) {
+
+        const int value = values[i];
+
+        if (value < 0) {
+            FMULogError(instance, "Value exceeds allowed range of fmi3UInt32.");
+        }
+
+        buffer[i] = (fmi3UInt32)value;
+    }
+
+    CALL(FMI3SetUInt32(instance->instance, valueReferences, nValueReferences, buffer, nValues));
+}
+
+void FMU_FMI3SetInt64(FMUInstance* instance, const int valueReferences[], int nValueReferences, const int values[], int nValues) {
 
     fmi3Int64* buffer = (fmi3Int64*)FMUGetBuffer(instance, nValues * sizeof(fmi3Int64));
 
-    for (i = 0; i < nValues; i++) {
+    for (size_t i = 0; i < nValues; i++) {
         buffer[i] = values[i];
     }
 
@@ -164,11 +330,9 @@ void FMU_FMI3SetInt64(FMUInstance* instance, const int valueReferences[], int nV
 
 void FMU_FMI3SetUInt64(FMUInstance* instance, const int valueReferences[], int nValueReferences, const int values[], int nValues) {
 
-    size_t i;
-
     fmi3UInt64* buffer = (fmi3UInt64*)FMUGetBuffer(instance, nValues * sizeof(fmi3UInt64));
 
-    for (i = 0; i < nValues; i++) {
+    for (size_t i = 0; i < nValues; i++) {
         buffer[i] = values[i];
     }
 

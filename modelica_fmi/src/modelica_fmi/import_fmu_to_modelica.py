@@ -76,7 +76,7 @@ def import_fmu_to_modelica(fmu_path: str | PathLike, model_path: str | PathLike,
         if variables is not None and variable.name not in variables:
             continue
 
-        if variable.type not in {'Float32', 'Float64', 'Int32', 'UInt64', 'Real', 'Integer', 'Enumeration', 'Boolean', 'String'}:
+        if variable.type not in {'Float32', 'Float64', 'Int8', 'UInt8', 'Int16', 'UInt16', 'Int32', 'UInt32', 'Int64', 'UInt64', 'Real', 'Integer', 'Enumeration', 'Boolean', 'String'}:
             continue
 
         if (interface_type == 'ModelExchange' and variable.type in {'Real', 'Float32', 'Float64'}
