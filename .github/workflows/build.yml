@@ -74,9 +74,9 @@ jobs:
     - run: tree
     - uses: actions/upload-artifact@v4
       with:
-        name: Modelica-FMI
+        name: Modelica-FMI-${{ github.ref_name }}
         path: |
-          FMI/
+          FMI
           LICENSE
           README.md
         if-no-files-found: error
