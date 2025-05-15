@@ -1,9 +1,6 @@
 from os import makedirs
-from shutil import rmtree
-
 import pytest
 from pathlib import Path
-
 from fmpy import extract
 from fmpy.util import download_file
 
@@ -19,7 +16,9 @@ def package_dir():
 
 @pytest.fixture(scope='session')
 def work_dir():
-    yield Path(__file__).parent / 'work'
+    path = Path(__file__).parent / 'work'
+    makedirs(path)
+    yield path
 
 
 @pytest.fixture(scope='session')
@@ -46,7 +45,6 @@ def reference_fmus_dist_dir(resources_dir):
 
 @pytest.fixture(scope='session')
 def reference_fmus_repo_dir(resources_dir):
-
     yield Path(__file__).parent.parent / 'thirdparty' / 'Reference-FMUs'
 
 
@@ -68,11 +66,6 @@ def executable(request):
 def dymola(executable, work_dir):
 
     from pymola import Dymola
-
-    if work_dir.exists():
-        rmtree(work_dir)
-
-    makedirs(work_dir)
 
     with Dymola(executable=executable, showWindow=True, debug=False) as dymola:
         dymola.cd(work_dir)
