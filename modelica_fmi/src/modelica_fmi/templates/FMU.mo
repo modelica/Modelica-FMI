@@ -8,6 +8,78 @@ model @=modelName=@
 @@ block imports @@
 @@ endblock @@
 
+@@ if enumerationTypeDefinitions @@
+  package Types
+    extends Modelica.Icons.TypesPackage;
+@@ for typeDefinition in enumerationTypeDefinitions @@
+
+    type @= typeDefinition.name =@ = enumeration(
+@@ for item in typeDefinition.items @@
+      @= name(item) =@@@ if item.description @@ "@= item.description =@"@@ endif @@@@ if not loop.last @@, @@ endif @@
+
+@@ endfor @@
+    )@@ if typeDefinition.description @@ "@= typeDefinition.description =@"@@ endif @@;
+
+    connector @= typeDefinition.name =@Input = input @= typeDefinition.name =@ "'input @= typeDefinition.name =@' as connector" annotation (
+      defaultComponentName="u",
+      Icon(graphics={Polygon(
+        points={{-100,100},{100,0},{-100,-100},{-100,100}},
+        lineColor={255,127,0},
+        fillColor={255,127,0},
+        fillPattern=FillPattern.Solid),
+    Text(
+      textColor={0,0,0},
+      extent={{140,-20},{140,20}},
+        textString="%name",
+        horizontalAlignment=TextAlignment.Left)},
+                                         coordinateSystem(
+      extent={{-100,-100},{100,100}},
+      preserveAspectRatio=true,
+      initialScale=0.2)),
+      Diagram(coordinateSystem(
+      preserveAspectRatio=true,
+      initialScale=0.2,
+      extent={{-100,-100},{100,100}}), graphics={Polygon(
+        points={{0,50},{100,0},{0,-50},{0,50}},
+        lineColor={255,127,0},
+        fillColor={255,127,0},
+        fillPattern=FillPattern.Solid), Text(
+        extent={{-10,85},{-10,60}},
+        textColor={255,127,0},
+        textString="%name")}));
+
+    connector @= typeDefinition.name =@Output = output @= typeDefinition.name =@ "'output @= typeDefinition.name =@' as connector" annotation (
+      defaultComponentName="y",
+      Icon(coordinateSystem(
+      preserveAspectRatio=true,
+      extent={{-100,-100},{100,100}}), graphics={Polygon(
+        points={{-100,100},{100,0},{-100,-100},{-100,100}},
+        lineColor={255,127,0},
+        fillColor={255,255,255},
+        fillPattern=FillPattern.Solid),
+    Text(
+      textColor={0,0,0},
+      extent={{-180,-40},{-180,40}},
+        textString="%name",
+        horizontalAlignment=TextAlignment.Right)}),
+      Diagram(coordinateSystem(
+      preserveAspectRatio=true,
+      extent={{-100,-100},{100,100}}), graphics={Polygon(
+        points={{-100,50},{0,0},{-100,-50},{-100,50}},
+        lineColor={255,127,0},
+        fillColor={255,255,255},
+        fillPattern=FillPattern.Solid), Text(
+        extent={{30,110},{30,60}},
+        textColor={255,127,0},
+        textString="%name")}));
+
+@@ block types @@
+@@ endblock @@
+@@ endfor @@
+
+  end Types;
+
+@@ endif @@
   parameter Modelica.Units.SI.Time stopTime = Modelica.Constants.inf annotation(Dialog(tab="FMI", group="Parameters"));
 
   parameter Real tolerance = 0.0 annotation(Dialog(tab="FMI", group="Parameters"));
@@ -29,15 +101,15 @@ model @=modelName=@
 @@ endfor @@
 @@ for variable in inputs @@
 
-  parameter @=fmi_type(variable, prefix=True)=@ @=name(variable, '_start')=@@=subscripts(variable)=@@=modifiers(variable)=@ = @=start_value(variable)=@;
+  parameter @=fmi_type(variable, prefix=True, declared=True)=@ @=name(variable, '_start')=@@=subscripts(variable)=@@=modifiers(variable)=@ = @=start_value(variable)=@;
 @@ endfor @@
 @@ for variable in inputs @@
 
-  @=fmi_type(variable, prefix=True)=@Input @=name(variable)=@@=subscripts(variable)=@@=modifiers(variable, start=True)=@ @=annotations[variable.name]=@;
+  @=fmi_type(variable, prefix=True, declared=True)=@Input @=name(variable)=@@=subscripts(variable)=@@=modifiers(variable, start=True)=@ @=annotations[variable.name]=@;
 @@ endfor @@
 @@ for variable in outputs @@
 
-  @=fmi_type(variable, prefix=True)=@Output @=name(variable)=@@=subscripts(variable)=@@=modifiers(variable)=@ @=annotations[variable.name]=@;
+  @=fmi_type(variable, prefix=True, declared=True)=@Output @=name(variable)=@@=subscripts(variable)=@@=modifiers(variable)=@ @=annotations[variable.name]=@;
 @@ endfor @@
 
 protected

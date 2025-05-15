@@ -6,7 +6,7 @@ class FMUImportError(Exception):
     pass
 
 
-def import_fmu_to_modelica(fmu_path: str | PathLike, model_path: str | PathLike, interface_type=Literal['CoSimulation'], variables: Iterable[str] | None = None):
+def import_fmu_to_modelica(fmu_path: str | PathLike, model_path: str | PathLike, interface_type: Literal['CoSimulation'] = 'CoSimulation', variables: Iterable[str] | None = None):
 
     from os import makedirs
     from pathlib import Path
@@ -14,7 +14,7 @@ def import_fmu_to_modelica(fmu_path: str | PathLike, model_path: str | PathLike,
 
     import jinja2
     from fmpy import extract, read_model_description
-    from fmpy.model_description import ScalarVariable
+    from fmpy.model_description import ScalarVariable, SimpleType
     from fmpy.util import sha256_checksum
 
     fmu_path = Path(fmu_path)
@@ -142,10 +142,18 @@ def import_fmu_to_modelica(fmu_path: str | PathLike, model_path: str | PathLike,
         else:
             return ''
 
-    def start_value(variable):
+    def start_value(variable: ScalarVariable) -> str:
 
         if variable.dimensions:
+
             values = variable.start.split(' ')
+
+            if variable.type == 'Enumeration':
+                def value2enum(value: str) -> str:
+                    return next(f'Types.{variable.declaredType.name}.{name(item)}'
+                                for item in variable.declaredType.items if item.value == value)
+                values = list(map(value2enum, values))
+
             if len(variable.dimensions) == 1:
                 return '{' + ', '.join(values) + '}'
             elif len(variable.dimensions) == 2:
@@ -163,14 +171,16 @@ def import_fmu_to_modelica(fmu_path: str | PathLike, model_path: str | PathLike,
                 for i in range(m):
                     s.append(', '.join(values[i*n:(i+1)*n]))
                 return '[' + '; '.join(s) + ']'
-
-
             else:
                 raise Exception("Unsupported number of dimensions.")
+
         if variable.type == 'Boolean':
             return 'true' if variable.start in ['true', '1'] else 'false'
         elif variable.type == 'String':
             return f'"{variable.start}"'
+        elif variable.type == 'Enumeration':
+            item = next(item for item in variable.declaredType.items if item.value == variable.start)
+            return f'Types.{variable.declaredType.name}.{name(item)}'
         else:
             return str(variable.start)
 
@@ -180,17 +190,25 @@ def import_fmu_to_modelica(fmu_path: str | PathLike, model_path: str | PathLike,
         else:
             return variable.type
 
-    def fmi2_type(variable, prefix=False):
+    def fmi2_type(variable: ScalarVariable, prefix: bool = False, declared: bool = False) -> str:
         p = 'FMI2' if prefix else ''
         if variable.type == 'Enumeration':
-            return f'{p}Integer'
+            if declared:
+                return f'Types.{variable.declaredType.name}'
+            else:
+                return f'{p}Integer'
         else:
             return f'{p}{variable.type}'
 
-    def fmi3_type(variable, prefix=False):
+    def fmi3_type(variable: ScalarVariable | SimpleType, prefix: bool = False, declared: bool = False) -> str:
         p = 'FMI3' if prefix else ''
-        if variable.type == 'Enumeration':
+        if isinstance(variable, SimpleType):
             return f'{p}Int64'
+        elif variable.type == 'Enumeration':
+            if declared:
+                return f'Types.{variable.declaredType.name}'
+            else:
+                return f'{p}Int64'
         else:
             return f'{p}{variable.type}'
 
@@ -360,7 +378,8 @@ def import_fmu_to_modelica(fmu_path: str | PathLike, model_path: str | PathLike,
         booleanInputVRs=[str(v.valueReference) for v in inputs if v.type == 'Boolean'],
         booleanInputs=[v.name for v in inputs if v.type == 'Boolean'],
         stopTime=stopTime,
-        copyPlatformBinary=copyPlatformBinary
+        copyPlatformBinary=copyPlatformBinary,
+        enumerationTypeDefinitions=[t for t in model_description.typeDefinitions if t.type == 'Enumeration']
     )
 
     with open(model_path, 'w') as f:
