@@ -2,6 +2,10 @@ from os import PathLike
 from typing import Literal, Iterable
 
 
+class FMUImportError(Exception):
+    pass
+
+
 def import_fmu_to_modelica(fmu_path: str | PathLike, model_path: str | PathLike, interface_type=Literal['CoSimulation'], variables: Iterable[str] | None = None):
 
     from os import makedirs
@@ -20,7 +24,7 @@ def import_fmu_to_modelica(fmu_path: str | PathLike, model_path: str | PathLike,
     package_dir = Path(model_path).parent
 
     if not (package_dir / 'package.mo').is_file():
-        raise Exception(f"{package_dir} is not a package of a Modelica library.")
+        raise FMUImportError(f"{package_dir} is not a package of a Modelica library.")
 
     model_description = read_model_description(fmu_path)
 
@@ -31,12 +35,12 @@ def import_fmu_to_modelica(fmu_path: str | PathLike, model_path: str | PathLike,
 
     if interface_type == 'CoSimulation':
         if model_description.coSimulation is None:
-            raise Exception(f"The FMU does not support Co-Simulation.")
+            raise FMUImportError(f"The FMU does not support Co-Simulation.")
         model_identifier = model_description.coSimulation.modelIdentifier
         copyPlatformBinary = model_description.coSimulation.canBeInstantiatedOnlyOncePerProcess
         IT = 'CS'
     else:
-        raise Exception(f"interface_type must be 'CoSimulation', but was '{interface_type}'.")
+        raise FMUImportError(f"interface_type must be 'CoSimulation', but was '{interface_type}'.")
 
     package_root = package_dir
 
