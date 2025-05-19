@@ -101,7 +101,7 @@ model @=modelName=@
 @@ endfor @@
 @@ for variable in inputs @@
 
-  parameter @=fmi_type(variable, prefix=True, declared=True)=@ @=name(variable, '_start')=@@=subscripts(variable)=@@=modifiers(variable)=@ = @=start_value(variable)=@;
+  parameter @=fmi_type(variable, prefix=True, declared=True)=@ @=name(variable, '_start')=@@=subscripts(variable)=@@=modifiers(variable)=@ = @=start_value(variable)=@ annotation(Dialog(tab="Initial", group="Start Values"));
 @@ endfor @@
 @@ for variable in inputs @@
 
