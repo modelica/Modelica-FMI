@@ -1,9 +1,10 @@
 within @=package=@;
 
-model @=modelName=@
+block @=modelName=@
 @@ if description @@
   "@=description=@"
 @@ endif @@
+  extends FMI.Internal.FMU;
 
 @@ block imports @@
 @@ endblock @@
@@ -80,19 +81,6 @@ model @=modelName=@
   end Types;
 
 @@ endif @@
-  parameter Modelica.Units.SI.Time stopTime = Modelica.Constants.inf annotation(Dialog(tab="FMI", group="Parameters"));
-
-  parameter Real tolerance = 0.0 annotation(Dialog(tab="FMI", group="Parameters"));
-
-  parameter Boolean visible = false annotation(Dialog(tab="FMI", group="Parameters"));
-
-  parameter Boolean loggingOn = false annotation(Dialog(tab="FMI", group="Parameters"));
-
-  parameter Boolean logToFile = false annotation(Dialog(tab="FMI", group="Parameters"));
-
-  parameter String logFile = getInstanceName() + ".txt" annotation(Dialog(tab="FMI", group="Parameters"));
-
-  parameter Boolean logFMICalls = false annotation(Dialog(tab="FMI", group="Parameters"));
 @@ block parameters @@
 @@ endblock @@
 @@ for variable in parameters @@
@@ -111,10 +99,6 @@ model @=modelName=@
 
   @=fmi_type(variable, prefix=True, declared=True)=@Output @=name(variable)=@@=subscripts(variable)=@@=modifiers(variable)=@ @=annotations[variable.name]=@;
 @@ endfor @@
-
-protected
-
-  FMI.Internal.ExternalFMU instance = FMI.Internal.ExternalFMU();
 @@ block equations @@
 @@ endblock @@
 
