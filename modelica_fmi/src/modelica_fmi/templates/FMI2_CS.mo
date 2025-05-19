@@ -128,7 +128,7 @@ equation
 @@ for variable in continuousOutputs @@
 
   if initial() then
-    @=name(variable)=@ = FMI2GetInitialReal(instance, startTime, @=dependencies3(variable, ['Real', 'Integer', 'Boolean'])=@valueReference=@=variable.valueReference=@);
+    @=name(variable)=@ = pure(FMI2GetInitialReal(instance, startTime, @=dependencies3(variable, ['Real', 'Integer', 'Boolean'])=@valueReference=@=variable.valueReference=@));
   else
     @=name(variable)=@ = outputVariables.@=name(variable)=@;
   end if;
