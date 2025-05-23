@@ -193,13 +193,17 @@ void FMU_Free(FMUInstance* instance) {
 
     /* TODO: terminate? */
 
-    char command[4096];
-
-    // TODO: call FMI{2|3}FreeInstance()
+    if (instance->instance->fmiMajorVersion == FMIMajorVersion2) {
+        FMI2FreeInstance(instance->instance);
+    } else if (instance->instance->fmiMajorVersion == FMIMajorVersion3) {
+        FMI3FreeInstance(instance->instance);
+    } 
 
     FMIFreeInstance(instance->instance);
 
     if (instance->tempBinaryPath) {
+
+       char command[4096];
 #ifdef WIN32
         snprintf(command, 4096, "rmdir /s /q \"%s\"", instance->tempBinaryDir);
 #else
