@@ -250,11 +250,11 @@ void FMU_Load(
     const char* extension = ".dll";
     const char* copyCommand = "copy";
 #elif defined(__APPLE__)
-    const char separator = '/';
+    const char* separator = "/";
     const char* extension = ".dylib";
     const char* copyCommand = "cp";
 #else
-    const char separator = '/';
+    const char* separator = "/";
     const char* extension = ".so";
     const char* copyCommand = "cp";
 #endif
@@ -274,22 +274,17 @@ void FMU_Load(
         instance->tempBinaryDir = _tempnam(NULL, NULL);
 #else
         instance->tempBinaryDir = (char*)calloc(1, 2048);
-
-        sprintf(instance->tempBinaryDir, "/tmp/fmusim.XXXXXX");
-
-        mkdtemp(instance->tempBinaryDir);
+        sprintf((char*)instance->tempBinaryDir, "/tmp/fmusim.XXXXXX");
+        mkdtemp((char*)instance->tempBinaryDir);
 #endif
         if (!instance->tempBinaryDir) {
             FMULogError(instance, "Failed to create temporary directory path.");
+            return;
         }
 
-        snprintf(command, 4096, "mkdir \"%s\"", instance->tempBinaryDir);
+        const size_t tempBinaryPathLength = strlen(instance->tempBinaryDir) + strlen(separator) + strlen(modelIdentifier) + strlen(extension) + 1;
 
-        if (system(command)) {
-            FMULogError(instance, "Failed to create temporary directory. Command: %s", command);
-        }
-
-        instance->tempBinaryPath = (char*)calloc(1, strlen(instance->tempBinaryDir) + strlen(separator) + strlen(modelIdentifier) + strlen(extension) + 1);
+        instance->tempBinaryPath = (char*)calloc(1, tempBinaryPathLength);
         
         sprintf((char*)instance->tempBinaryPath, "%s%s%s%s", instance->tempBinaryDir, separator, modelIdentifier, extension);
         
@@ -297,6 +292,7 @@ void FMU_Load(
 
         if (system(command)) {
             FMULogError(instance, "Failed to copy platform binary. Command: %s", command);
+            return;
         }
     }
 
