@@ -155,8 +155,8 @@ static void logFunctionCall(FMIInstance* instance, FMIStatus status, const char*
         
         if (logFile) {
             fprintf(logFile, "[%s] ", instance->name);
-            fprintf(logFile, call);
-            fprintf(logFile, suffix);
+            fputs(call, logFile);
+            fputs(suffix, logFile);
         }
 
     } else {
