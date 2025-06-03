@@ -15,17 +15,17 @@ interface_types = ['CoSimulation']  # , 'ModelExchange']
 
 def pymola_available():
     try:
-        import pymola
+        import pymola  # noqa
         return True
-    except:
+    except:  # noqa
         return False
 
 
 def om_available():
 
     try:
-        import OMPython
-    except:
+        import OMPython  # noqa
+    except:  # noqa
         return False
 
     return 'OPENMODELICAHOME' in os.environ

@@ -29,7 +29,7 @@ end Examples;
 """)
 
     with open(examples_dir.parent / 'package.order', 'r') as f:
-        package_order = list(map(lambda l: l.strip(), f.readlines()))
+        package_order = list(map(lambda line: line.strip(), f.readlines()))
 
     if 'Examples' not in package_order:
         with open(examples_dir.parent / 'package.order', 'a') as file:

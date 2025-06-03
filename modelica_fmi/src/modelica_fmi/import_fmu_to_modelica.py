@@ -35,7 +35,7 @@ def import_fmu_to_modelica(fmu_path: str | PathLike, model_path: str | PathLike,
 
     if interface_type == 'CoSimulation':
         if model_description.coSimulation is None:
-            raise FMUImportError(f"The FMU does not support Co-Simulation.")
+            raise FMUImportError("The FMU does not support Co-Simulation.")
         model_identifier = model_description.coSimulation.modelIdentifier
         copyPlatformBinary = model_description.coSimulation.canBeInstantiatedOnlyOncePerProcess
         IT = 'CS'
@@ -258,9 +258,9 @@ def import_fmu_to_modelica(fmu_path: str | PathLike, model_path: str | PathLike,
         unknown = next(filter(lambda u: u.variable.name == variable.name, model_description.initialUnknowns))
 
         for dependency in unknown.dependencies:
-            l = variables.get(dependency.type, [])
-            l.append((name(dependency), str(dependency.valueReference)))
-            variables[dependency.type] = l
+            dependencies = variables.get(dependency.type, [])
+            dependencies.append((name(dependency), str(dependency.valueReference)))
+            variables[dependency.type] = dependencies
 
         if type in variables:
             names, vrs = zip(*variables[type])
@@ -387,7 +387,7 @@ def import_fmu_to_modelica(fmu_path: str | PathLike, model_path: str | PathLike,
 
     if (package_dir / 'package.order').is_file():
         with open(package_dir / 'package.order', 'r') as f:
-            package_order = list(map(lambda l: l.strip(), f.readlines()))
+            package_order = list(map(lambda line: line.strip(), f.readlines()))
     else:
         package_order = []
 

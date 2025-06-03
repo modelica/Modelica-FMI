@@ -37,7 +37,7 @@ for variable_type, prefix in product(['Real', 'Integer', 'Boolean', 'String'], [
         package_order_file = package / 'package.order'
 
         with open(package_order_file, 'r') as f:
-            package_order = list(map(lambda l: l.strip(), f.readlines()))
+            package_order = list(map(lambda line: line.strip(), f.readlines()))
 
         if function_name not in package_order:
             with open(package_order_file, 'a') as f:
@@ -67,7 +67,7 @@ for variable_type, (prefix, suffix) in product(
         package_order_file = package / 'package.order'
 
         with open(package_order_file, 'r') as f:
-            package_order = list(map(lambda l: l.strip(), f.readlines()))
+            package_order = list(map(lambda line: line.strip(), f.readlines()))
 
         if function_name not in package_order:
             with open(package_order_file, 'a') as f:
