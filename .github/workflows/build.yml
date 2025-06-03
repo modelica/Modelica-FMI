@@ -14,6 +14,7 @@ jobs:
     - run: ruff check
     - run: ruff format --check --diff
   build-win32-binaries:
+    needs: [lint]
     runs-on: windows-2022
     steps:
     - uses: actions/checkout@v4
@@ -25,6 +26,7 @@ jobs:
        path: ./FMI/Resources/Library/win32/ModelicaFMI.dll
        if-no-files-found: error
   build-win64-binaries:
+    needs: [lint]
     runs-on: windows-2022
     steps:
     - uses: actions/checkout@v4
@@ -36,6 +38,7 @@ jobs:
         path: ./FMI/Resources/Library/win64/ModelicaFMI.dll
         if-no-files-found: error
   build-linux64-binaries:
+    needs: [lint]
     runs-on: ubuntu-22.04
     steps:
     - uses: actions/checkout@v4
@@ -47,6 +50,7 @@ jobs:
         path: ./FMI/Resources/Library/linux64/libModelicaFMI.so
         if-no-files-found: error
   build-darwin64-binaries:
+    needs: [lint]
     runs-on: macos-13
     steps:
     - uses: actions/checkout@v4
