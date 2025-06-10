@@ -12,20 +12,25 @@ A Modelica library to import [Functional Mock-up Units](https://fmi-standard.org
 
 ## Installation
 
-- [install uv](https://docs.astral.sh/uv/getting-started/installation/)
+Install the `modelica-fmi` command with [uv](https://docs.astral.sh/uv/getting-started/installation/):
 
-- install the `modelica-fmi` command with
-```
+```bash
 uv tool install --reinstall https://github.com/modelica/Modelica-FMI/releases/download/v0.0.6/modelica_fmi-0.0.6-py3-none-any.whl
 ```
 
-- download the [Modelica-FMI](https://github.com/modelica/Modelica-FMI/releases/download/v0.0.6/Modelica-FMI-0.0.6.zip) package and load it in your Modelica tool
+Or, with `pip`:
+
+```bash
+pip install https://github.com/modelica/Modelica-FMI/releases/download/v0.0.6/modelica_fmi-0.0.6-py3-none-any.whl
+```
+
+Then download the [Modelica-FMI](https://github.com/modelica/Modelica-FMI/releases/download/v0.0.6/Modelica-FMI-0.0.6.zip) package and load it in your Modelica tool.
 
 ## Usage
 
 To import an FMU into an existing package call [FMI.importFMU()](FMI/importFMU.mo) or run
 
-```
+```bash
 modelica-fmi /path/to/model.fmu /path/to/package/model.mo
 ```
 
