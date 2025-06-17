@@ -51,10 +51,6 @@
     end Int64To@= typeDefinition.name =@;
 @@ endfor @@
 @@ endblock @@
-@@ block parameters @@
-
-  parameter Modelica.Units.SI.Time communicationStepSize = @=communicationStepSize=@ annotation(Dialog(tab="FMI", group="Parameters"));
-@@ endblock @@
 @@ block equations @@
 
 protected

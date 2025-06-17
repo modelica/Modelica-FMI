@@ -81,6 +81,9 @@ block @=modelName=@
   end Types;
 
 @@ endif @@
+
+  parameter Modelica.Units.SI.Time communicationStepSize = @=communicationStepSize=@ annotation(Dialog(tab="FMI", group="Parameters"));
+
 @@ block parameters @@
 @@ endblock @@
 @@ for variable in parameters @@

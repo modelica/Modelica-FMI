@@ -4,10 +4,6 @@
   import FMI.FMI3.Interfaces.*;
   import FMI.FMI3.Functions.*;
 @@ endblock @@
-@@ block parameters @@
-
-  parameter Modelica.Units.SI.Time communicationStepSize = @=communicationStepSize=@ annotation(Dialog(tab="FMI", group="Parameters"));
-@@ endblock @@
 @@ block equations @@
 
 initial algorithm
