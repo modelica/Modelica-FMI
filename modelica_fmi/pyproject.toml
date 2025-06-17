@@ -5,7 +5,7 @@ description = "Import FMUs to Modelica"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
-    "fmpy>=0.3.22",
+    "fmpy>=0.3.25",
     "jinja2>=3.1.6",
 ]
 

@@ -19,10 +19,6 @@ protected
 
   parameter Real startTime(fixed=false);
 
-  parameter Boolean startValuesSet(start=false, fixed=false);
-
-  Boolean initialized(start=false, fixed=true);
-
   FMI.Internal.ExternalFMU instance = FMI.Internal.ExternalFMU();
 
 end FMU;
