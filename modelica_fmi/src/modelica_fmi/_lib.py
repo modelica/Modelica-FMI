@@ -237,7 +237,7 @@ def shape(variables: dict[int, ModelVariable], variable: ModelVariable):
         )
     return tuple(s)
 
-def dependencies3(model_description: ModelDescription, variable: ModelVariable, types: list[str]):
+def dependencies3(model_description: ModelDescription, variables: dict[int, ModelVariable], variable: ModelVariable, types: list[str]):
     arguments = []
 
     for type in types:
@@ -261,7 +261,7 @@ def dependencies3(model_description: ModelDescription, variable: ModelVariable, 
                 continue
 
             vrs.append(str(dependency.valueReference))
-            s = shape(dependency)
+            s = shape(variables, dependency)
 
             if not s:
                 values.append(name(dependency))

@@ -89,7 +89,11 @@ block @=modelName=@
 @@ endfor @@
 @@ for variable in inputs @@
 
-  @=fmi_type(variable, prefix=True, declared=True)=@Input @=name(variable)=@@=subscripts(variable)=@@=modifiers(variable)=@ @=annotations[variable.name]=@;
+  parameter @=fmi_type(variable, prefix=True, declared=True)=@ @=name(variable, '_start')=@@=subscripts(variable)=@@=modifiers(variable)=@ = @=start_value(variable)=@ annotation(Dialog(tab="Initial", group="Start Values"));
+@@ endfor @@
+@@ for variable in inputs @@
+
+  @=fmi_type(variable, prefix=True, declared=True)=@Input @=name(variable)=@@=subscripts(variable)=@@=modifiers(variable, start=True)=@ @=annotations[variable.name]=@;
 @@ endfor @@
 @@ for variable in outputs @@
 
