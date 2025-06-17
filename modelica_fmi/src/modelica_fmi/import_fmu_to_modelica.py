@@ -13,6 +13,7 @@ def import_fmu_to_modelica(
     model_path: str | PathLike,
     interface_type: Literal["CoSimulation"] = "CoSimulation",
     variables: Iterable[str] | None = None,
+    basic: bool = False,
 ):
     from os import makedirs
     from pathlib import Path
@@ -86,7 +87,7 @@ def import_fmu_to_modelica(
 
     fmiMajorVersion = int(model_description.fmiVersion[0])
 
-    template = environment.get_template(f"FMI{fmiMajorVersion}_{IT}.mo")
+    template = environment.get_template(f"FMI{fmiMajorVersion}_{"Basic" if basic else ""}{IT}.mo")
 
     parameters = []
     structural_parameters = []

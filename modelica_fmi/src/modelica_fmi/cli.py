@@ -19,7 +19,7 @@ def main():
         version=f"%(prog)s version {version}",
         help="print the program version",
     )
-
+    parser.add_argument("--basic", action="store_true", help="Use basic co-simulation w/o initialization")
     parser.add_argument("fmu_path", help="Path of the FMU to import")
     parser.add_argument("model_path", help="Path of the Modelica file to generate")
 
@@ -29,4 +29,5 @@ def main():
         fmu_path=args.fmu_path,
         model_path=args.model_path,
         interface_type="CoSimulation",
+        basic=args.basic,
     )
