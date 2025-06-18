@@ -1,6 +1,7 @@
 from modelica_fmi.import_fmu_to_modelica import import_fmu_to_modelica
-from PySide6.QtWidgets import (QDialog, QFileDialog, QMessageBox)
+from PySide6.QtWidgets import (QDialog, QMessageBox)
 from PySide6.QtCore import QSettings
+
 
 def compile_resources():
     """ Compile the .ui and .qrc files if they are available and newer than the compiled .py files """
@@ -65,7 +66,7 @@ def main():
     QCoreApplication.setOrganizationName("Modelica Association")
     QCoreApplication.setApplicationName("Modelica FMI")
 
-    app = QApplication(sys.argv)
+    QApplication(sys.argv)
     dialog = ImportDialog()
 
     settings = QSettings()

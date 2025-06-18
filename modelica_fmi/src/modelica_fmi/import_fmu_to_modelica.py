@@ -1,7 +1,8 @@
 from os import PathLike
 from typing import Literal, Iterable
 
-from modelica_fmi._lib import *
+from modelica_fmi._lib import start_value, subscripts, modelica_type, fmi2_type, fmi3_type, modifiers, choices, \
+    dependencies, dependencies2, dependencies3, numel, set_variables, name
 
 
 class FMUImportError(Exception):
