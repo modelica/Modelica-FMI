@@ -7,6 +7,7 @@ from fmpy.model_description import ModelVariable, SimpleType, ModelDescription, 
 def name(variable: ModelVariable | Item, suffix: str = "") -> str:
     """Convert the FMI variable name to a valid Modelica identifier"""
     import re
+
     ex = re.compile(r"^[a-zA-Z_$][\w$]*$")
     if ex.match(variable.name):
         return variable.name + suffix
@@ -51,14 +52,14 @@ def set_variables(variables: Iterable[ModelVariable], indent: int = 2) -> str:
         if len(variable.dimensions) == 2:
             line += "Matrix"
         line += f"(instance, valueReferences={{{variable.valueReference}}}, values="
-        if variable.type == 'Enumeration':
+        if variable.type == "Enumeration":
             line += f"Types.{variable.declaredType.name}ToInt64("
         if not variable.dimensions:
             line += "{"
         line += name(variable)
         if not variable.dimensions:
             line += "}"
-        if variable.type == 'Enumeration':
+        if variable.type == "Enumeration":
             line += ")"
         line += ");"
         lines.append(line)
@@ -121,9 +122,7 @@ def start_value(variables: dict[int, ModelVariable], variable: ModelVariable) ->
         return f'"{variable.start}"'
     elif variable.type == "Enumeration":
         item = next(
-            item
-            for item in variable.declaredType.items
-            if item.value == variable.start
+            item for item in variable.declaredType.items if item.value == variable.start
         )
         return f"Types.{variable.declaredType.name}.{name(item)}"
     else:
@@ -140,7 +139,6 @@ def modelica_type(variable):
 
 
 def modifiers(variable: ModelVariable, start: bool = False):
-
     attrs = []
 
     prefix = "each " if variable.dimensions else ""
@@ -150,16 +148,13 @@ def modifiers(variable: ModelVariable, start: bool = False):
 
     if variable.unit is not None:
         attrs.append(f'{prefix}unit="{variable.unit}"')
-    elif (
-        variable.declaredType is not None and variable.declaredType.unit is not None
-    ):
+    elif variable.declaredType is not None and variable.declaredType.unit is not None:
         attrs.append(f'{prefix}unit="{variable.declaredType.unit}"')
 
     if variable.quantity is not None:
         attrs.append(f'{prefix}quantity="{variable.quantity}"')
     elif (
-        variable.declaredType is not None
-        and variable.declaredType.quantity is not None
+        variable.declaredType is not None and variable.declaredType.quantity is not None
     ):
         attrs.append(f'{prefix}quantity="{variable.declaredType.quantity}"')
 
@@ -168,19 +163,20 @@ def modifiers(variable: ModelVariable, start: bool = False):
 
     return ""
 
+
 def choices(variable: ModelVariable) -> str:
     if variable.type == "Enumeration":
         choices = [
-            f'choice={item.value} "{item.name}"'
-            for item in variable.declaredType.items
+            f'choice={item.value} "{item.name}"' for item in variable.declaredType.items
         ]
         return " annotation(choices(" + ", ".join(choices) + "))"
     else:
         return ""
 
 
-def dependencies(model_description: ModelDescription, variable: ModelVariable, type, nValues=False):
-
+def dependencies(
+    model_description: ModelDescription, variable: ModelVariable, type, nValues=False
+):
     variables = {}
 
     unknown = next(
@@ -206,6 +202,7 @@ def dependencies(model_description: ModelDescription, variable: ModelVariable, t
 
     return arguments
 
+
 def dependencies2(model_description: ModelDescription, variable):
     unknown = next(
         filter(
@@ -215,15 +212,17 @@ def dependencies2(model_description: ModelDescription, variable):
     )
     return unknown.dependencies
 
+
 def numel(variables: dict[int, ModelVariable], variable: ModelVariable):
     n = 1
     for dimension in variable.dimensions:
         n *= int(
             dimension.start
-                 if dimension.start
+            if dimension.start
             else variables[dimension.valueReference].start
         )
     return n
+
 
 def shape(variables: dict[int, ModelVariable], variable: ModelVariable):
     s = []
@@ -237,7 +236,13 @@ def shape(variables: dict[int, ModelVariable], variable: ModelVariable):
         )
     return tuple(s)
 
-def dependencies3(model_description: ModelDescription, variables: dict[int, ModelVariable], variable: ModelVariable, types: list[str]):
+
+def dependencies3(
+    model_description: ModelDescription,
+    variables: dict[int, ModelVariable],
+    variable: ModelVariable,
+    types: list[str],
+):
     arguments = []
 
     for type in types:

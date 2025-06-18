@@ -1,8 +1,21 @@
 from os import PathLike
 from typing import Literal, Iterable
 
-from modelica_fmi._lib import start_value, subscripts, modelica_type, fmi2_type, fmi3_type, modifiers, choices, \
-    dependencies, dependencies2, dependencies3, numel, set_variables, name
+from modelica_fmi._lib import (
+    start_value,
+    subscripts,
+    modelica_type,
+    fmi2_type,
+    fmi3_type,
+    modifiers,
+    choices,
+    dependencies,
+    dependencies2,
+    dependencies3,
+    numel,
+    set_variables,
+    name,
+)
 
 
 class FMUImportError(Exception):
@@ -15,7 +28,7 @@ def import_fmu_to_modelica(
     interface_type: Literal["CoSimulation"] = "CoSimulation",
     variables: Iterable[str] | None = None,
     basic: bool = False,
-    hide_connectors = False,
+    hide_connectors=False,
 ):
     from os import makedirs
     from pathlib import Path
@@ -88,7 +101,9 @@ def import_fmu_to_modelica(
 
     fmiMajorVersion = int(model_description.fmiVersion[0])
 
-    template = environment.get_template(f"FMI{fmiMajorVersion}_{"Basic" if basic else ""}{IT}.mo")
+    template = environment.get_template(
+        f"FMI{fmiMajorVersion}_{'Basic' if basic else ''}{IT}.mo"
+    )
 
     parameters = []
     structural_parameters = []
@@ -165,16 +180,26 @@ def import_fmu_to_modelica(
 
     template.globals.update(
         {
-            "start_value": lambda *args, **kwargs: start_value(variables, *args, **kwargs),
-            "subscripts": lambda *args, **kwargs: subscripts(variables, *args, **kwargs),
+            "start_value": lambda *args, **kwargs: start_value(
+                variables, *args, **kwargs
+            ),
+            "subscripts": lambda *args, **kwargs: subscripts(
+                variables, *args, **kwargs
+            ),
             "modelica_type": modelica_type,
             "fmi_type": fmi2_type if fmiMajorVersion == 2 else fmi3_type,
             "modifiers": modifiers,
             "choices": choices,
             "name": name,
-            "dependencies":  lambda *args, **kwargs: dependencies(model_description, *args, **kwargs),
-            "dependencies2": lambda *args, **kwargs: dependencies2(model_description, *args, **kwargs),
-            "dependencies3": lambda *args, **kwargs: dependencies3(model_description, variables, *args, **kwargs),
+            "dependencies": lambda *args, **kwargs: dependencies(
+                model_description, *args, **kwargs
+            ),
+            "dependencies2": lambda *args, **kwargs: dependencies2(
+                model_description, *args, **kwargs
+            ),
+            "dependencies3": lambda *args, **kwargs: dependencies3(
+                model_description, variables, *args, **kwargs
+            ),
             "numel": lambda *args, **kwargs: numel(variables, *args, **kwargs),
             "set_variables": set_variables,
         }
