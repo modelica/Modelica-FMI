@@ -152,63 +152,67 @@ block Feedthrough
 
   parameter Types.Option Enumeration_input_start = Types.Option.Option_1 annotation(Dialog(tab="Initial", group="Start Values"));
 
-  FMI3Float32Input Float32_continuous_input(start=Float32_continuous_input_start) annotation (Placement(transformation(extent={ { -640, 586.6666666666666 }, { -600, 626.6666666666666 } }), iconTransformation(extent={ { -640, 586.6666666666666 }, { -600, 626.6666666666666 } })));
+  FMI3Float32Input Float32_continuous_input(start=Float32_continuous_input_start) annotation(Placement(transformation(extent={ { -640, 586.6666666666666 }, { -600, 626.6666666666666 } }), iconTransformation(extent={ { -640, 586.6666666666666 }, { -600, 626.6666666666666 } })));
 
-  FMI3Float32Input Float32_discrete_input(start=Float32_discrete_input_start) annotation (Placement(transformation(extent={ { -640, 493.33333333333337 }, { -600, 533.3333333333334 } }), iconTransformation(extent={ { -640, 493.33333333333337 }, { -600, 533.3333333333334 } })));
+  FMI3Float32Input Float32_discrete_input(start=Float32_discrete_input_start) annotation(Placement(transformation(extent={ { -640, 493.33333333333337 }, { -600, 533.3333333333334 } }), iconTransformation(extent={ { -640, 493.33333333333337 }, { -600, 533.3333333333334 } })));
 
-  FMI3Float64Input Float64_continuous_input(start=Float64_continuous_input_start) annotation (Placement(transformation(extent={ { -640, 400.0 }, { -600, 440.0 } }), iconTransformation(extent={ { -640, 400.0 }, { -600, 440.0 } })));
+  FMI3Float64Input Float64_continuous_input(start=Float64_continuous_input_start) annotation(Placement(transformation(extent={ { -640, 400.0 }, { -600, 440.0 } }), iconTransformation(extent={ { -640, 400.0 }, { -600, 440.0 } })));
 
-  FMI3Float64Input Float64_discrete_input(start=Float64_discrete_input_start) annotation (Placement(transformation(extent={ { -640, 306.6666666666667 }, { -600, 346.6666666666667 } }), iconTransformation(extent={ { -640, 306.6666666666667 }, { -600, 346.6666666666667 } })));
+  FMI3Float64Input Float64_discrete_input(start=Float64_discrete_input_start) annotation(Placement(transformation(extent={ { -640, 306.6666666666667 }, { -600, 346.6666666666667 } }), iconTransformation(extent={ { -640, 306.6666666666667 }, { -600, 346.6666666666667 } })));
 
-  FMI3Int8Input Int8_input(start=Int8_input_start) annotation (Placement(transformation(extent={ { -640, 213.33333333333337 }, { -600, 253.33333333333337 } }), iconTransformation(extent={ { -640, 213.33333333333337 }, { -600, 253.33333333333337 } })));
+  FMI3Int8Input Int8_input(start=Int8_input_start) annotation(Placement(transformation(extent={ { -640, 213.33333333333337 }, { -600, 253.33333333333337 } }), iconTransformation(extent={ { -640, 213.33333333333337 }, { -600, 253.33333333333337 } })));
 
-  FMI3UInt8Input UInt8_input(start=UInt8_input_start) annotation (Placement(transformation(extent={ { -640, 120.0 }, { -600, 160.0 } }), iconTransformation(extent={ { -640, 120.0 }, { -600, 160.0 } })));
+  FMI3UInt8Input UInt8_input(start=UInt8_input_start) annotation(Placement(transformation(extent={ { -640, 120.0 }, { -600, 160.0 } }), iconTransformation(extent={ { -640, 120.0 }, { -600, 160.0 } })));
 
-  FMI3Int16Input Int16_input(start=Int16_input_start) annotation (Placement(transformation(extent={ { -640, 26.666666666666742 }, { -600, 66.66666666666674 } }), iconTransformation(extent={ { -640, 26.666666666666742 }, { -600, 66.66666666666674 } })));
+  FMI3Int16Input Int16_input(start=Int16_input_start) annotation(Placement(transformation(extent={ { -640, 26.666666666666742 }, { -600, 66.66666666666674 } }), iconTransformation(extent={ { -640, 26.666666666666742 }, { -600, 66.66666666666674 } })));
 
-  FMI3UInt16Input UInt16_input(start=UInt16_input_start) annotation (Placement(transformation(extent={ { -640, -66.66666666666663 }, { -600, -26.66666666666663 } }), iconTransformation(extent={ { -640, -66.66666666666663 }, { -600, -26.66666666666663 } })));
+  FMI3UInt16Input UInt16_input(start=UInt16_input_start) annotation(Placement(transformation(extent={ { -640, -66.66666666666663 }, { -600, -26.66666666666663 } }), iconTransformation(extent={ { -640, -66.66666666666663 }, { -600, -26.66666666666663 } })));
 
-  FMI3Int32Input Int32_input(start=Int32_input_start) annotation (Placement(transformation(extent={ { -640, -160.0 }, { -600, -120.0 } }), iconTransformation(extent={ { -640, -160.0 }, { -600, -120.0 } })));
+  FMI3Int32Input Int32_input(start=Int32_input_start) annotation(Placement(transformation(extent={ { -640, -160.0 }, { -600, -120.0 } }), iconTransformation(extent={ { -640, -160.0 }, { -600, -120.0 } })));
 
-  FMI3UInt32Input UInt32_input(start=UInt32_input_start) annotation (Placement(transformation(extent={ { -640, -253.33333333333326 }, { -600, -213.33333333333326 } }), iconTransformation(extent={ { -640, -253.33333333333326 }, { -600, -213.33333333333326 } })));
+  FMI3UInt32Input UInt32_input(start=UInt32_input_start) annotation(Placement(transformation(extent={ { -640, -253.33333333333326 }, { -600, -213.33333333333326 } }), iconTransformation(extent={ { -640, -253.33333333333326 }, { -600, -213.33333333333326 } })));
 
-  FMI3Int64Input Int64_input(start=Int64_input_start) annotation (Placement(transformation(extent={ { -640, -346.6666666666665 }, { -600, -306.6666666666665 } }), iconTransformation(extent={ { -640, -346.6666666666665 }, { -600, -306.6666666666665 } })));
+  FMI3Int64Input Int64_input(start=Int64_input_start) annotation(Placement(transformation(extent={ { -640, -346.6666666666665 }, { -600, -306.6666666666665 } }), iconTransformation(extent={ { -640, -346.6666666666665 }, { -600, -306.6666666666665 } })));
 
-  FMI3UInt64Input UInt64_input(start=UInt64_input_start) annotation (Placement(transformation(extent={ { -640, -440.0 }, { -600, -400.0 } }), iconTransformation(extent={ { -640, -440.0 }, { -600, -400.0 } })));
+  FMI3UInt64Input UInt64_input(start=UInt64_input_start) annotation(Placement(transformation(extent={ { -640, -440.0 }, { -600, -400.0 } }), iconTransformation(extent={ { -640, -440.0 }, { -600, -400.0 } })));
 
-  FMI3BooleanInput Boolean_input(start=Boolean_input_start) annotation (Placement(transformation(extent={ { -640, -533.3333333333333 }, { -600, -493.33333333333326 } }), iconTransformation(extent={ { -640, -533.3333333333333 }, { -600, -493.33333333333326 } })));
+  FMI3BooleanInput Boolean_input(start=Boolean_input_start) annotation(Placement(transformation(extent={ { -640, -533.3333333333333 }, { -600, -493.33333333333326 } }), iconTransformation(extent={ { -640, -533.3333333333333 }, { -600, -493.33333333333326 } })));
 
-  Types.OptionInput Enumeration_input(start=Enumeration_input_start) annotation (Placement(transformation(extent={ { -640, -626.6666666666665 }, { -600, -586.6666666666665 } }), iconTransformation(extent={ { -640, -626.6666666666665 }, { -600, -586.6666666666665 } })));
+  Types.OptionInput Enumeration_input(start=Enumeration_input_start) annotation(Placement(transformation(extent={ { -640, -626.6666666666665 }, { -600, -586.6666666666665 } }), iconTransformation(extent={ { -640, -626.6666666666665 }, { -600, -586.6666666666665 } })));
 
-  FMI3Float32Output Float32_continuous_output annotation (Placement(transformation(extent={ { 600, 596.6666666666666 }, { 620, 616.6666666666666 } }), iconTransformation(extent={ { 600, 596.6666666666666 }, { 620, 616.6666666666666 } })));
+  FMI3Float32Output Float32_continuous_output annotation(Placement(transformation(extent={ { 600, 596.6666666666666 }, { 620, 616.6666666666666 } }), iconTransformation(extent={ { 600, 596.6666666666666 }, { 620, 616.6666666666666 } })));
 
-  FMI3Float32Output Float32_discrete_output annotation (Placement(transformation(extent={ { 600, 503.33333333333337 }, { 620, 523.3333333333334 } }), iconTransformation(extent={ { 600, 503.33333333333337 }, { 620, 523.3333333333334 } })));
+  FMI3Float32Output Float32_discrete_output annotation(Placement(transformation(extent={ { 600, 503.33333333333337 }, { 620, 523.3333333333334 } }), iconTransformation(extent={ { 600, 503.33333333333337 }, { 620, 523.3333333333334 } })));
 
-  FMI3Float64Output Float64_continuous_output annotation (Placement(transformation(extent={ { 600, 410.0 }, { 620, 430.0 } }), iconTransformation(extent={ { 600, 410.0 }, { 620, 430.0 } })));
+  FMI3Float64Output Float64_continuous_output annotation(Placement(transformation(extent={ { 600, 410.0 }, { 620, 430.0 } }), iconTransformation(extent={ { 600, 410.0 }, { 620, 430.0 } })));
 
-  FMI3Float64Output Float64_discrete_output annotation (Placement(transformation(extent={ { 600, 316.6666666666667 }, { 620, 336.6666666666667 } }), iconTransformation(extent={ { 600, 316.6666666666667 }, { 620, 336.6666666666667 } })));
+  FMI3Float64Output Float64_discrete_output annotation(Placement(transformation(extent={ { 600, 316.6666666666667 }, { 620, 336.6666666666667 } }), iconTransformation(extent={ { 600, 316.6666666666667 }, { 620, 336.6666666666667 } })));
 
-  FMI3Int8Output Int8_output annotation (Placement(transformation(extent={ { 600, 223.33333333333337 }, { 620, 243.33333333333337 } }), iconTransformation(extent={ { 600, 223.33333333333337 }, { 620, 243.33333333333337 } })));
+  FMI3Int8Output Int8_output annotation(Placement(transformation(extent={ { 600, 223.33333333333337 }, { 620, 243.33333333333337 } }), iconTransformation(extent={ { 600, 223.33333333333337 }, { 620, 243.33333333333337 } })));
 
-  FMI3UInt8Output UInt8_output annotation (Placement(transformation(extent={ { 600, 130.0 }, { 620, 150.0 } }), iconTransformation(extent={ { 600, 130.0 }, { 620, 150.0 } })));
+  FMI3UInt8Output UInt8_output annotation(Placement(transformation(extent={ { 600, 130.0 }, { 620, 150.0 } }), iconTransformation(extent={ { 600, 130.0 }, { 620, 150.0 } })));
 
-  FMI3Int16Output Int16_output annotation (Placement(transformation(extent={ { 600, 36.66666666666674 }, { 620, 56.66666666666674 } }), iconTransformation(extent={ { 600, 36.66666666666674 }, { 620, 56.66666666666674 } })));
+  FMI3Int16Output Int16_output annotation(Placement(transformation(extent={ { 600, 36.66666666666674 }, { 620, 56.66666666666674 } }), iconTransformation(extent={ { 600, 36.66666666666674 }, { 620, 56.66666666666674 } })));
 
-  FMI3UInt16Output UInt16_output annotation (Placement(transformation(extent={ { 600, -56.66666666666663 }, { 620, -36.66666666666663 } }), iconTransformation(extent={ { 600, -56.66666666666663 }, { 620, -36.66666666666663 } })));
+  FMI3UInt16Output UInt16_output annotation(Placement(transformation(extent={ { 600, -56.66666666666663 }, { 620, -36.66666666666663 } }), iconTransformation(extent={ { 600, -56.66666666666663 }, { 620, -36.66666666666663 } })));
 
-  FMI3Int32Output Int32_output annotation (Placement(transformation(extent={ { 600, -150.0 }, { 620, -130.0 } }), iconTransformation(extent={ { 600, -150.0 }, { 620, -130.0 } })));
+  FMI3Int32Output Int32_output annotation(Placement(transformation(extent={ { 600, -150.0 }, { 620, -130.0 } }), iconTransformation(extent={ { 600, -150.0 }, { 620, -130.0 } })));
 
-  FMI3UInt32Output UInt32_output annotation (Placement(transformation(extent={ { 600, -243.33333333333326 }, { 620, -223.33333333333326 } }), iconTransformation(extent={ { 600, -243.33333333333326 }, { 620, -223.33333333333326 } })));
+  FMI3UInt32Output UInt32_output annotation(Placement(transformation(extent={ { 600, -243.33333333333326 }, { 620, -223.33333333333326 } }), iconTransformation(extent={ { 600, -243.33333333333326 }, { 620, -223.33333333333326 } })));
 
-  FMI3Int64Output Int64_output annotation (Placement(transformation(extent={ { 600, -336.6666666666665 }, { 620, -316.6666666666665 } }), iconTransformation(extent={ { 600, -336.6666666666665 }, { 620, -316.6666666666665 } })));
+  FMI3Int64Output Int64_output annotation(Placement(transformation(extent={ { 600, -336.6666666666665 }, { 620, -316.6666666666665 } }), iconTransformation(extent={ { 600, -336.6666666666665 }, { 620, -316.6666666666665 } })));
 
-  FMI3UInt64Output UInt64_output annotation (Placement(transformation(extent={ { 600, -430.0 }, { 620, -410.0 } }), iconTransformation(extent={ { 600, -430.0 }, { 620, -410.0 } })));
+  FMI3UInt64Output UInt64_output annotation(Placement(transformation(extent={ { 600, -430.0 }, { 620, -410.0 } }), iconTransformation(extent={ { 600, -430.0 }, { 620, -410.0 } })));
 
-  FMI3BooleanOutput Boolean_output annotation (Placement(transformation(extent={ { 600, -523.3333333333333 }, { 620, -503.33333333333326 } }), iconTransformation(extent={ { 600, -523.3333333333333 }, { 620, -503.33333333333326 } })));
+  FMI3BooleanOutput Boolean_output annotation(Placement(transformation(extent={ { 600, -523.3333333333333 }, { 620, -503.33333333333326 } }), iconTransformation(extent={ { 600, -523.3333333333333 }, { 620, -503.33333333333326 } })));
 
-  Types.OptionOutput Enumeration_output annotation (Placement(transformation(extent={ { 600, -616.6666666666665 }, { 620, -596.6666666666665 } }), iconTransformation(extent={ { 600, -616.6666666666665 }, { 620, -596.6666666666665 } })));
+  Types.OptionOutput Enumeration_output annotation(Placement(transformation(extent={ { 600, -616.6666666666665 }, { 620, -596.6666666666665 } }), iconTransformation(extent={ { 600, -616.6666666666665 }, { 620, -596.6666666666665 } })));
 
 protected
+
+  parameter Boolean startValuesSet(start=false, fixed=false);
+
+  Boolean initialized(start=false, fixed=true);
 
   record OutputVariables
     FMI3Float32 Float32_continuous_output;

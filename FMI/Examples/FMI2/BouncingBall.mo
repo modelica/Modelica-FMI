@@ -15,9 +15,9 @@ block BouncingBall
 
   parameter FMI2Real e = 0.7 "Coefficient of restitution";
 
-  FMI2RealOutput h(unit="m", quantity="Position") annotation (Placement(transformation(extent={ { 600, 23.33333333333333 }, { 620, 43.33333333333333 } }), iconTransformation(extent={ { 600, 23.33333333333333 }, { 620, 43.33333333333333 } })));
+  FMI2RealOutput h(unit="m", quantity="Position") "Position of the ball" annotation(Placement(transformation(extent={ { 600, 23.33333333333333 }, { 620, 43.33333333333333 } }), iconTransformation(extent={ { 600, 23.33333333333333 }, { 620, 43.33333333333333 } })));
 
-  FMI2RealOutput v(unit="m/s", quantity="Velocity") annotation (Placement(transformation(extent={ { 600, -43.33333333333334 }, { 620, -23.333333333333343 } }), iconTransformation(extent={ { 600, -43.33333333333334 }, { 620, -23.333333333333343 } })));
+  FMI2RealOutput v(unit="m/s", quantity="Velocity") "Velocity of the ball" annotation(Placement(transformation(extent={ { 600, -43.33333333333334 }, { 620, -23.333333333333343 } }), iconTransformation(extent={ { 600, -43.33333333333334 }, { 620, -23.333333333333343 } })));
 
 protected
 

@@ -13,7 +13,7 @@ block Dahlquist
 
   parameter FMI2Real k = 1;
 
-  FMI2RealOutput x annotation (Placement(transformation(extent={ { 600, -10.0 }, { 620, 10.0 } }), iconTransformation(extent={ { 600, -10.0 }, { 620, 10.0 } })));
+  FMI2RealOutput x "the only state" annotation(Placement(transformation(extent={ { 600, -10.0 }, { 620, 10.0 } }), iconTransformation(extent={ { 600, -10.0 }, { 620, 10.0 } })));
 
 protected
 

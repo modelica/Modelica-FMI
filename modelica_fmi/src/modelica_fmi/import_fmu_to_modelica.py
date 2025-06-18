@@ -14,6 +14,7 @@ def import_fmu_to_modelica(
     interface_type: Literal["CoSimulation"] = "CoSimulation",
     variables: Iterable[str] | None = None,
     basic: bool = False,
+    hide_connectors = False,
 ):
     from os import makedirs
     from pathlib import Path
@@ -21,7 +22,6 @@ def import_fmu_to_modelica(
 
     import jinja2
     from fmpy import extract, read_model_description
-    from fmpy.model_description import SimpleType, ModelVariable
     from fmpy.util import sha256_checksum
 
     fmu_path = Path(fmu_path)
@@ -144,17 +144,18 @@ def import_fmu_to_modelica(
 
     annotations = dict()
 
-    for i, variable in enumerate(inputs):
-        y = y1 - (i + 1) * (height / (1 + len(inputs)))
-        annotations[variable.name] = (
-            f"annotation (Placement(transformation(extent={{ {{ {x0 - 40}, {y - 20} }}, {{ {x0}, {y + 20} }} }}), iconTransformation(extent={{ {{ {x0 - 40}, {y - 20} }}, {{ {x0}, {y + 20} }} }})))"
-        )
+    if not hide_connectors:
+        for i, variable in enumerate(inputs):
+            y = y1 - (i + 1) * (height / (1 + len(inputs)))
+            annotations[variable.name] = (
+                f" annotation(Placement(transformation(extent={{ {{ {x0 - 40}, {y - 20} }}, {{ {x0}, {y + 20} }} }}), iconTransformation(extent={{ {{ {x0 - 40}, {y - 20} }}, {{ {x0}, {y + 20} }} }})))"
+            )
 
-    for i, variable in enumerate(outputs):
-        y = y1 - (i + 1) * (height / (1 + len(outputs)))
-        annotations[variable.name] = (
-            f"annotation (Placement(transformation(extent={{ {{ {x1}, {y - 10} }}, {{ {x1 + 20}, {y + 10} }} }}), iconTransformation(extent={{ {{ {x1}, {y - 10} }}, {{ {x1 + 20}, {y + 10} }} }})))"
-        )
+        for i, variable in enumerate(outputs):
+            y = y1 - (i + 1) * (height / (1 + len(outputs)))
+            annotations[variable.name] = (
+                f" annotation(Placement(transformation(extent={{ {{ {x1}, {y - 10} }}, {{ {x1 + 20}, {y + 10} }} }}), iconTransformation(extent={{ {{ {x1}, {y - 10} }}, {{ {x1 + 20}, {y + 10} }} }})))"
+            )
 
     variables = dict(
         (variable.valueReference, variable)

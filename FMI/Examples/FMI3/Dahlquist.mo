@@ -13,9 +13,13 @@ block Dahlquist
 
   parameter FMI3Float64 k = 1;
 
-  FMI3Float64Output x annotation (Placement(transformation(extent={ { 600, -10.0 }, { 620, 10.0 } }), iconTransformation(extent={ { 600, -10.0 }, { 620, 10.0 } })));
+  FMI3Float64Output x "the only state" annotation(Placement(transformation(extent={ { 600, -10.0 }, { 620, 10.0 } }), iconTransformation(extent={ { 600, -10.0 }, { 620, 10.0 } })));
 
 protected
+
+  parameter Boolean startValuesSet(start=false, fixed=false);
+
+  Boolean initialized(start=false, fixed=true);
 
   record OutputVariables
     FMI3Float64 x;

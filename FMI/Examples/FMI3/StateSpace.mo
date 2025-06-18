@@ -21,13 +21,17 @@ block StateSpace
 
   parameter FMI3Float64 x0[3] = {0, 0, 0} "Initial state vector";
 
-  parameter FMI3Float64 u_start[3] = {1, 2, 3} annotation(Dialog(tab="Initial", group="Start Values"));
+  parameter FMI3Float64 u_start[3] = {1, 2, 3} "Input vector" annotation(Dialog(tab="Initial", group="Start Values"));
 
-  FMI3Float64Input u[3](start=u_start) annotation (Placement(transformation(extent={ { -640, -20.0 }, { -600, 20.0 } }), iconTransformation(extent={ { -640, -20.0 }, { -600, 20.0 } })));
+  FMI3Float64Input u[3](start=u_start) "Input vector" annotation(Placement(transformation(extent={ { -640, -20.0 }, { -600, 20.0 } }), iconTransformation(extent={ { -640, -20.0 }, { -600, 20.0 } })));
 
-  FMI3Float64Output y[3] annotation (Placement(transformation(extent={ { 600, -10.0 }, { 620, 10.0 } }), iconTransformation(extent={ { 600, -10.0 }, { 620, 10.0 } })));
+  FMI3Float64Output y[3] "Output vector" annotation(Placement(transformation(extent={ { 600, -10.0 }, { 620, 10.0 } }), iconTransformation(extent={ { 600, -10.0 }, { 620, 10.0 } })));
 
 protected
+
+  parameter Boolean startValuesSet(start=false, fixed=false);
+
+  Boolean initialized(start=false, fixed=true);
 
   record OutputVariables
     FMI3Float64 y[3];

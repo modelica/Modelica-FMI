@@ -91,7 +91,7 @@ block @=modelName=@
 @@ endblock @@
 @@ for variable in outputs @@
 
-  @=fmi_type(variable, prefix=True, declared=True)=@Output @=name(variable)=@@=subscripts(variable)=@@=modifiers(variable)=@ @=annotations[variable.name]=@;
+  @=fmi_type(variable, prefix=True, declared=True)=@Output @=name(variable)=@@=subscripts(variable)=@@=modifiers(variable)=@@@ if variable.description @@ "@=variable.description=@"@@ endif @@@=annotations[variable.name]=@;
 @@ endfor @@
 @@ block equations @@
 @@ endblock @@

@@ -7,7 +7,7 @@
 @@ block inputs @@
 @@ for variable in inputs @@
 
-  @=fmi_type(variable, prefix=True, declared=True)=@Input @=name(variable)=@@=subscripts(variable)=@ @=annotations[variable.name]=@;
+  @=fmi_type(variable, prefix=True, declared=True)=@Input @=name(variable)=@@=subscripts(variable)=@@@ if variable.description @@ "@=variable.description=@"@@ endif @@@=annotations[variable.name]=@;
 @@ endfor @@
 @@ endblock @@
 @@ block equations @@

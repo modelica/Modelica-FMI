@@ -15,11 +15,15 @@ block BouncingBall
 
   parameter FMI3Float64 e = 0.7 "Coefficient of restitution";
 
-  FMI3Float64Output h(unit="m", quantity="Position") annotation (Placement(transformation(extent={ { 600, 23.33333333333333 }, { 620, 43.33333333333333 } }), iconTransformation(extent={ { 600, 23.33333333333333 }, { 620, 43.33333333333333 } })));
+  FMI3Float64Output h(unit="m", quantity="Position") "Position of the ball" annotation(Placement(transformation(extent={ { 600, 23.33333333333333 }, { 620, 43.33333333333333 } }), iconTransformation(extent={ { 600, 23.33333333333333 }, { 620, 43.33333333333333 } })));
 
-  FMI3Float64Output v(unit="m/s", quantity="Velocity") annotation (Placement(transformation(extent={ { 600, -43.33333333333334 }, { 620, -23.333333333333343 } }), iconTransformation(extent={ { 600, -43.33333333333334 }, { 620, -23.333333333333343 } })));
+  FMI3Float64Output v(unit="m/s", quantity="Velocity") "Velocity of the ball" annotation(Placement(transformation(extent={ { 600, -43.33333333333334 }, { 620, -23.333333333333343 } }), iconTransformation(extent={ { 600, -43.33333333333334 }, { 620, -23.333333333333343 } })));
 
 protected
+
+  parameter Boolean startValuesSet(start=false, fixed=false);
+
+  Boolean initialized(start=false, fixed=true);
 
   record OutputVariables
     FMI3Float64 h;
