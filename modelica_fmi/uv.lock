@@ -299,7 +299,6 @@ source = { editable = "." }
 dependencies = [
     { name = "fmpy" },
     { name = "jinja2" },
-    { name = "pymola" },
     { name = "pyside6" },
 ]
 
@@ -315,7 +314,6 @@ dev = [
 requires-dist = [
     { name = "fmpy", specifier = ">=0.3.25" },
     { name = "jinja2", specifier = ">=3.1.6" },
-    { name = "pymola", git = "ssh://git@vm-sdl3-dsy.dsone.3ds.com/SCT/pymola.git" },
     { name = "pyside6", specifier = ">=6.9.1" },
 ]
 
@@ -472,17 +470,6 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/1d/b2/31537cf4b1ca988837256c910a668b553fceb8f069bedc4b1c826024b52c/pycparser-2.22.tar.gz", hash = "sha256:491c8be9c040f5390f5bf44a5b07752bd07f56edf992381b05c701439eec10f6", size = 172736, upload-time = "2024-03-30T13:22:22.564Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/13/a3/a812df4e2dd5696d1f351d58b8fe16a405b234ad2886a0dab9183fb78109/pycparser-2.22-py3-none-any.whl", hash = "sha256:c3702b6d3dd8c7abc1afa565d7e63d53a1d0bd86cdc24edd75470f4de499cfcc", size = 117552, upload-time = "2024-03-30T13:22:20.476Z" },
-]
-
-[[package]]
-name = "pymola"
-version = "0.0.9"
-source = { git = "ssh://git@vm-sdl3-dsy.dsone.3ds.com/SCT/pymola.git#5c32435b85d6a7bebfe5d1d953d244ce359d17fd" }
-dependencies = [
-    { name = "numpy" },
-    { name = "psutil" },
-    { name = "requests" },
-    { name = "urllib3" },
 ]
 
 [[package]]
