@@ -4,6 +4,12 @@
   import FMI.FMI3.Interfaces.*;
   import FMI.FMI3.Functions.*;
 @@ endblock @@
+@@ block inputs @@
+@@ for variable in inputs @@
+
+  @=fmi_type(variable, prefix=True, declared=True)=@Input @=name(variable)=@@=subscripts(variable)=@ @=annotations[variable.name]=@;
+@@ endfor @@
+@@ endblock @@
 @@ block equations @@
 
 initial algorithm
