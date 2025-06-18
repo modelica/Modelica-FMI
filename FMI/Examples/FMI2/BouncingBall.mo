@@ -21,6 +21,10 @@ block BouncingBall
 
 protected
 
+  parameter Boolean startValuesSet(start=false, fixed=false);
+
+  Boolean initialized(start=false, fixed=true);
+
   record OutputVariables
     Real h;
     Real v;

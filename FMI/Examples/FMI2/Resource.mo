@@ -15,6 +15,10 @@ block Resource
 
 protected
 
+  parameter Boolean startValuesSet(start=false, fixed=false);
+
+  Boolean initialized(start=false, fixed=true);
+
   record OutputVariables
     Integer y;
   end OutputVariables;

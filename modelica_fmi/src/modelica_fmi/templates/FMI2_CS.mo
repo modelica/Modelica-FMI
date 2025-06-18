@@ -57,6 +57,10 @@
 
 protected
 
+  parameter Boolean startValuesSet(start=false, fixed=false);
+
+  Boolean initialized(start=false, fixed=true);
+
   record OutputVariables
 @@ for variable in outputs @@
     @=fmi_type(variable, declared=True)=@ @=name(variable)=@;

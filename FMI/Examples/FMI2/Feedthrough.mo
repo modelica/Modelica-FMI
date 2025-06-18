@@ -148,6 +148,10 @@ block Feedthrough
 
 protected
 
+  parameter Boolean startValuesSet(start=false, fixed=false);
+
+  Boolean initialized(start=false, fixed=true);
+
   record OutputVariables
     Real Float64_continuous_output;
     Real Float64_discrete_output;

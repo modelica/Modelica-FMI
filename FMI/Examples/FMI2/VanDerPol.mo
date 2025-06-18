@@ -19,6 +19,10 @@ block VanDerPol
 
 protected
 
+  parameter Boolean startValuesSet(start=false, fixed=false);
+
+  Boolean initialized(start=false, fixed=true);
+
   record OutputVariables
     Real x0;
     Real x1;
