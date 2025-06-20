@@ -22,5 +22,8 @@ to install the <code>modelica-fmi</code> command.</p>
 
 <p>To import an FMU into a Modelica package run <a href=\"modelica://FMI.importFMU\">FMI.importFMU()</a>.</p>
 
-</html>"));
+</html>"),
+    __Dymola_Commands(executeCall(description=
+            "Import an FMU to an existing package") = Execute(
+        "modelica-fmi-gui") "Import FMU..."));
 end FMI;

@@ -43,13 +43,23 @@
     end IntegerTo@= typeDefinition.name =@;
 @@ endfor @@
 @@ endblock @@
-@@ block parameters @@
+@@ block inputs @@
+@@ for variable in inputs @@
 
-  parameter Modelica.Units.SI.Time communicationStepSize = @=communicationStepSize=@ annotation(Dialog(tab="FMI", group="Parameters"));
+  parameter @=fmi_type(variable, prefix=True, declared=True)=@ @=name(variable, '_start')=@@=subscripts(variable)=@@=modifiers(variable)=@ = @=start_value(variable)=@ annotation(Dialog(tab="Initial", group="Start Values"));
+@@ endfor @@
+@@ for variable in inputs @@
+
+  @=fmi_type(variable, prefix=True, declared=True)=@Input @=name(variable)=@@=subscripts(variable)=@@=modifiers(variable, start=True)=@ @=annotations[variable.name]=@;
+@@ endfor @@
 @@ endblock @@
 @@ block equations @@
 
 protected
+
+  parameter Boolean startValuesSet(start=false, fixed=false);
+
+  Boolean initialized(start=false, fixed=true);
 
   record OutputVariables
 @@ for variable in outputs @@

@@ -81,23 +81,17 @@ block @=modelName=@
   end Types;
 
 @@ endif @@
-@@ block parameters @@
-@@ endblock @@
+
+  parameter Modelica.Units.SI.Time communicationStepSize = @=communicationStepSize=@ annotation(Dialog(tab="FMI", group="Parameters"));
 @@ for variable in parameters @@
 
   parameter @=fmi_type(variable, prefix=True)=@ @=name(variable)=@@@ if variable.dimensions @@@=subscripts(variable)=@@@ endif @@@=modifiers(variable)=@ = @=start_value(variable)=@@@ if variable.description @@ "@=variable.description=@"@@ endif @@@=choices(variable)=@;
 @@ endfor @@
-@@ for variable in inputs @@
-
-  parameter @=fmi_type(variable, prefix=True, declared=True)=@ @=name(variable, '_start')=@@=subscripts(variable)=@@=modifiers(variable)=@ = @=start_value(variable)=@ annotation(Dialog(tab="Initial", group="Start Values"));
-@@ endfor @@
-@@ for variable in inputs @@
-
-  @=fmi_type(variable, prefix=True, declared=True)=@Input @=name(variable)=@@=subscripts(variable)=@@=modifiers(variable, start=True)=@ @=annotations[variable.name]=@;
-@@ endfor @@
+@@ block inputs @@
+@@ endblock @@
 @@ for variable in outputs @@
 
-  @=fmi_type(variable, prefix=True, declared=True)=@Output @=name(variable)=@@=subscripts(variable)=@@=modifiers(variable)=@ @=annotations[variable.name]=@;
+  @=fmi_type(variable, prefix=True, declared=True)=@Output @=name(variable)=@@=subscripts(variable)=@@=modifiers(variable)=@@@ if variable.description @@ "@=variable.description=@"@@ endif @@@=annotations[variable.name]=@;
 @@ endfor @@
 @@ block equations @@
 @@ endblock @@
