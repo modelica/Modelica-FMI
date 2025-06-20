@@ -83,8 +83,6 @@ def main():
             import_fmu_to_modelica(
                 fmu_path=dialog.ui.fmuPathLineEdit.text(),
                 model_path=dialog.ui.modelPathLineEdit.text(),
-                basic=dialog.ui.basicCheckBox.isChecked(),
-                hide_connectors=dialog.ui.hideConnectorsCheckBox.isChecked(),
             )
         except Exception as ex:
             QMessageBox.critical(dialog, "Failed to import FMU", str(ex))
