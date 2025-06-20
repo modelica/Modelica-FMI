@@ -28,13 +28,23 @@ Then download the [Modelica-FMI](https://github.com/modelica/Modelica-FMI/releas
 
 ## Usage
 
-To import an FMU into an existing package call [FMI.importFMU()](FMI/importFMU.mo) or run
+To open the import dialog run
+
+```bash
+modelica-fmi-gui
+```
+
+or
 
 ```bash
 modelica-fmi /path/to/model.fmu /path/to/package/model.mo
 ```
 
-and reload the package.
+to import an FMU directly.
+
+In Dymola you can open the import dialog by opening the `FMI` package and selecting `Simulation > Commands > Import FMU...`.
+
+After the import you have to reload the package.
 
 ## License
 
