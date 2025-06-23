@@ -2,8 +2,26 @@ within ;
 package FMI "Import Functional Mock-up Units (FMUs) to Modelica"
   extends Modelica.Icons.Package;
 
+  package Menu "FMU Import"
+
+    function importFMU = FMI.Menu.openImportDialog "Import FMU..." annotation(__Dymola_autoExecute = true);
+    function openImportDialog
+
+    algorithm
+
+      Execute("modelica-fmi-gui");
+
+    end openImportDialog;
+    annotation (
+      __Dymola_toolbar=true,
+      Protection(hideFromBrowser=true),
+      Icon(coordinateSystem(preserveAspectRatio=false, extent={{-100,-100},{100,
+              100}}), graphics={Bitmap(extent={{-100,-100},{100,100}}, fileName
+              ="modelica://FMI/Resources/Images/FMI_package.svg")}));
+
+  end Menu;
 annotation (version="0.0.6", uses(Modelica(version="4.0.0")), Icon(graphics={Bitmap(extent={{-80,-60},
-            {80,60}}, fileName="modelica://FMI/Resources/FMI_bare.svg")}),
+            {80,60}}, fileName="modelica://FMI/Resources/Images/FMI_bare.svg")}),
     Documentation(info="<html>
 
 <p>A Modelica package to import <a href=\"https://fmi-standard.org/\">Functional Mock-up Units</a> (FMUs).</p>
@@ -22,5 +40,8 @@ to install the <code>modelica-fmi</code> command.</p>
 
 <p>To import an FMU into a Modelica package run <a href=\"modelica://FMI.importFMU\">FMI.importFMU()</a>.</p>
 
-</html>"));
+</html>"),
+    __Dymola_Commands(executeCall(description=
+            "Import an FMU to an existing package") = Execute(
+        "modelica-fmi-gui") "Import FMU..."), __Dymola_containsMenu=true);
 end FMI;
