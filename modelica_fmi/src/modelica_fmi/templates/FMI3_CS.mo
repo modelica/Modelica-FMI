@@ -100,9 +100,9 @@ initial algorithm
     startTime := time;
 @@ for variable in parameters @@
 @@ if not variable.dimensions @@
-    FMI3Set@=fmi_type(variable)=@(instance, valueReferences={@=variable.valueReference=@}, values={@=name(variable)=@});
+    FMI3Set@=fmi_type(variable)=@(instance, valueReferences={@=variable.valueReference=@}, values=@@ if variable.type == 'Enumeration' @@Types.@= variable.declaredType.name =@ToInt64(@@ endif @@{@=name(variable)=@}@@ if variable.type == 'Enumeration' @@)@@ endif @@);
 @@ elif variable.dimensions|length == 1 @@
-    FMI3Set@=fmi_type(variable)=@(instance, valueReferences={@=variable.valueReference=@}, values=@=name(variable)=@);
+    FMI3Set@=fmi_type(variable)=@(instance, valueReferences={@=variable.valueReference=@}, values=@@ if variable.type == 'Enumeration' @@Types.@= variable.declaredType.name =@ToInt64(@@ endif @@@=name(variable)=@@@ if variable.type == 'Enumeration' @@)@@ endif @@);
 @@ else @@
     FMI3Set@=fmi_type(variable)=@Matrix(instance, valueReferences={@=variable.valueReference=@}, values=@=name(variable)=@, nValues=@=numel(variable)=@);
 @@ endif @@
