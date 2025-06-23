@@ -36,5 +36,8 @@ exclude = [
   "*.qrc",
 ]
 
+[tool.ruff]
+extend-exclude = ["src/modelica_fmi/gui/generated"]
+
 #[tool.uv.sources]
 #pymola = { git = "ssh://git@vm-sdl3-dsy.dsone.3ds.com/SCT/pymola.git" }
