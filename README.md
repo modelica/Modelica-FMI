@@ -42,7 +42,7 @@ modelica-fmi /path/to/model.fmu /path/to/package/model.mo
 
 to import an FMU directly.
 
-In Dymola you can open the import dialog by opening the `FMI` package and selecting `Simulation > Commands > Import FMU...`.
+In Dymola you can open the import dialog by selecting `Tools > FMU Import > Import FMU...`.
 
 After the import you have to reload the package.
 
