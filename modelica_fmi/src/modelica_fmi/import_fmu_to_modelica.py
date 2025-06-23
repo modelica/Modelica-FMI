@@ -8,7 +8,6 @@ from modelica_fmi._lib import (
     fmi2_type,
     fmi3_type,
     modifiers,
-    choices,
     dependencies,
     dependencies2,
     dependencies3,
@@ -189,7 +188,6 @@ def import_fmu_to_modelica(
             "modelica_type": modelica_type,
             "fmi_type": fmi2_type if fmiMajorVersion == 2 else fmi3_type,
             "modifiers": modifiers,
-            "choices": choices,
             "name": name,
             "dependencies": lambda *args, **kwargs: dependencies(
                 model_description, *args, **kwargs

@@ -164,16 +164,6 @@ def modifiers(variable: ModelVariable, start: bool = False):
     return ""
 
 
-def choices(variable: ModelVariable) -> str:
-    if variable.type == "Enumeration":
-        choices = [
-            f'choice={item.value} "{item.name}"' for item in variable.declaredType.items
-        ]
-        return " annotation(choices(" + ", ".join(choices) + "))"
-    else:
-        return ""
-
-
 def dependencies(
     model_description: ModelDescription, variable: ModelVariable, type, nValues=False
 ):
