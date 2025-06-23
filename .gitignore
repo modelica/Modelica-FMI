@@ -6,3 +6,4 @@ build/
 dist/
 *.egg-info/
 modelica_fmi/tests/work/
+modelica_fmi/tests/resources/

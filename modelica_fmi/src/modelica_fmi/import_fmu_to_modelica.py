@@ -28,6 +28,7 @@ def import_fmu_to_modelica(
     variables: Iterable[str] | None = None,
     basic: bool = False,
     hide_connectors=False,
+    hide_large_arrays=False,
 ):
     from os import makedirs
     from pathlib import Path
@@ -176,6 +177,13 @@ def import_fmu_to_modelica(
         (variable.valueReference, variable)
         for variable in model_description.modelVariables
     )
+
+    if hide_large_arrays:
+        for variable in parameters:
+            if numel(variables, variable) > 50:
+                annotations[variable.name] = (
+                    " annotation(Evaluate=true, __Dymola_HideArray=true)"
+                )
 
     template.globals.update(
         {

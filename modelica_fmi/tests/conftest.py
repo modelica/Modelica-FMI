@@ -1,3 +1,4 @@
+import shutil
 from os import makedirs
 import pytest
 from pathlib import Path
@@ -19,6 +20,7 @@ def package_dir():
 @pytest.fixture(scope="session")
 def work_dir():
     path = Path(__file__).parent / "work"
+    shutil.rmtree(path)
     makedirs(path)
     yield path
 

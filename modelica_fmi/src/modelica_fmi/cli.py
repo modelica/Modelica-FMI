@@ -29,6 +29,11 @@ def main():
         action="store_true",
         help="Hide the connectors in the graphical representation",
     )
+    parser.add_argument(
+        "--hide-large-arrays",
+        action="store_true",
+        help="Hide large parameter arrays in Dymola",
+    )
     parser.add_argument("fmu_path", help="Path of the FMU to import")
     parser.add_argument("model_path", help="Path of the Modelica file to generate")
 
@@ -40,4 +45,5 @@ def main():
         interface_type="CoSimulation",
         basic=args.basic,
         hide_connectors=args.hide_connectors,
+        hide_large_arrays=args.hide_large_arrays,
     )

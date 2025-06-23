@@ -84,6 +84,7 @@ def main():
                 fmu_path=dialog.ui.fmuPathLineEdit.text(),
                 model_path=dialog.ui.modelPathLineEdit.text(),
                 hide_connectors=dialog.ui.hideConnectorsCheckBox.isChecked(),
+                hide_large_arrays=dialog.ui.hideLargeArraysCheckBox.isChecked(),
             )
         except Exception as ex:
             QMessageBox.critical(dialog, "Failed to import FMU", str(ex))
