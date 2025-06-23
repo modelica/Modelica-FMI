@@ -1,4 +1,4 @@
-![](https://github.com/user-attachments/assets/dbcd7e72-cdb3-48b5-8323-a1b89c328ea2)
+![](FMI/Resources/Images/FMI_package.svg)
 
 # Modelica FMI
 
