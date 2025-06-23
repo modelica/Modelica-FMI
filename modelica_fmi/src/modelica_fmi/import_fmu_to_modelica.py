@@ -144,9 +144,9 @@ def import_fmu_to_modelica(
             parameters.append(variable)
         elif variable.causality == "structuralParameter":
             structural_parameters.append(variable)
-        elif variable.causality == "input":
+        elif variable.causality == "input" and variable.type != "String":
             inputs.append(variable)
-        elif variable.causality == "output":
+        elif variable.causality == "output" and variable.type != "String":
             outputs.append(variable)
 
     width = 1200
