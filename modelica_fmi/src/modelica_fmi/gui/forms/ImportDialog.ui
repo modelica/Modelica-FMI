@@ -126,6 +126,13 @@
      </property>
     </spacer>
    </item>
+   <item row="2" column="0" colspan="2">
+    <widget class="QCheckBox" name="hideConnectorsCheckBox">
+     <property name="text">
+      <string>Hide Connectors</string>
+     </property>
+    </widget>
+   </item>
   </layout>
  </widget>
  <resources>

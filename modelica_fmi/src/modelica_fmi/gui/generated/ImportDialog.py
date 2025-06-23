@@ -15,9 +15,10 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QFont, QFontDatabase, QGradient, QIcon,
     QImage, QKeySequence, QLinearGradient, QPainter,
     QPalette, QPixmap, QRadialGradient, QTransform)
-from PySide6.QtWidgets import (QAbstractButton, QApplication, QDialog, QDialogButtonBox,
-    QGridLayout, QHBoxLayout, QLabel, QLineEdit,
-    QSizePolicy, QSpacerItem, QToolButton, QWidget)
+from PySide6.QtWidgets import (QAbstractButton, QApplication, QCheckBox, QDialog,
+    QDialogButtonBox, QGridLayout, QHBoxLayout, QLabel,
+    QLineEdit, QSizePolicy, QSpacerItem, QToolButton,
+    QWidget)
 from . import icons_rc
 
 class Ui_ImportDialog(object):
@@ -89,6 +90,11 @@ class Ui_ImportDialog(object):
 
         self.gridLayout.addItem(self.verticalSpacer, 3, 0, 1, 1)
 
+        self.hideConnectorsCheckBox = QCheckBox(ImportDialog)
+        self.hideConnectorsCheckBox.setObjectName(u"hideConnectorsCheckBox")
+
+        self.gridLayout.addWidget(self.hideConnectorsCheckBox, 2, 0, 1, 2)
+
 
         self.retranslateUi(ImportDialog)
         self.buttonBox.accepted.connect(ImportDialog.accept)
@@ -103,5 +109,6 @@ class Ui_ImportDialog(object):
         self.mo.setText(QCoreApplication.translate("ImportDialog", u"Modelica File", None))
         self.selectModelPathButton.setText(QCoreApplication.translate("ImportDialog", u"...", None))
         self.selectFMUPathButton.setText(QCoreApplication.translate("ImportDialog", u"...", None))
+        self.hideConnectorsCheckBox.setText(QCoreApplication.translate("ImportDialog", u"Hide Connectors", None))
     # retranslateUi
 
