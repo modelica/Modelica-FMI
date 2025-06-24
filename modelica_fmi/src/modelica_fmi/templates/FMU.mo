@@ -97,15 +97,12 @@ block @=modelName=@
 @@ endblock @@
 
   annotation (
-    Icon(coordinateSystem(
+   Icon(coordinateSystem(
       preserveAspectRatio=false,
-      extent={{@=x0=@,@=y0=@}, {@=x1=@,@=y1=@}}),
-      graphics={
-        Text(extent={{@=x0=@,@=y1+10=@}, {@=x1=@,@=y1+50=@}}, lineColor={0,0,255}, textString="%name"),
-        Rectangle(extent={{@=x0=@,@=y0=@},{@=x1=@,@=y1=@}}, lineColor={95,95,95}, fillColor={255,255,255}, fillPattern=FillPattern.Solid)
-      }
+      extent={{-100,-100},{100,100}}),
+      graphics={Bitmap(extent={{-90,-90},{90,90}}, fileName="@=icon=@")}
     ),
-    Diagram(coordinateSystem(preserveAspectRatio=false, extent={{@=x0=@,@=y0=@}, {@=x1=@,@=y1=@}})),
+    Diagram(coordinateSystem(preserveAspectRatio=false, extent={{-100,-100},{100,100}})),
     experiment(StopTime=@=stopTime=@),
     uses(FMI(version="@=libraryVersion=@")),
     Documentation(info="<html>

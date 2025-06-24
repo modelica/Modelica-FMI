@@ -6,12 +6,7 @@ connector FMI3Float64Input  = input  FMI3Float64 "'input FMI3Float64' as connect
       lineColor={0,0,127},
       fillColor={0,0,127},
       fillPattern=FillPattern.Solid,
-      points={{-100.0,100.0},{100.0,0.0},{-100.0,-100.0}}),
-    Text(
-      textColor={0,0,0},
-      extent={{140,-20},{140,20}},
-        textString="%name",
-        horizontalAlignment=TextAlignment.Left)},
+      points={{-100.0,100.0},{100.0,0.0},{-100.0,-100.0}})},
     coordinateSystem(extent={{-100.0,-100.0},{100.0,100.0}},
       preserveAspectRatio=true,
       initialScale=0.2)),

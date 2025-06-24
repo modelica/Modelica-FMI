@@ -1,5 +1,6 @@
 within FMI.Internal;
 partial block FMU "Base class for imported FMUs"
+  extends Modelica.Blocks.Icons.Block;
 
   parameter Modelica.Units.SI.Time stopTime = Modelica.Constants.inf annotation(Dialog(tab="FMI", group="Parameters"));
 

@@ -9,12 +9,7 @@ connector FMI2RealOutput = output FMI2Real "'output FMI2Real' as connector" anno
       lineColor={0,0,127},
       fillColor={255,255,255},
       fillPattern=FillPattern.Solid,
-      points={{-100.0,100.0},{100.0,0.0},{-100.0,-100.0}}),
-    Text(
-      textColor={0,0,0},
-      extent={{-180,-40},{-180,40}},
-        textString="%name",
-        horizontalAlignment=TextAlignment.Right)}),
+      points={{-100.0,100.0},{100.0,0.0},{-100.0,-100.0}})}),
   Diagram(
     coordinateSystem(preserveAspectRatio=true,
       extent={{-100.0,-100.0},{100.0,100.0}}),
