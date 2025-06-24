@@ -261,7 +261,7 @@ def dependencies3(
             if not s:
                 values.append(name(dependency))
             elif len(s) == 1:
-                for i in range(1, numel(dependency) + 1):
+                for i in range(1, numel(variables, dependency) + 1):
                     values.append(f"{name(dependency)}[{i}]")
             elif len(s) == 2:
                 for i in range(1, s[0] + 1):
