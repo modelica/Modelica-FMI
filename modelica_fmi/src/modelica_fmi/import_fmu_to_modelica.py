@@ -159,13 +159,23 @@ def import_fmu_to_modelica(
 
     if not hide_connectors:
         for i, variable in enumerate(inputs):
-            y = 0 if len(inputs) == 1 else y1 - i * (height / (len(inputs) - 1))
+            if len(inputs) == 1:
+                y = 0
+            elif len(inputs) == 2:
+                y = -50 if i == 0 else 50
+            else:
+                y = 0 if len(inputs) == 1 else y1 - i * (height / (len(inputs) - 1))
             annotations[variable.name] = (
                 f" annotation(Placement(transformation(extent={{ {{ {x0 - 40}, {y - 20} }}, {{ {x0}, {y + 20} }} }}), iconTransformation(extent={{ {{ {x0 - 40}, {y - 20} }}, {{ {x0}, {y + 20} }} }})))"
             )
 
         for i, variable in enumerate(outputs):
-            y = 0 if len(outputs) == 1 else y1 - i * (height / (len(outputs) - 1))
+            if len(outputs) == 1:
+                y = 0
+            elif len(outputs) == 2:
+                y = -50 if i == 0 else 50
+            else:
+                y = 0 if len(outputs) == 1 else y1 - i * (height / (len(outputs) - 1))
             annotations[variable.name] = (
                 f" annotation(Placement(transformation(extent={{ {{ {x1}, {y - 10} }}, {{ {x1 + 20}, {y + 10} }} }}), iconTransformation(extent={{ {{ {x1}, {y - 10} }}, {{ {x1 + 20}, {y + 10} }} }})))"
             )
