@@ -9,7 +9,7 @@ package FMI "Import Functional Mock-up Units (FMUs) to Modelica"
 
     algorithm
 
-      Execute("modelica-fmi-gui");
+      DymolaCommands.System.Execute("modelica-fmi-gui");
 
     end openImportDialog;
     annotation (
