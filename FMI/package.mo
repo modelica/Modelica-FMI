@@ -33,7 +33,7 @@ annotation (version="0.0.6", uses(Modelica(version="4.0.0")), Icon(graphics={Bit
 
 <h5>Install the modelica-fmi command</h5>
 
-<p>To import FMUs the library requires the <code>modelica-fmi</code> command.</p>
+<p>To import FMUs the library requires the <code>modelica-fmi</code> and <code>modelica-fmi-gui</code>commands.</p>
 
 <p>After <a href=\"https://docs.astral.sh/uv/getting-started/installation/\">installing uv</a> run
 
@@ -43,7 +43,11 @@ to install the <code>modelica-fmi</code> command.</p>
 
 <h5>Import an FMU</h5>
 
-<p>To import an FMU into a Modelica package run <a href=\"modelica://FMI.importFMU\">FMI.importFMU()</a>.</p>
+<p>To import an FMU into a Modelica package using the import dialog run <code>modelica-fmi-gui</code>.</p>
+
+<p>In Dymola you can select <code>Tools > FMU Import > Import FMU...</code>.</p>
+
+<p>To import an FMU on the command line run <code>modelica-fmi --help</code>.</p>
 
 </html>"),
     __Dymola_Commands(executeCall(description=
