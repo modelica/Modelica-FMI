@@ -15,16 +15,16 @@ A Modelica library to import [Functional Mock-up Units](https://fmi-standard.org
 To import FMUs install the `modelica-fmi` and `modelica-fmi-gui` commands with [uv](https://docs.astral.sh/uv/getting-started/installation/):
 
 ```bash
-uv tool install --reinstall https://github.com/modelica/Modelica-FMI/releases/download/v0.0.6/modelica_fmi-0.0.6-py3-none-any.whl
+uv tool install --reinstall https://github.com/modelica/Modelica-FMI/releases/download/v0.0.7/modelica_fmi-0.0.7-py3-none-any.whl
 ```
 
 Or, with `pip`:
 
 ```bash
-pip install https://github.com/modelica/Modelica-FMI/releases/download/v0.0.6/modelica_fmi-0.0.6-py3-none-any.whl
+pip install https://github.com/modelica/Modelica-FMI/releases/download/v0.0.7/modelica_fmi-0.0.7-py3-none-any.whl
 ```
 
-To simulate imported FMUs download the [Modelica-FMI](https://github.com/modelica/Modelica-FMI/releases/download/v0.0.6/Modelica-FMI-0.0.6.zip) package and load it in your Modelica tool.
+To simulate imported FMUs download the [Modelica-FMI](https://github.com/modelica/Modelica-FMI/releases/download/v0.0.7/Modelica-FMI-0.0.7.zip) package and load it in your Modelica tool.
 
 ## Usage
 
@@ -75,7 +75,7 @@ uv venv
 
 - install PyInstaller and modelica_fmi
 ```
-uv pip install pyinstaller https://github.com/modelica/Modelica-FMI/releases/download/v0.0.6/modelica_fmi-0.0.6-py3-none-any.whl
+uv pip install pyinstaller https://github.com/modelica/Modelica-FMI/releases/download/v0.0.7/modelica_fmi-0.0.7-py3-none-any.whl
 ```
 
 - build modelica-fmi-gui
