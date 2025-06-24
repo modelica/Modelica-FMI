@@ -4,16 +4,21 @@ package FMI "Import Functional Mock-up Units (FMUs) to Modelica"
 
   package Menu "FMU Import"
 
-    function importFMU = FMI.Menu.openImportDialog "Import FMU..." annotation(__Dymola_autoExecute = true);
+    function importFMU = FMI.Menu.openImportDialog "Import FMU..." annotation(__Dymola_interactive=true, __Dymola_autoExecute=true);
+
     function openImportDialog
 
     algorithm
 
       DymolaCommands.System.Execute("modelica-fmi-gui");
 
+      annotation(__Dymola_interactive=true);
+
     end openImportDialog;
+
     annotation (
       __Dymola_toolbar=true,
+      __Dymola_interactive=true,
       Protection(hideFromBrowser=true),
       Icon(coordinateSystem(preserveAspectRatio=false, extent={{-100,-100},{100,
               100}}), graphics={Bitmap(extent={{-100,-100},{100,100}}, fileName
