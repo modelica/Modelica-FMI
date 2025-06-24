@@ -25,7 +25,7 @@ package FMI "Import Functional Mock-up Units (FMUs) to Modelica"
               ="modelica://FMI/Resources/Images/FMI_package.svg")}));
 
   end Menu;
-annotation (version="0.0.7", uses(Modelica(version="4.0.0")), Icon(graphics={Bitmap(extent={{-80,-60},
+annotation (version="0.0.8", uses(Modelica(version="4.0.0")), Icon(graphics={Bitmap(extent={{-80,-60},
             {80,60}}, fileName="modelica://FMI/Resources/Images/FMI_bare.svg")}),
     Documentation(info="<html>
 
@@ -37,7 +37,7 @@ annotation (version="0.0.7", uses(Modelica(version="4.0.0")), Icon(graphics={Bit
 
 <p>After <a href=\"https://docs.astral.sh/uv/getting-started/installation/\">installing uv</a> run
 
-<pre>uv tool install --reinstall https://github.com/modelica/modelica-fmi/releases/download/v0.0.7/modelica_fmi-0.0.7-py3-none-any.whl</pre>
+<pre>uv tool install --reinstall https://github.com/modelica/modelica-fmi/releases/download/v0.0.8/modelica_fmi-0.0.8-py3-none-any.whl</pre>
 
 to install the <code>modelica-fmi</code> command.</p>
 

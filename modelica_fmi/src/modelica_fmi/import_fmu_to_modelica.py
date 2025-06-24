@@ -226,9 +226,13 @@ def import_fmu_to_modelica(
         icon = f"modelica://{package}/Resources/FMUs/{hash}/model.png"
     elif model_description.fmiVersion.startswith("3."):
         if (unzipdir / "terminalsAndIcons" / "icon.svg").is_file():
-            icon = f"modelica://{package}/Resources/FMUs/{hash}/terminalsAndIcons/icon.svg"
+            icon = (
+                f"modelica://{package}/Resources/FMUs/{hash}/terminalsAndIcons/icon.svg"
+            )
         elif (unzipdir / "terminalsAndIcons" / "icon.png").is_file():
-            icon = f"modelica://{package}/Resources/FMUs/{hash}/terminalsAndIcons/icon.png"
+            icon = (
+                f"modelica://{package}/Resources/FMUs/{hash}/terminalsAndIcons/icon.png"
+            )
 
     class_text = template.render(
         hash=hash,
