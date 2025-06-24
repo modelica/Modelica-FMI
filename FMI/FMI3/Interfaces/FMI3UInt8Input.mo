@@ -5,13 +5,7 @@ connector FMI3UInt8Input    = input  FMI3UInt8 "'input FMI3UInt8' as connector" 
         points={{-100,100},{100,0},{-100,-100},{-100,100}},
         lineColor={255,127,0},
         fillColor={255,127,0},
-        fillPattern=FillPattern.Solid),
-    Text(
-      textColor={0,0,0},
-      extent={{140,-20},{140,20}},
-        textString="%name",
-        horizontalAlignment=TextAlignment.Left)},
-                                         coordinateSystem(
+        fillPattern=FillPattern.Solid)}, coordinateSystem(
       extent={{-100,-100},{100,100}},
       preserveAspectRatio=true,
       initialScale=0.2)),

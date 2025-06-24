@@ -6,12 +6,7 @@ connector FMI2RealInput = input FMI2Real "'input FMI2Real' as connector" annotat
       lineColor={0,0,127},
       fillColor={0,0,127},
       fillPattern=FillPattern.Solid,
-      points={{-100.0,100.0},{100.0,0.0},{-100.0,-100.0}}),
-    Text(
-      textColor={0,0,0},
-      extent={{140,-20},{140,20}},
-        textString="%name",
-        horizontalAlignment=TextAlignment.Left)},
+      points={{-100.0,100.0},{100.0,0.0},{-100.0,-100.0}})},
     coordinateSystem(extent={{-100.0,-100.0},{100.0,100.0}},
       preserveAspectRatio=true,
       initialScale=0.2)),

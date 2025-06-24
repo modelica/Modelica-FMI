@@ -150,25 +150,32 @@ def import_fmu_to_modelica(
         elif variable.causality == "output" and variable.type != "String":
             outputs.append(variable)
 
-    width = 1200
-    height = max(200, 100 * max(len(inputs), len(outputs)))
+    height = 160
 
-    x0 = -int(width / 2)
-    x1 = int(width / 2)
-    y0 = -int(height / 2)
-    y1 = int(height / 2)
+    x0, x1 = -100, 100
+    y0, y1 = -80, 80
 
     annotations = dict()
 
     if not hide_connectors:
         for i, variable in enumerate(inputs):
-            y = y1 - (i + 1) * (height / (1 + len(inputs)))
+            if len(inputs) == 1:
+                y = 0
+            elif len(inputs) == 2:
+                y = -50 if i == 0 else 50
+            else:
+                y = 0 if len(inputs) == 1 else y1 - i * (height / (len(inputs) - 1))
             annotations[variable.name] = (
                 f" annotation(Placement(transformation(extent={{ {{ {x0 - 40}, {y - 20} }}, {{ {x0}, {y + 20} }} }}), iconTransformation(extent={{ {{ {x0 - 40}, {y - 20} }}, {{ {x0}, {y + 20} }} }})))"
             )
 
         for i, variable in enumerate(outputs):
-            y = y1 - (i + 1) * (height / (1 + len(outputs)))
+            if len(outputs) == 1:
+                y = 0
+            elif len(outputs) == 2:
+                y = -50 if i == 0 else 50
+            else:
+                y = 0 if len(outputs) == 1 else y1 - i * (height / (len(outputs) - 1))
             annotations[variable.name] = (
                 f" annotation(Placement(transformation(extent={{ {{ {x1}, {y - 10} }}, {{ {x1 + 20}, {y + 10} }} }}), iconTransformation(extent={{ {{ {x1}, {y - 10} }}, {{ {x1 + 20}, {y + 10} }} }})))"
             )
@@ -213,6 +220,16 @@ def import_fmu_to_modelica(
 
     stop_time = getattr(model_description.defaultExperiment, "stopTime", 1)
 
+    icon = "modelica://FMI/Resources/Images/FMU_bare.svg"
+
+    if model_description.fmiVersion == "2.0" and (unzipdir / "model.png").is_file():
+        icon = f"modelica://FMI/Resources/FMUs/{hash}/model.png"
+    elif model_description.fmiVersion.startswith("3."):
+        if (unzipdir / "terminalsAndIcons" / "icon.svg").is_file():
+            icon = f"modelica://FMI/Resources/FMUs/{hash}/terminalsAndIcons/icon.svg"
+        elif (unzipdir / "terminalsAndIcons" / "icon.png").is_file():
+            icon = f"modelica://FMI/Resources/FMUs/{hash}/terminalsAndIcons/icon.png"
+
     class_text = template.render(
         hash=hash,
         libraryVersion=library_version,
@@ -224,6 +241,7 @@ def import_fmu_to_modelica(
         modelIdentifier=model_identifier,
         interfaceType=0 if interface_type == "ModelExchange" else 1,
         instantiationToken=model_description.guid,
+        icon=icon,
         nx=model_description.numberOfContinuousStates,
         nz=model_description.numberOfEventIndicators,
         parameters=parameters,

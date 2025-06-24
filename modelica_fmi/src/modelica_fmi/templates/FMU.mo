@@ -24,55 +24,44 @@ block @=modelName=@
     connector @= typeDefinition.name =@Input = input @= typeDefinition.name =@ "'input @= typeDefinition.name =@' as connector" annotation (
       defaultComponentName="u",
       Icon(graphics={Polygon(
-        points={{-100,100},{100,0},{-100,-100},{-100,100}},
-        lineColor={255,127,0},
-        fillColor={255,127,0},
-        fillPattern=FillPattern.Solid),
-    Text(
-      textColor={0,0,0},
-      extent={{140,-20},{140,20}},
-        textString="%name",
-        horizontalAlignment=TextAlignment.Left)},
-                                         coordinateSystem(
-      extent={{-100,-100},{100,100}},
-      preserveAspectRatio=true,
-      initialScale=0.2)),
+            points={{-100,100},{100,0},{-100,-100},{-100,100}},
+            lineColor={255,127,0},
+            fillColor={255,127,0},
+            fillPattern=FillPattern.Solid)}, coordinateSystem(
+          extent={{-100,-100},{100,100}},
+          preserveAspectRatio=true,
+          initialScale=0.2)),
       Diagram(coordinateSystem(
-      preserveAspectRatio=true,
-      initialScale=0.2,
-      extent={{-100,-100},{100,100}}), graphics={Polygon(
-        points={{0,50},{100,0},{0,-50},{0,50}},
-        lineColor={255,127,0},
-        fillColor={255,127,0},
-        fillPattern=FillPattern.Solid), Text(
-        extent={{-10,85},{-10,60}},
-        textColor={255,127,0},
-        textString="%name")}));
+          preserveAspectRatio=true,
+          initialScale=0.2,
+          extent={{-100,-100},{100,100}}), graphics={Polygon(
+            points={{0,50},{100,0},{0,-50},{0,50}},
+            lineColor={255,127,0},
+            fillColor={255,127,0},
+            fillPattern=FillPattern.Solid), Text(
+            extent={{-10,85},{-10,60}},
+            textColor={255,127,0},
+            textString="%name")}));
 
     connector @= typeDefinition.name =@Output = output @= typeDefinition.name =@ "'output @= typeDefinition.name =@' as connector" annotation (
       defaultComponentName="y",
       Icon(coordinateSystem(
-      preserveAspectRatio=true,
-      extent={{-100,-100},{100,100}}), graphics={Polygon(
-        points={{-100,100},{100,0},{-100,-100},{-100,100}},
-        lineColor={255,127,0},
-        fillColor={255,255,255},
-        fillPattern=FillPattern.Solid),
-    Text(
-      textColor={0,0,0},
-      extent={{-180,-40},{-180,40}},
-        textString="%name",
-        horizontalAlignment=TextAlignment.Right)}),
+          preserveAspectRatio=true,
+          extent={{-100,-100},{100,100}}), graphics={Polygon(
+            points={{-100,100},{100,0},{-100,-100},{-100,100}},
+            lineColor={255,127,0},
+            fillColor={255,255,255},
+            fillPattern=FillPattern.Solid)}),
       Diagram(coordinateSystem(
-      preserveAspectRatio=true,
-      extent={{-100,-100},{100,100}}), graphics={Polygon(
-        points={{-100,50},{0,0},{-100,-50},{-100,50}},
-        lineColor={255,127,0},
-        fillColor={255,255,255},
-        fillPattern=FillPattern.Solid), Text(
-        extent={{30,110},{30,60}},
-        textColor={255,127,0},
-        textString="%name")}));
+          preserveAspectRatio=true,
+          extent={{-100,-100},{100,100}}), graphics={Polygon(
+            points={{-100,50},{0,0},{-100,-50},{-100,50}},
+            lineColor={255,127,0},
+            fillColor={255,255,255},
+            fillPattern=FillPattern.Solid), Text(
+            extent={{30,110},{30,60}},
+            textColor={255,127,0},
+            textString="%name")}));
 
 @@ block types @@
 @@ endblock @@
@@ -97,15 +86,12 @@ block @=modelName=@
 @@ endblock @@
 
   annotation (
-    Icon(coordinateSystem(
+   Icon(coordinateSystem(
       preserveAspectRatio=false,
-      extent={{@=x0=@,@=y0=@}, {@=x1=@,@=y1=@}}),
-      graphics={
-        Text(extent={{@=x0=@,@=y1+10=@}, {@=x1=@,@=y1+50=@}}, lineColor={0,0,255}, textString="%name"),
-        Rectangle(extent={{@=x0=@,@=y0=@},{@=x1=@,@=y1=@}}, lineColor={95,95,95}, fillColor={255,255,255}, fillPattern=FillPattern.Solid)
-      }
+      extent={{-100,-100},{100,100}}),
+      graphics={Bitmap(extent={{-90,-90},{90,90}}, fileName="@=icon=@")}
     ),
-    Diagram(coordinateSystem(preserveAspectRatio=false, extent={{@=x0=@,@=y0=@}, {@=x1=@,@=y1=@}})),
+    Diagram(coordinateSystem(preserveAspectRatio=false, extent={{-100,-100},{100,100}})),
     experiment(StopTime=@=stopTime=@),
     uses(FMI(version="@=libraryVersion=@")),
     Documentation(info="<html>

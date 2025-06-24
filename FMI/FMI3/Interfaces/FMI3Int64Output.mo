@@ -8,12 +8,7 @@ connector FMI3Int64Output   = output FMI3Int64
         points={{-100,100},{100,0},{-100,-100},{-100,100}},
         lineColor={255,127,0},
         fillColor={255,255,255},
-        fillPattern=FillPattern.Solid),
-    Text(
-      textColor={0,0,0},
-      extent={{-180,-40},{-180,40}},
-        textString="%name",
-        horizontalAlignment=TextAlignment.Right)}),
+        fillPattern=FillPattern.Solid)}),
   Diagram(coordinateSystem(
       preserveAspectRatio=true,
       extent={{-100,-100},{100,100}}), graphics={Polygon(
