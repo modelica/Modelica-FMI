@@ -14,7 +14,8 @@ from modelica_fmi._lib import (
     numel,
     set_variables,
     name,
-    get_variables, get_initial_variable,
+    get_variables,
+    get_initial_variable,
 )
 
 

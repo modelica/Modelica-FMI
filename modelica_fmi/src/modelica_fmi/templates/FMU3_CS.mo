@@ -76,16 +76,7 @@ initial algorithm
 algorithm
 
   when {initial(), sample(startTime, communicationStepSize)} then
-
-@@ for variable in inputs @@
-@@ if not variable.dimensions @@
-    FMI3Set@=fmi_type(variable)=@(instance, valueReferences={@=variable.valueReference=@}, values=@@ if variable.type == 'Enumeration' @@Types.@=variable.declaredType.name=@ToInt64(@@ endif @@{pre(@=name(variable)=@)}@@ if variable.type == 'Enumeration' @@)@@ endif @@);
-@@ elif variable.dimensions|length == 1 @@
-    FMI3Set@=fmi_type(variable)=@(instance, valueReferences={@=variable.valueReference=@}, values=@@ if variable.type == 'Enumeration' @@Types.@=variable.declaredType.name=@ToInt64(@@ endif @@pre(@=name(variable)=@)@@ if variable.type == 'Enumeration' @@)@@ endif @@);
-@@ else @@
-    FMI3Set@=fmi_type(variable)=@Matrix(instance, valueReferences={@=variable.valueReference=@}, values=pre(@=name(variable)=@), nValues=@=numel(variable)=@);
-@@ endif @@
-@@ endfor @@
+@=-set_variables(inputs, indent=4, pre=True)=@
 
     if not initialized and not initial() then
       FMI3ExitInitializationMode(instance);
@@ -118,7 +109,7 @@ equation
 algorithm
 
   if initial() then
-@=set_variables(dependencies2(variable), indent=4)=@
+@=-set_variables(dependencies2(variable), indent=4)=@
 @=get_variables([variable], indent=4)=@
   else
     @=name(variable)=@ := outputVariables.@=name(variable)=@;

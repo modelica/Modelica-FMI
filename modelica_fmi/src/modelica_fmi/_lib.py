@@ -1,4 +1,5 @@
 """Functions for the Modelica code generation"""
+
 from math import prod
 from typing import Iterable
 
@@ -47,26 +48,36 @@ def fmi3_type(
         return f"{p}{variable.type}"
 
 
-def flatten(variable: ModelVariable) -> str:
+def flatten(variable: ModelVariable, pre: bool = False) -> str:
     """Convert an n-dimensional Modelica variable to a vector"""
+
+    variable_expr = name(variable)
+
+    if pre:
+        variable_expr = f"pre({variable_expr})"
+
     if not variable.dimensions:
-        return f"{{{variable.name}}}"
+        return f"{{{variable_expr}}}"
     elif len(variable.dimensions) == 1:
-        return name(variable)
+        return variable_expr
     else:
         s = shape(variable)
         expression = "cat(1"
         for i in np.ndindex(s[:-1]):
             i = map(lambda j: str(j + 1), i)
-            expression += f", {name(variable)}[" + ",".join(i) + ",:]"
+            expression += f", {variable_expr}[" + ",".join(i) + ",:]"
         return expression + ")"
 
 
-def get_variables(variables: Iterable[ModelVariable], indent: int = 2, prefix: str = "") -> str:
+def get_variables(
+    variables: Iterable[ModelVariable], indent: int = 2, prefix: str = ""
+) -> str:
     lines = []
     for variable in variables:
         if len(variable.dimensions) > 1:
-            raise Exception("Output variables with more than one dimension are not supported.")
+            raise Exception(
+                "Output variables with more than one dimension are not supported."
+            )
         line = f"{prefix}{name(variable)} := "
         if not variable.dimensions:
             line += "scalar("
@@ -80,16 +91,35 @@ def get_variables(variables: Iterable[ModelVariable], indent: int = 2, prefix: s
         lines.append(line + ";")
     return " " * indent + ("\n" + " " * indent).join(lines)
 
+
 def get_initial_variable(model_description: ModelDescription, variable: ModelVariable):
     indent = 4
     if len(variable.dimensions) > 1:
-        raise Exception("Output variables with more than one dimension are not supported.")
+        raise Exception(
+            "Output variables with more than one dimension are not supported."
+        )
     line = f"{name(variable)} = "
     if not variable.dimensions:
         line += "scalar("
     if variable.type == "Enumeration":
         line += f"Types.Int64To{variable.declaredType.name}("
-    deps = dependencies3(model_description, variable, ['Float32', 'Float64', 'Int8', 'UInt8', 'Int16', 'UInt16', 'Int32', 'UInt32', 'Int64', 'UInt64', 'Boolean'])
+    deps = dependencies3(
+        model_description,
+        variable,
+        [
+            "Float32",
+            "Float64",
+            "Int8",
+            "UInt8",
+            "Int16",
+            "UInt16",
+            "Int32",
+            "UInt32",
+            "Int64",
+            "UInt64",
+            "Boolean",
+        ],
+    )
     line += f"pure(FMI3GetInitial{fmi3_type(variable)}(instance, startTime, {deps}valueReference={variable.valueReference}, nValues={numel(variable)}))"
     if variable.type == "Enumeration":
         line += ")"
@@ -99,18 +129,22 @@ def get_initial_variable(model_description: ModelDescription, variable: ModelVar
     return " " * indent + line
 
 
-def set_variables(variables: Iterable[ModelVariable], indent: int = 2) -> str:
+def set_variables(
+    variables: Iterable[ModelVariable], indent: int = 2, pre: bool = False
+) -> str:
+    if not variables:
+        return ""
     lines = []
     for variable in variables:
-        line = f"FMI3Set{fmi3_type(variable)}"
+        line = " " * indent + f"FMI3Set{fmi3_type(variable)}"
         line += f"(instance, valueReferences={{{variable.valueReference}}}, values="
         if variable.type == "Enumeration":
             line += f"Types.{variable.declaredType.name}ToInt64("
-        line += flatten(variable)
+        line += flatten(variable, pre)
         if variable.type == "Enumeration":
             line += ")"
         lines.append(line + ");")
-    return " " * indent + ("\n" + " " * indent).join(lines)
+    return "\n" + "\n".join(lines)
 
 
 def subscripts(variables: dict[int, ModelVariable], variable: ModelVariable):

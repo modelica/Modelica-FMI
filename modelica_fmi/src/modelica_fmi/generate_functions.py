@@ -3,7 +3,9 @@ from pathlib import Path
 import jinja2
 
 
-loader = jinja2.FileSystemLoader(searchpath=Path(__file__).parent / "templates" / "functions")
+loader = jinja2.FileSystemLoader(
+    searchpath=Path(__file__).parent / "templates" / "functions"
+)
 
 environment = jinja2.Environment(
     loader=loader,
