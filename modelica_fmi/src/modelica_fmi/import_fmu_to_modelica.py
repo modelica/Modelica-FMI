@@ -14,6 +14,7 @@ from modelica_fmi._lib import (
     numel,
     set_variables,
     name,
+    get_variables,
 )
 
 
@@ -102,7 +103,7 @@ def import_fmu_to_modelica(
     fmiMajorVersion = int(model_description.fmiVersion[0])
 
     template = environment.get_template(
-        f"FMI{fmiMajorVersion}_{'Basic' if basic else ''}{IT}.mo"
+        f"FMU{fmiMajorVersion}_{'Basic' if basic else ''}{IT}.mo"
     )
 
     parameters = []
@@ -213,7 +214,8 @@ def import_fmu_to_modelica(
             "dependencies3": lambda *args, **kwargs: dependencies3(
                 model_description, variables, *args, **kwargs
             ),
-            "numel": lambda *args, **kwargs: numel(variables, *args, **kwargs),
+            "numel": numel,
+            "get_variables": get_variables,
             "set_variables": set_variables,
         }
     )

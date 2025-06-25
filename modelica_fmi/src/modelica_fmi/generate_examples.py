@@ -64,6 +64,7 @@ end FMI{fmi_version};
                 fmu_path=dist / f"{fmi_version}.0" / f"{model}.fmu",
                 model_path=examples_dir / f"FMI{fmi_version}" / f"{model}.mo",
                 interface_type="CoSimulation",
+                basic=fmi_version == 3
             )
 
 

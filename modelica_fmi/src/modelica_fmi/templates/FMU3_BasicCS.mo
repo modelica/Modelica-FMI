@@ -1,9 +1,4 @@
-@@ extends "FMU.mo" @@
-@@ block imports @@
-  import FMI.FMI3.Types.*;
-  import FMI.FMI3.Interfaces.*;
-  import FMI.FMI3.Functions.*;
-@@ endblock @@
+@@ extends "FMU3.mo" @@
 @@ block inputs @@
 @@ for variable in inputs @@
 
@@ -31,7 +26,7 @@ initial algorithm
 
   FMI.Internal.Logging.logMessages(instance);
 
-@= set_variables(parameters) =@
+@=set_variables(parameters)=@
 
   startTime := time;
 
@@ -48,21 +43,13 @@ algorithm
 
   when sample(startTime, communicationStepSize) then
 
-@= set_variables(inputs, indent=4) =@
+@=set_variables(inputs, indent=4)=@
 
     FMI3DoStep(instance,
-        currentCommunicationPoint=time - communicationStepSize,
+        currentCommunicationPoint=time,
         communicationStepSize=communicationStepSize);
 
-@@ for variable in outputs @@
-@@ if not variable.dimensions @@
-    @=name(variable)=@ := scalar(@@ if variable.type == 'Enumeration' @@Types.Int64To@=variable.declaredType.name=@(@@ endif @@FMI3Get@=fmi_type(variable)=@(instance, valueReference=@=variable.valueReference=@, nValues=1)@@ if variable.type == 'Enumeration' @@)@@ endif @@);
-@@ elif variable.dimensions|length == 1 @@
-    @=name(variable)=@ := @@ if variable.type == 'Enumeration' @@Types.Int64To@=variable.declaredType.name=@(@@ endif @@FMI3Get@=fmi_type(variable)=@(instance, valueReference=@=variable.valueReference=@, nValues=@=numel(variable)=@)@@ if variable.type == 'Enumeration' @@)@@ endif @@;
-@@ else @@
-    @=name(variable)=@ := FMI3Get@=fmi_type(variable)=@Matrix(instance, @=variable.valueReference=@, m=size(@=name(variable)=@, 1), n=size(@=name(variable)=@, 2), nValues=@=numel(variable)=@);
-@@ endif @@
-@@ endfor @@
+@=get_variables(outputs, indent=4)=@
 
   end when;
 @@ endblock @@

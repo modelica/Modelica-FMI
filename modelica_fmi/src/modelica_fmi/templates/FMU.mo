@@ -8,8 +8,8 @@ block @=modelName=@
 
 @@ block imports @@
 @@ endblock @@
-
 @@ if enumerationTypeDefinitions @@
+
   package Types
     extends Modelica.Icons.TypesPackage;
 @@ for typeDefinition in enumerationTypeDefinitions @@

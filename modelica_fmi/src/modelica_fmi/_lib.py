@@ -1,6 +1,8 @@
 """Functions for the Modelica code generation"""
-
+from math import prod
 from typing import Iterable
+
+import numpy as np
 from fmpy.model_description import ModelVariable, SimpleType, ModelDescription, Item
 
 
@@ -45,24 +47,51 @@ def fmi3_type(
         return f"{p}{variable.type}"
 
 
+def flatten(variable: ModelVariable) -> str:
+    """Convert an n-dimensional Modelica variable to a vector"""
+    if not variable.dimensions:
+        return f"{{{variable.name}}}"
+    elif len(variable.dimensions) == 1:
+        return name(variable)
+    else:
+        s = shape(variable)
+        expression = "cat(1"
+        for i in np.ndindex(s[:-1]):
+            i = map(lambda j: str(j + 1), i)
+            expression += f", {name(variable)}[" + ",".join(i) + ",:]"
+        return expression + ")"
+
+
+def get_variables(variables: Iterable[ModelVariable], indent: int = 2) -> str:
+    lines = []
+    for variable in variables:
+        if len(variable.dimensions) > 1:
+            raise Exception("Output variables with more than one dimension are not supported.")
+        line = f"{name(variable)} := "
+        if not variable.dimensions:
+            line += "scalar("
+        if variable.type == "Enumeration":
+            line += f"Types.Int64To{variable.declaredType.name}("
+        line += f"FMI3Get{fmi3_type(variable)}(instance, valueReference={variable.valueReference}, nValues={numel(variable)})"
+        if variable.type == "Enumeration":
+            line += ")"
+        if not variable.dimensions:
+            line += ")"
+        lines.append(line + ";")
+    return " " * indent + ("\n" + " " * indent).join(lines)
+
+
 def set_variables(variables: Iterable[ModelVariable], indent: int = 2) -> str:
     lines = []
     for variable in variables:
         line = f"FMI3Set{fmi3_type(variable)}"
-        if len(variable.dimensions) == 2:
-            line += "Matrix"
         line += f"(instance, valueReferences={{{variable.valueReference}}}, values="
         if variable.type == "Enumeration":
             line += f"Types.{variable.declaredType.name}ToInt64("
-        if not variable.dimensions:
-            line += "{"
-        line += name(variable)
-        if not variable.dimensions:
-            line += "}"
+        line += flatten(variable)
         if variable.type == "Enumeration":
             line += ")"
-        line += ");"
-        lines.append(line)
+        lines.append(line + ");")
     return " " * indent + ("\n" + " " * indent).join(lines)
 
 
@@ -203,28 +232,17 @@ def dependencies2(model_description: ModelDescription, variable):
     return unknown.dependencies
 
 
-def numel(variables: dict[int, ModelVariable], variable: ModelVariable):
-    n = 1
-    for dimension in variable.dimensions:
-        n *= int(
-            dimension.start
-            if dimension.start
-            else variables[dimension.valueReference].start
-        )
-    return n
+def numel(variable: ModelVariable) -> int:
+    if not variable.dimensions:
+        return 1
+    else:
+        return prod(shape(variable))
 
 
-def shape(variables: dict[int, ModelVariable], variable: ModelVariable):
-    s = []
-    for dimension in variable.dimensions:
-        s.append(
-            int(
-                dimension.start
-                if dimension.start
-                else variables[dimension.valueReference].start
-            )
-        )
-    return tuple(s)
+def shape(variable: ModelVariable) -> tuple[int, ...]:
+    return tuple(
+        int(d.start if d.start else d.variable.start) for d in variable.dimensions
+    )
 
 
 def dependencies3(
@@ -256,12 +274,12 @@ def dependencies3(
                 continue
 
             vrs.append(str(dependency.valueReference))
-            s = shape(variables, dependency)
+            s = shape(dependency)
 
             if not s:
                 values.append(name(dependency))
             elif len(s) == 1:
-                for i in range(1, numel(variables, dependency) + 1):
+                for i in range(1, numel(dependency) + 1):
                     values.append(f"{name(dependency)}[{i}]")
             elif len(s) == 2:
                 for i in range(1, s[0] + 1):
