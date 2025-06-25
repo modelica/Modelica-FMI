@@ -14,7 +14,7 @@ from modelica_fmi._lib import (
     numel,
     set_variables,
     name,
-    get_variables,
+    get_variables, get_initial_variable,
 )
 
 
@@ -212,11 +212,14 @@ def import_fmu_to_modelica(
                 model_description, *args, **kwargs
             ),
             "dependencies3": lambda *args, **kwargs: dependencies3(
-                model_description, variables, *args, **kwargs
+                model_description, *args, **kwargs
             ),
             "numel": numel,
             "get_variables": get_variables,
             "set_variables": set_variables,
+            "get_initial_variable": lambda *args, **kwargs: get_initial_variable(
+                model_description, *args, **kwargs
+            ),
         }
     )
 

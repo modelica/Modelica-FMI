@@ -108,13 +108,7 @@ equation
 @@ for variable in continuousOutputs @@
 
   if initial() then
-@@ if not variable.dimensions @@
-    @=name(variable)=@ = scalar(pure(FMI3GetInitial@=fmi_type(variable)=@(instance, startTime, @=dependencies3(variable, ['Float32', 'Float64', 'Int8', 'UInt8', 'Int16', 'UInt16', 'Int32', 'UInt32', 'Int64', 'UInt64', 'Boolean'])=@valueReference=@=variable.valueReference=@, nValues=1)));
-@@ elif variable.dimensions|length == 1 @@
-    @=name(variable)=@ = pure(FMI3GetInitial@=fmi_type(variable)=@(instance, startTime, @=dependencies3(variable, ['Float32', 'Float64', 'Int8', 'UInt8', 'Int16', 'UInt16', 'Int32', 'UInt32', 'Int64', 'UInt64', 'Boolean'])=@valueReference=@=variable.valueReference=@, nValues=size(@=name(variable)=@, 1)));
-@@ else @@
-    @=name(variable)=@ = pure(FMI3GetInitial@=fmi_type(variable)=@Matrix(instance, startTime, @=dependencies3(variable, ['Float32', 'Float64', 'Int8', 'UInt8', 'Int16', 'UInt16', 'Int32', 'UInt32', 'Int64', 'UInt64', 'Boolean'])=@valueReference=@=variable.valueReference=@, m=size(@=name(variable)=@, 1), n=size(@=name(variable)=@, 2), nValues=product(size(@=name(variable)=@))));
-@@ endif @@
+@=get_initial_variable(variable)=@
   else
     @=name(variable)=@ = outputVariables.@=name(variable)=@;
   end if;

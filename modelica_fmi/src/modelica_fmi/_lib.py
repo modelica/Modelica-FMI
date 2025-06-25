@@ -80,6 +80,24 @@ def get_variables(variables: Iterable[ModelVariable], indent: int = 2, prefix: s
         lines.append(line + ";")
     return " " * indent + ("\n" + " " * indent).join(lines)
 
+def get_initial_variable(model_description: ModelDescription, variable: ModelVariable):
+    indent = 4
+    if len(variable.dimensions) > 1:
+        raise Exception("Output variables with more than one dimension are not supported.")
+    line = f"{name(variable)} = "
+    if not variable.dimensions:
+        line += "scalar("
+    if variable.type == "Enumeration":
+        line += f"Types.Int64To{variable.declaredType.name}("
+    deps = dependencies3(model_description, variable, ['Float32', 'Float64', 'Int8', 'UInt8', 'Int16', 'UInt16', 'Int32', 'UInt32', 'Int64', 'UInt64', 'Boolean'])
+    line += f"pure(FMI3GetInitial{fmi3_type(variable)}(instance, startTime, {deps}valueReference={variable.valueReference}, nValues={numel(variable)}))"
+    if variable.type == "Enumeration":
+        line += ")"
+    if not variable.dimensions:
+        line += ")"
+    line += ";"
+    return " " * indent + line
+
 
 def set_variables(variables: Iterable[ModelVariable], indent: int = 2) -> str:
     lines = []
@@ -247,7 +265,6 @@ def shape(variable: ModelVariable) -> tuple[int, ...]:
 
 def dependencies3(
     model_description: ModelDescription,
-    variables: dict[int, ModelVariable],
     variable: ModelVariable,
     types: list[str],
 ):
