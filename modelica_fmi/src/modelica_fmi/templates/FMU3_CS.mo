@@ -99,15 +99,7 @@ algorithm
     end if;
 
     if not initial() then
-@@ for variable in outputs @@
-@@ if not variable.dimensions @@
-      outputVariables.@=name(variable)=@ := scalar(@@ if variable.type == 'Enumeration' @@Types.Int64To@=variable.declaredType.name=@(@@ endif @@FMI3Get@=fmi_type(variable)=@(instance, valueReference=@=variable.valueReference=@, nValues=1)@@ if variable.type == 'Enumeration' @@)@@ endif @@);
-@@ elif variable.dimensions|length == 1 @@
-      outputVariables.@=name(variable)=@ := @@ if variable.type == 'Enumeration' @@Types.Int64To@=variable.declaredType.name=@(@@ endif @@FMI3Get@=fmi_type(variable)=@(instance, valueReference=@=variable.valueReference=@, nValues=@=numel(variable)=@)@@ if variable.type == 'Enumeration' @@)@@ endif @@;
-@@ else @@
-      outputVariables.@=name(variable)=@ := FMI3Get@=fmi_type(variable)=@Matrix(instance, @=variable.valueReference=@, m=size(@=name(variable)=@, 1), n=size(@=name(variable)=@, 2), nValues=@=numel(variable)=@);
-@@ endif @@
-@@ endfor @@
+@=get_variables(outputs, indent=6, prefix="outputVariables.")=@
     end if;
 
   end when;

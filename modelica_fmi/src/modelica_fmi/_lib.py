@@ -62,12 +62,12 @@ def flatten(variable: ModelVariable) -> str:
         return expression + ")"
 
 
-def get_variables(variables: Iterable[ModelVariable], indent: int = 2) -> str:
+def get_variables(variables: Iterable[ModelVariable], indent: int = 2, prefix: str = "") -> str:
     lines = []
     for variable in variables:
         if len(variable.dimensions) > 1:
             raise Exception("Output variables with more than one dimension are not supported.")
-        line = f"{name(variable)} := "
+        line = f"{prefix}{name(variable)} := "
         if not variable.dimensions:
             line += "scalar("
         if variable.type == "Enumeration":
