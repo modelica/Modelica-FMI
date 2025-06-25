@@ -132,22 +132,8 @@ equation
 algorithm
 
   if initial() then
-@@ for dependency in dependencies2(variable) @@
-@@ if not variable.dimensions @@
-    FMI3Set@=fmi_type(dependency)=@(instance, {@=dependency.valueReference=@}, @@ if variable.type == 'Enumeration' @@Types.@= variable.declaredType.name =@ToInt64(@@ endif @@{@=name(dependency)=@}@@ if variable.type == 'Enumeration' @@)@@ endif @@);
-@@ elif variable.dimensions|length == 1 @@
-    FMI3Set@=fmi_type(dependency)=@(instance, {@=dependency.valueReference=@}, @=name(dependency)=@));
-@@ else @@
-    FMI3Set@=fmi_type(dependency)=@Matrix(instance, {@=dependency.valueReference=@}, @=name(dependency)=@, product(size(@=name(dependency)=@)));
-@@ endif @@
-@@ endfor @@
-@@ if not variable.dimensions @@
-    @=name(variable)=@ := scalar(@@ if variable.type == 'Enumeration' @@Types.Int64To@= variable.declaredType.name =@(@@ endif @@FMI3Get@=fmi_type(variable)=@(instance, @=variable.valueReference=@, 1)@@ if variable.type == 'Enumeration' @@)@@ endif @@);
-@@ elif variable.dimensions|length == 1 @@
-    @=name(variable)=@ := @@ if variable.type == 'Enumeration' @@Types.Int64To@= variable.declaredType.name =@(@@ endif @@FMI3Get@=fmi_type(variable)=@(instance, @=variable.valueReference=@, @=numel(variable)=@)@@ if variable.type == 'Enumeration' @@)@@ endif @@;
-@@ else @@
-    @=name(variable)=@ := FMI3Get@=fmi_type(variable)=@Matrix(instance, @=variable.valueReference=@, size(@=name(variable)=@, 1), size(@=name(variable)=@, 2), product(size(@=name(variable)=@)));
-@@ endif @@
+@=set_variables(dependencies2(variable), indent=4)=@
+@=get_variables([variable], indent=4)=@
   else
     @=name(variable)=@ := outputVariables.@=name(variable)=@;
   end if;

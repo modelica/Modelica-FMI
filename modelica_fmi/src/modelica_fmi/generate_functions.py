@@ -3,7 +3,7 @@ from pathlib import Path
 import jinja2
 
 
-loader = jinja2.FileSystemLoader(searchpath=Path(__file__).parent / "templates")
+loader = jinja2.FileSystemLoader(searchpath=Path(__file__).parent / "templates" / "functions")
 
 environment = jinja2.Environment(
     loader=loader,
@@ -41,7 +41,7 @@ for variable_type, prefix in product(
             with open(package_order_file, "a") as f:
                 f.write(function_name + "\n")
 
-for variable_type, (prefix, suffix) in product(
+for variable_type, prefix in product(
     [
         "Float32",
         "Float64",
@@ -56,17 +56,17 @@ for variable_type, (prefix, suffix) in product(
         "Boolean",
         "String",
     ],
-    [("Get", ""), ("Set", ""), ("Get", "Matrix"), ("Set", "Matrix")],
+    ["Get", "Set"],
 ):
     for package, level in [
         (library_dir / "FMI3" / "Functions", ""),
         (library_dir / "Internal" / "FMI3", "Internal"),
     ]:
-        template = environment.get_template(f"FMI3_{level}{prefix}{suffix}.mo")
+        template = environment.get_template(f"FMI3_{level}{prefix}.mo")
 
         class_text = template.render(variable_type=variable_type)
 
-        function_name = f"FMI3{prefix}{variable_type}{suffix}"
+        function_name = f"FMI3{prefix}{variable_type}"
 
         with open(package / f"{function_name}.mo", "w") as f:
             f.write(class_text)
