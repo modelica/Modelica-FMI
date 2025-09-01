@@ -1,7 +1,5 @@
-from PySide6.QtWidgets import QDialog, QFileDialog, QMessageBox
-from PySide6.QtCore import QSettings
+from PySide6.QtWidgets import QDialog, QFileDialog
 from modelica_fmi.gui.generated.ImportDialog import Ui_ImportDialog
-from modelica_fmi.import_fmu_to_modelica import import_fmu_to_modelica
 
 
 class ImportDialog(QDialog):
@@ -32,18 +30,3 @@ class ImportDialog(QDialog):
         )
         if filename:
             self.ui.modelPathLineEdit.setText(filename)
-
-    def importFMU(self):
-        settings = QSettings()
-        settings.setValue("fmuPath", self.ui.fmuPathLineEdit.text())
-        settings.setValue("modelPath", self.ui.modelPathLineEdit.text())
-
-        try:
-            import_fmu_to_modelica(
-                fmu_path=self.ui.fmuPathLineEdit.text(),
-                model_path=self.ui.modelPathLineEdit.text(),
-                basic=self.ui.basicCheckBox.isChecked(),
-                hide_connectors=self.ui.hideConnectorsCheckBox.isChecked(),
-            )
-        except Exception as ex:
-            QMessageBox.critical(self, "Failed to import FMU", str(ex))
