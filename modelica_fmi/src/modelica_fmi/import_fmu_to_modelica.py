@@ -51,6 +51,9 @@ def import_fmu_to_modelica(
 
     model_description = read_model_description(fmu_path)
 
+    if model_description.fmiVersion == "1.0":
+        raise FMUImportError(f"FMI 1.0 is not supported.")
+
     if (
         model_description.defaultExperiment is not None
         and model_description.defaultExperiment.stepSize is not None
