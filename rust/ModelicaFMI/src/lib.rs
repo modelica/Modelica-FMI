@@ -1,11 +1,12 @@
 #![allow(non_camel_case_types, non_snake_case, non_upper_case_globals, unused)]
-use std::{ffi::{c_char, c_void}, path::Path};
+use std::{ffi::{c_char, c_void}, path::Path, sync::{Arc, Mutex}};
 use fmi::fmi2::FMU2;
 use fmi::SHARED_LIBRARY_EXTENSION;
+use fmi::fmi2::types::{fmi2OK, fmi2Warning, fmi2Error};
 
 struct FMUInstance<'a> {
     fmu: Option<FMU2<'a>>,
-    errorMessage: Vec<u8>,
+    errorMessage: Arc<Mutex<Vec<u8>>>,
 }
 
 #[unsafe(no_mangle)]
@@ -13,7 +14,7 @@ pub extern "C" fn FMU_Create() -> *mut c_void {
 
     let instance = FMUInstance {
         fmu: None,
-        errorMessage: Vec::new(),
+        errorMessage: Arc::new(Mutex::new(Vec::new())),
     };
 
     Box::into_raw(Box::new(instance)) as *mut c_void
@@ -64,8 +65,14 @@ pub extern "C" fn FMU_Load(
         println!("[FMICall][{:?}] {}", status, message);
     };
 
-    let log_message = |status: &fmi::types::fmiStatus, category: &str, message: &str| {
-        println!("[Message][{:?}][{}] {}", status, category, message);
+    let error_msg = instance.errorMessage.clone();
+
+    let log_message = move |status: &fmi::types::fmiStatus, category: &str, message: &str| {
+        // println!("[Message][{:?}][{}] {}", status, category, message);
+        // append message to instance.errorMessage (thread-safe)
+        let full_message = format!("[{:?}][{}] {}\0", status, category, message);
+        let mut guard = error_msg.lock().unwrap();
+        guard.extend_from_slice(full_message.as_bytes());
     };
 
     let mut fmu = FMU2::new(
@@ -102,15 +109,11 @@ pub extern "C" fn FMU_getErrorMessage(instance: *mut c_void) -> *const c_char {
 
     let instance = unsafe { &mut *(instance as *mut FMUInstance) };
 
-    if instance.errorMessage.is_empty() {
+    let guard = instance.errorMessage.lock().unwrap();
+    if guard.is_empty() {
         "\0" as *const str as *const c_char
     } else {
-        instance.errorMessage.as_ptr() as *const c_char
-        // let message = instance.errorMessages.remove(0);
-        // let c_string = std::ffi::CString::new(message).unwrap();
-        // let ptr = c_string.as_ptr();
-        // std::mem::forget(c_string); // Prevent deallocation
-        // return ptr;
+        guard.as_ptr() as *const c_char
     }
 }
 
@@ -185,9 +188,13 @@ pub extern "C" fn FMU_FMI2SetupExperiment(instance: *mut c_void,
         Some(stopTime)
     } else {
         None
+
     };
 
-    fmu.setupExperiment(tolerance, startTime, stopTime);
+    if !matches!(fmu.setupExperiment(tolerance, 10.0, stopTime), fmi2OK | fmi2Warning) {
+        let mut guard = instance.errorMessage.lock().unwrap();
+        guard.extend_from_slice(b"Error in setupExperiment\0");
+    }
 }
 
 #[unsafe(no_mangle)]
@@ -205,7 +212,7 @@ pub extern "C" fn FMU_FMI2ExitInitializationMode(instance: *mut c_void) {
     let instance = unsafe { &mut *(instance as *mut FMUInstance) };
     let fmu = instance.fmu.as_mut().unwrap();
 
-    // fmu.exitInitializationMode();
+    fmu.exitInitializationMode();
 }
 
 /***************************************************
@@ -243,5 +250,8 @@ pub extern "C" fn FMU_FMI2DoStep(instance: *mut c_void,
 
     fmu.doStep(currentCommunicationPoint, communicationStepSize, noSetFMUStatePriorToCurrentPoint);
 
-    instance.errorMessage.extend_from_slice(b"my error_message\0");
+    // if !matches!(fmu.doStep(currentCommunicationPoint, communicationStepSize, noSetFMUStatePriorToCurrentPoint), fmi2OK | fmi2Warning) {
+    //     let mut guard = instance.errorMessage.lock().unwrap();
+    //     guard.extend_from_slice(b"Error in doStep\0");
+    // }
 }
