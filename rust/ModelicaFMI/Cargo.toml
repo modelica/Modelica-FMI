@@ -8,6 +8,7 @@ crate-type = ["cdylib"]
 
 [dependencies]
 fmi = { path = "../fmi" }
+url = "2"
 
 [build-dependencies]
 static_vcruntime = "3.0"
