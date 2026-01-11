@@ -28,6 +28,21 @@ macro_rules! get_instance_mut {
     }};
 }
 
+macro_rules! get_fmu {
+    ($instance:expr) => {{
+        match $instance.fmu.as_ref() {
+        Some(fmu) => fmu,
+        None => {
+            let mut guard = $instance.errorMessage.lock().unwrap();
+            if !guard.is_empty() {   
+                guard.extend_from_slice(b"FMU is not instantiated.\0");
+            }
+            return
+        },
+        }
+    }};
+}
+
 // set an error message if it has not been set yet by the FMU
 macro_rules! call {
     ($instance:expr, $status:expr) => {
@@ -83,7 +98,6 @@ pub extern "C" fn FMU_Load(
     let modelIdentifier = unsafe { std::ffi::CStr::from_ptr(modelIdentifier) };
     let modelIdentifier = modelIdentifier.to_str().unwrap();
 
-    // let path = Path::new(r"E:\WS\Modelica-FMI\FMI\Resources\FMUs\1604856\binaries\win64\BouncingBall.dll");
     let share_library_filename = format!("{}{}", modelIdentifier, SHARED_LIBRARY_EXTENSION);
     let path = unzipdir.join("binaries").join("win64").join(share_library_filename);
 
@@ -173,8 +187,8 @@ Common Functions
 
 #[unsafe(no_mangle)]
 pub extern "C" fn FMU_FMI2GetReal(instance: *mut c_void, vr: i32, value: *mut f64) {
-    let instance = unsafe { &mut *(instance as *mut FMUInstance) };
-    let fmu = instance.fmu.as_mut().unwrap();
+    let instance = get_instance!(instance);
+    let fmu = get_fmu!(instance);
     
     let valueReferences = [vr as u32];
     let values = unsafe { std::slice::from_raw_parts_mut(value as *mut f64, 1) };
@@ -184,8 +198,8 @@ pub extern "C" fn FMU_FMI2GetReal(instance: *mut c_void, vr: i32, value: *mut f6
 
 #[unsafe(no_mangle)]
 pub extern "C" fn FMU_FMI2GetInteger(instance: *mut c_void, vr: i32, value: *mut i32) {
-    let instance = unsafe { &mut *(instance as *mut FMUInstance) };
-    let fmu = instance.fmu.as_mut().unwrap();
+    let instance = get_instance!(instance);
+    let fmu = get_fmu!(instance);
     
     let valueReferences = [vr as u32];
     let values = unsafe { std::slice::from_raw_parts_mut(value as *mut i32, 1) };
@@ -195,8 +209,8 @@ pub extern "C" fn FMU_FMI2GetInteger(instance: *mut c_void, vr: i32, value: *mut
 
 #[unsafe(no_mangle)]
 pub extern "C" fn FMU_FMI2GetBoolean(instance: *mut c_void, vr: i32, value: *mut i32) {
-    let instance = unsafe { &mut *(instance as *mut FMUInstance) };
-    let fmu = instance.fmu.as_mut().unwrap();
+    let instance = get_instance!(instance);
+    let fmu = get_fmu!(instance);
     
     let valueReferences = [vr as u32];
     let values = unsafe { std::slice::from_raw_parts_mut(value as *mut i32, 1) };
@@ -206,8 +220,8 @@ pub extern "C" fn FMU_FMI2GetBoolean(instance: *mut c_void, vr: i32, value: *mut
 
 #[unsafe(no_mangle)]
 pub extern "C" fn FMU_FMI2SetReal(instance: *mut c_void, vr: *const i32, nvr: i32, value: *const f64) {
-    let instance = unsafe { &mut *(instance as *mut FMUInstance) };
-    let fmu = instance.fmu.as_mut().unwrap();
+    let instance = get_instance!(instance);
+    let fmu = get_fmu!(instance);
     
     let valueReferences = unsafe { std::slice::from_raw_parts(vr as *const u32, nvr as usize) };
     let values = unsafe { std::slice::from_raw_parts(value as *const f64, nvr as usize) };
@@ -217,8 +231,8 @@ pub extern "C" fn FMU_FMI2SetReal(instance: *mut c_void, vr: *const i32, nvr: i3
 
 #[unsafe(no_mangle)]
 pub extern "C" fn FMU_FMI2SetInteger(instance: *mut c_void, vr: *const i32, nvr: i32, value: *const i32) {
-    let instance = unsafe { &mut *(instance as *mut FMUInstance) };
-    let fmu = instance.fmu.as_mut().unwrap();
+    let instance = get_instance!(instance);
+    let fmu = get_fmu!(instance);
     
     let valueReferences = unsafe { std::slice::from_raw_parts(vr as *const u32, nvr as usize) };
     let values = unsafe { std::slice::from_raw_parts(value as *const i32, nvr as usize) };
@@ -228,8 +242,8 @@ pub extern "C" fn FMU_FMI2SetInteger(instance: *mut c_void, vr: *const i32, nvr:
 
 #[unsafe(no_mangle)]
 pub extern "C" fn FMU_FMI2SetBoolean(instance: *mut c_void, vr: *const i32, nvr: i32, value: *const i32) {
-    let instance = unsafe { &mut *(instance as *mut FMUInstance) };
-    let fmu = instance.fmu.as_mut().unwrap();
+    let instance = get_instance!(instance);
+    let fmu = get_fmu!(instance);
     
     let valueReferences = unsafe { std::slice::from_raw_parts(vr as *const u32, nvr as usize) };
     let values = unsafe { std::slice::from_raw_parts(value as *const i32, nvr as usize) };
@@ -239,8 +253,8 @@ pub extern "C" fn FMU_FMI2SetBoolean(instance: *mut c_void, vr: *const i32, nvr:
 
 #[unsafe(no_mangle)]
 pub extern "C" fn FMU_FMI2SetString(instance: *mut c_void, vr: *const i32, nvr: i32, value: *const *const c_char) {
-    let instance = unsafe { &mut *(instance as *mut FMUInstance) };
-    let fmu = instance.fmu.as_mut().unwrap();
+    let instance = get_instance!(instance);
+    let fmu = get_fmu!(instance);
     
     let valueReferences = unsafe { std::slice::from_raw_parts(vr as *const u32, nvr as usize) };
     let values = unsafe { std::slice::from_raw_parts(value, nvr as usize) };
@@ -264,8 +278,7 @@ pub extern "C" fn FMU_FMI2SetupExperiment(instance: *mut c_void,
     stopTime: f64) {
 
     let instance = get_instance!(instance);
-
-    let fmu = instance.fmu.as_ref().unwrap();
+    let fmu = get_fmu!(instance);
 
     let tolerance = if toleranceDefined != 0 {
         Some(tolerance)
@@ -285,14 +298,14 @@ pub extern "C" fn FMU_FMI2SetupExperiment(instance: *mut c_void,
 #[unsafe(no_mangle)]
 pub extern "C" fn FMU_FMI2EnterInitializationMode(instance: *mut c_void) {
     let instance = get_instance!(instance);
-    let fmu = instance.fmu.as_ref().unwrap();
+    let fmu = get_fmu!(instance);
     call!(instance, fmu.enterInitializationMode());
 }
 
 #[unsafe(no_mangle)]
 pub extern "C" fn FMU_FMI2ExitInitializationMode(instance: *mut c_void) {
     let instance = get_instance!(instance);
-    let fmu = instance.fmu.as_ref().unwrap();
+    let fmu = get_fmu!(instance);
     call!(instance, fmu.exitInitializationMode());
 }
 
@@ -340,7 +353,6 @@ pub extern "C" fn FMU_FMI2GetContinuousStates(instance: *mut c_void, x: *mut f64
     todo!()
 }
 
-
 /***************************************************
 Co-Simulation
 ****************************************************/
@@ -350,7 +362,9 @@ pub extern "C" fn FMU_FMI2DoStep(instance: *mut c_void,
     currentCommunicationPoint: f64,
     communicationStepSize: f64,
     noSetFMUStatePriorToCurrentPoint: i32) {
+
     let instance = get_instance!(instance);
-    let fmu = instance.fmu.as_ref().unwrap();
+    let fmu = get_fmu!(instance);
+
     call!(instance, fmu.doStep(currentCommunicationPoint, communicationStepSize, noSetFMUStatePriorToCurrentPoint));
 }
