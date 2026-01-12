@@ -474,13 +474,13 @@ impl<'lib> FMU2<'lib> {
 
         if let Some(cb) = &self.logFMICall {
             let url = if let Some(url) = resourceUrl {
-                url.to_string()
+                format!("\"{}\"", url.to_string())
             } else {
-                String::from("None")
+                "None".to_string()
             };
 
             let message = format!(
-                "fmi2Instantiate(instanceName=\"{}\", fmuType={:?}, fmuGUID=\"{}\", fmuResourceLocation={:?}, visible={}, loggingOn={})",
+                "fmi2Instantiate(instanceName={:?}, fmuType={:?}, fmuGUID={:?}, fmuResourceLocation={}, visible={}, loggingOn={})",
                 instanceName, interfaceType, guid, url, visible, loggingOn
             );
 
