@@ -1,10 +1,11 @@
 #![allow(non_camel_case_types, non_snake_case, non_upper_case_globals, unused)]
-use std::{ffi::{CStr, c_char, c_void}, path::Path, sync::{Arc, Mutex}};
+use std::{ffi::{CStr, c_char, c_void}, io::Write, path::Path, sync::{Arc, Mutex}};
 use fmi::fmi2::FMU2;
 use fmi::SHARED_LIBRARY_EXTENSION;
 use fmi::fmi2::types::{fmi2OK, fmi2Warning, fmi2Error, fmi2Type::fmi2CoSimulation};
 use url::Url;
 use fmi::types::fmiStatus::{fmiOK, fmiWarning, fmiError};
+use std::fs::File;
 
 struct FMUInstance<'a> {
     fmu: Option<FMU2<'a>>,
@@ -127,9 +128,27 @@ pub extern "C" fn FMU_Load(
 
     let mut info_messages = instance.infoMessages.clone();
 
-    let log_fmi_call = move |status: &fmi::types::fmiStatus, message: &str| {        
-        info_messages.lock().unwrap().push(message.to_string());
+    let log_file_option = if logToFile != 0 {
+        let log_file_cstr = unsafe { std::ffi::CStr::from_ptr(logFile) };
+        let log_file_str = log_file_cstr.to_str().unwrap();
+        let mut log_file = File::create(log_file_str).unwrap();
+        let mut log_file_ref = Arc::new(Mutex::new(log_file));
+        Some(log_file_ref)
+    } else {
+        None
     };
+    
+    let log_fmi_call = move |status: &fmi::types::fmiStatus, message: &str| {
+        if let Some(log_file_ref) = &log_file_option {
+            let mut log_file = log_file_ref.lock().unwrap();
+            log_file.write_all(message.as_bytes()).unwrap();
+            log_file.write_all(b"\n").unwrap();
+        } else {
+            let mut messages = info_messages.lock().unwrap();
+            messages.push(message.to_string());
+        }
+    };
+    
 
     let mut info_messages = instance.infoMessages.clone();
     let mut warning_messages = instance.warningMessages.clone();
