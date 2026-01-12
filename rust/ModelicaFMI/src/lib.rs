@@ -4,10 +4,19 @@ use fmi::fmi2::FMU2;
 use fmi::SHARED_LIBRARY_EXTENSION;
 use fmi::fmi2::types::{fmi2OK, fmi2Warning, fmi2Error, fmi2Type::fmi2CoSimulation};
 use url::Url;
+use fmi::types::fmiStatus::{fmiOK, fmiWarning, fmiError};
 
 struct FMUInstance<'a> {
     fmu: Option<FMU2<'a>>,
-    errorMessage: Arc<Mutex<Vec<u8>>>,
+    
+    infoMessages: Arc<Mutex<Vec<String>>>,
+    infoMessageBuffer: Arc<Mutex<Vec<u8>>>,
+
+    warningMessages: Arc<Mutex<Vec<String>>>,
+    warningMessageBuffer: Arc<Mutex<Vec<u8>>>,
+    
+    errorMessages: Arc<Mutex<Vec<String>>>,
+    errorMessageBuffer: Arc<Mutex<Vec<u8>>>,
 }
 
 macro_rules! get_instance {
@@ -33,9 +42,9 @@ macro_rules! get_fmu {
         match $instance.fmu.as_ref() {
         Some(fmu) => fmu,
         None => {
-            let mut guard = $instance.errorMessage.lock().unwrap();
+            let mut guard = $instance.errorMessages.lock().unwrap();
             if !guard.is_empty() {   
-                guard.extend_from_slice(b"FMU is not instantiated.\0");
+                guard.push("FMU is not instantiated.".to_string());
             }
             return
         },
@@ -47,9 +56,9 @@ macro_rules! get_fmu {
 macro_rules! call {
     ($instance:expr, $status:expr) => {
         if !matches!($status, fmi2OK | fmi2Warning) {
-            let mut guard = $instance.errorMessage.lock().unwrap();
+            let mut guard = $instance.errorMessages.lock().unwrap();
             if !guard.is_empty() {   
-                guard.extend_from_slice(b"FMI call failed.\0");
+                guard.push("FMI call failed.".to_string());
             }
         }
     };
@@ -60,7 +69,12 @@ pub extern "C" fn FMU_Create() -> *mut c_void {
 
     let instance = FMUInstance {
         fmu: None,
-        errorMessage: Arc::new(Mutex::new(Vec::new())),
+        infoMessages: Arc::new(Mutex::new(Vec::new())),
+        infoMessageBuffer: Arc::new(Mutex::new(Vec::new())),
+        warningMessages: Arc::new(Mutex::new(Vec::new())),
+        warningMessageBuffer: Arc::new(Mutex::new(Vec::new())),
+        errorMessages: Arc::new(Mutex::new(Vec::new())),
+        errorMessageBuffer: Arc::new(Mutex::new(Vec::new())),
     };
 
     Box::into_raw(Box::new(instance)) as *mut c_void
@@ -110,12 +124,19 @@ pub extern "C" fn FMU_Load(
         println!("[FMICall][{:?}] {}", status, message);
     };
 
-    let error_msg = instance.errorMessage.clone();
+    let mut info_messages = instance.infoMessages.clone();
+    let mut warning_messages = instance.warningMessages.clone();
+    let mut error_messages = instance.errorMessages.clone();
 
     let log_message = move |status: &fmi::types::fmiStatus, category: &str, message: &str| {
-        let full_message = format!("[{:?}][{}] {}\0", status, category, message);
-        let mut guard = error_msg.lock().unwrap();
-        guard.extend_from_slice(full_message.as_bytes());
+
+        let messages = match status {
+            fmiOK => &info_messages,
+            fmiWarning => &warning_messages,
+            _ => &error_messages,
+        };
+
+        messages.lock().unwrap().push(message.to_string());
     };
 
     let mut fmu = FMU2::new(
@@ -143,8 +164,8 @@ pub extern "C" fn FMU_Load(
         0 => fmi::fmi2::types::fmi2Type::fmi2ModelExchange,
         1 => fmi::fmi2::types::fmi2Type::fmi2CoSimulation,
         _ => {
-            let mut guard = instance.errorMessage.lock().unwrap();
-            guard.extend_from_slice(b"Invalid interface type.\0");
+            let mut guard = instance.errorMessages.lock().unwrap();
+            guard.push("Invalid interface type.".to_string());
             return;
         },
     };
@@ -156,12 +177,48 @@ pub extern "C" fn FMU_Load(
 
 #[unsafe(no_mangle)]
 pub extern "C" fn FMU_getInfoMessage(instance: *mut c_void) -> *const c_char {
-    "\0" as *const str as *const c_char
+
+    if instance.is_null() {
+        return "\0" as *const str as *const c_char;
+    }
+
+    let instance = unsafe { &mut *(instance as *mut FMUInstance) };
+
+    let mut buffer = instance.infoMessageBuffer.lock().unwrap();
+    buffer.clear();
+
+    let mut messages = instance.infoMessages.lock().unwrap();
+
+    if let Some(message) = messages.pop() {
+        buffer.extend_from_slice(message.as_bytes());
+    }
+
+    buffer.push(0); // null-terminate
+
+    buffer.as_ptr() as *const c_char
 }
 
 #[unsafe(no_mangle)]
 pub extern "C" fn FMU_getWarningMessage(instance: *mut c_void) -> *const c_char {
-    "\0" as *const str as *const c_char
+
+    if instance.is_null() {
+        return "\0" as *const str as *const c_char;
+    }
+
+    let instance = unsafe { &mut *(instance as *mut FMUInstance) };
+
+    let mut buffer = instance.warningMessageBuffer.lock().unwrap();
+    buffer.clear();
+
+    let mut messages = instance.warningMessages.lock().unwrap();
+
+    if let Some(message) = messages.pop() {
+        buffer.extend_from_slice(message.as_bytes());
+    }
+
+    buffer.push(0); // null-terminate
+
+    buffer.as_ptr() as *const c_char
 }
 
 #[unsafe(no_mangle)]
@@ -173,12 +230,19 @@ pub extern "C" fn FMU_getErrorMessage(instance: *mut c_void) -> *const c_char {
 
     let instance = unsafe { &mut *(instance as *mut FMUInstance) };
 
-    let guard = instance.errorMessage.lock().unwrap();
-    if guard.is_empty() {
-        "\0" as *const str as *const c_char
-    } else {
-        guard.as_ptr() as *const c_char
+    let mut buffer = instance.errorMessageBuffer.lock().unwrap();
+    buffer.clear();
+
+    let mut messages = instance.errorMessages.lock().unwrap();
+
+    for message in messages.drain(..) {
+        buffer.extend_from_slice(message.as_bytes());
+        buffer.push(b'\n');
     }
+
+    buffer.push(0); // null-terminate
+
+    buffer.as_ptr() as *const c_char
 }
 
 /***************************************************
