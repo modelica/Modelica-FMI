@@ -83,9 +83,16 @@ pub extern "C" fn FMU_Create() -> *mut c_void {
 #[unsafe(no_mangle)]
 pub extern "C" fn FMU_Free(instance: *mut c_void) {
 
-    if !instance.is_null() {
-        let _ = unsafe { Box::from_raw(instance as *mut FMUInstance) };
+    if instance.is_null() {
+        return;
     }
+    
+    let instance = unsafe { Box::from_raw(instance as *mut FMUInstance) };
+
+    let mut fmu = instance.fmu.unwrap();
+
+    fmu.terminate();
+    fmu.freeInstance();
 }
 
 #[unsafe(no_mangle)]
@@ -114,8 +121,6 @@ pub extern "C" fn FMU_Load(
 
     let share_library_filename = format!("{}{}", modelIdentifier, SHARED_LIBRARY_EXTENSION);
     let path = unzipdir.join("binaries").join("win64").join(share_library_filename);
-
-    println!("Loading FMU from path: {:?}", path);
 
     let instanceName = unsafe { std::ffi::CStr::from_ptr(instanceName) };
     let instanceName = instanceName.to_str().unwrap();
