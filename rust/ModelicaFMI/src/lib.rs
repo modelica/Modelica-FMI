@@ -120,8 +120,10 @@ pub extern "C" fn FMU_Load(
     let instanceName = unsafe { std::ffi::CStr::from_ptr(instanceName) };
     let instanceName = instanceName.to_str().unwrap();
 
-    let log_fmi_call = |status: &fmi::types::fmiStatus, message: &str| {
-        println!("[FMICall][{:?}] {}", status, message);
+    let mut info_messages = instance.infoMessages.clone();
+
+    let log_fmi_call = move |status: &fmi::types::fmiStatus, message: &str| {        
+        info_messages.lock().unwrap().push(message.to_string());
     };
 
     let mut info_messages = instance.infoMessages.clone();
@@ -142,7 +144,7 @@ pub extern "C" fn FMU_Load(
     let mut fmu = FMU2::new(
         path.as_path(),
         instanceName,
-        Some(Box::new(log_fmi_call)), 
+        if logFMICalls != 0 { Some(Box::new(log_fmi_call)) } else { None },
         Some(Box::new(log_message))
     ).unwrap();
 
