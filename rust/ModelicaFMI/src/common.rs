@@ -1,6 +1,6 @@
 #![allow(non_camel_case_types, non_snake_case, non_upper_case_globals, unused)]
 use std::{ffi::{CStr, c_char, c_void}, io::Write, path::Path, sync::{Arc, Mutex}};
-use fmi::fmi2::FMU2;
+use fmi::{fmi2::FMU2, fmi3::FMU3};
 use fmi::SHARED_LIBRARY_EXTENSION;
 use fmi::fmi2::types::{fmi2OK, fmi2Warning, fmi2Error, fmi2Type::fmi2CoSimulation};
 use url::Url;
@@ -9,6 +9,7 @@ use std::fs::File;
 
 pub struct FMUInstance<'a> {
     pub fmu: Option<FMU2<'a>>,
+    pub fmu3: Option<FMU3<'a>>,
     
     pub infoMessages: Arc<Mutex<Vec<String>>>,
     pub infoMessageBuffer: Arc<Mutex<Vec<u8>>>,
@@ -70,6 +71,7 @@ pub extern "C" fn FMU_Create() -> *mut c_void {
 
     let instance = FMUInstance {
         fmu: None,
+        fmu3: None,
         infoMessages: Arc::new(Mutex::new(Vec::new())),
         infoMessageBuffer: Arc::new(Mutex::new(Vec::new())),
         warningMessages: Arc::new(Mutex::new(Vec::new())),

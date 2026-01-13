@@ -1563,16 +1563,14 @@ impl<'lib> FMU3<'lib> {
 
     pub fn updateDiscreteStates(
         &self,
-    ) -> Result<
-        (
+    ) -> (
             fmi3Boolean,
             fmi3Boolean,
             fmi3Boolean,
             fmi3Boolean,
             fmi3Float64,
-        ),
-        fmi3Status,
-    > {
+            fmi3Status,
+        ) {
         let mut discreteStatesNeedUpdate = false;
         let mut terminateSimulation = false;
         let mut nominalsOfContinuousStatesChanged = false;
@@ -1595,17 +1593,14 @@ impl<'lib> FMU3<'lib> {
             cb(&status, &message);
         }
 
-        if status == fmi3OK {
-            Ok((
-                discreteStatesNeedUpdate,
-                terminateSimulation,
-                nominalsOfContinuousStatesChanged,
-                valuesOfContinuousStatesChanged,
-                nextEventTime,
-            ))
-        } else {
-            Err(status)
-        }
+        (
+            discreteStatesNeedUpdate,
+            terminateSimulation,
+            nominalsOfContinuousStatesChanged,
+            valuesOfContinuousStatesChanged,
+            nextEventTime,
+            status,
+        )
     }
 
     pub fn getOutputDerivatives(

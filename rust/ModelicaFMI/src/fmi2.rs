@@ -8,23 +8,23 @@ use fmi::types::fmiStatus::{fmiOK, fmiWarning, fmiError};
 use std::fs::File;
 use crate::common::FMUInstance;
 
-macro_rules! get_instance {
-    ($instance:expr) => {{
-        if $instance.is_null() {
-            return;
-        }
-        unsafe { &*($instance as *const FMUInstance) }
-    }};
-}
+// macro_rules! get_instance {
+//     ($instance:expr) => {{
+//         if $instance.is_null() {
+//             return;
+//         }
+//         unsafe { &*($instance as *const FMUInstance) }
+//     }};
+// }
 
-macro_rules! get_instance_mut {
-    ($instance:expr) => {{
-        if $instance.is_null() {
-            return;
-        }
-        unsafe { &mut *($instance as *mut FMUInstance) }
-    }};
-}
+// macro_rules! get_instance_mut {
+//     ($instance:expr) => {{
+//         if $instance.is_null() {
+//             return;
+//         }
+//         unsafe { &mut *($instance as *mut FMUInstance) }
+//     }};
+// }
 
 macro_rules! get_fmu {
     ($instance:expr) => {{
@@ -41,17 +41,17 @@ macro_rules! get_fmu {
     }};
 }
 
-// set an error message if it has not been set yet by the FMU
-macro_rules! call {
-    ($instance:expr, $status:expr) => {
-        if !matches!($status, fmi2OK | fmi2Warning) {
-            let mut guard = $instance.errorMessages.lock().unwrap();
-            if !guard.is_empty() {   
-                guard.push("FMI call failed.".to_string());
-            }
-        }
-    };
-}
+// // set an error message if it has not been set yet by the FMU
+// macro_rules! call {
+//     ($instance:expr, $status:expr) => {
+//         if !matches!($status, fmi2OK | fmi2Warning) {
+//             let mut guard = $instance.errorMessages.lock().unwrap();
+//             if !guard.is_empty() {   
+//                 guard.push("FMI call failed.".to_string());
+//             }
+//         }
+//     };
+// }
 
 /***************************************************
 Common Functions
