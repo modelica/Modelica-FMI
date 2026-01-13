@@ -28,7 +28,7 @@ use crate::common::FMUInstance;
 
 macro_rules! get_fmu {
     ($instance:expr) => {{
-        match $instance.fmu.as_ref() {
+        match $instance.fmu2.as_ref() {
         Some(fmu) => fmu,
         None => {
             let mut guard = $instance.errorMessages.lock().unwrap();

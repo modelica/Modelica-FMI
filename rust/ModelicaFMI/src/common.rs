@@ -1,6 +1,6 @@
 #![allow(non_camel_case_types, non_snake_case, non_upper_case_globals, unused)]
 use std::{ffi::{CStr, c_char, c_void}, io::Write, path::Path, sync::{Arc, Mutex}};
-use fmi::{fmi2::FMU2, fmi3::FMU3};
+use fmi::{fmi2::{FMU2, PLATFORM}, fmi3::{FMU3, PLATFORM_TUPLE}};
 use fmi::SHARED_LIBRARY_EXTENSION;
 use fmi::fmi2::types::{fmi2OK, fmi2Warning, fmi2Error, fmi2Type::fmi2CoSimulation};
 use url::Url;
@@ -8,7 +8,7 @@ use fmi::types::fmiStatus::{fmiOK, fmiWarning, fmiError};
 use std::fs::File;
 
 pub struct FMUInstance<'a> {
-    pub fmu: Option<FMU2<'a>>,
+    pub fmu2: Option<FMU2<'a>>,
     pub fmu3: Option<FMU3<'a>>,
     
     pub infoMessages: Arc<Mutex<Vec<String>>>,
@@ -70,7 +70,7 @@ macro_rules! call {
 pub extern "C" fn FMU_Create() -> *mut c_void {
 
     let instance = FMUInstance {
-        fmu: None,
+        fmu2: None,
         fmu3: None,
         infoMessages: Arc::new(Mutex::new(Vec::new())),
         infoMessageBuffer: Arc::new(Mutex::new(Vec::new())),
@@ -92,10 +92,15 @@ pub extern "C" fn FMU_Free(instance: *mut c_void) {
     
     let instance = unsafe { Box::from_raw(instance as *mut FMUInstance) };
 
-    let mut fmu = instance.fmu.unwrap();
+    if let Some(mut fmu) = instance.fmu2 {
+        fmu.terminate();
+        fmu.freeInstance();
+    }
 
-    fmu.terminate();
-    fmu.freeInstance();
+    if let Some(mut fmu) = instance.fmu3 {
+        fmu.terminate();
+        fmu.freeInstance();
+    }
 }
 
 #[unsafe(no_mangle)]
@@ -123,7 +128,6 @@ pub extern "C" fn FMU_Load(
     let modelIdentifier = modelIdentifier.to_str().unwrap();
 
     let share_library_filename = format!("{}{}", modelIdentifier, SHARED_LIBRARY_EXTENSION);
-    let path = unzipdir.join("binaries").join("win64").join(share_library_filename);
 
     let instanceName = unsafe { std::ffi::CStr::from_ptr(instanceName) };
     let instanceName = instanceName.to_str().unwrap();
@@ -167,27 +171,6 @@ pub extern "C" fn FMU_Load(
         messages.lock().unwrap().push(message.to_string());
     };
 
-    let mut fmu = FMU2::new(
-        path.as_path(),
-        instanceName,
-        if logFMICalls != 0 { Some(Box::new(log_fmi_call)) } else { None },
-        Some(Box::new(log_message))
-    ).unwrap();
-
-    let guid = unsafe { std::ffi::CStr::from_ptr(instantiationToken) };
-    let guid = guid.to_str().unwrap();
-
-    let resources_path = unzipdir.join("resources").join("");
-
-    let resourceUrl = if resources_path.is_dir() {
-        Some(Url::from_directory_path(&resources_path).unwrap())
-    } else {
-        None
-    };
-
-    let visible = visible != 0;
-    let loggingOn = loggingOn != 0;
-
     let interfaceType = match interfaceType {
         0 => fmi::fmi2::types::fmi2Type::fmi2ModelExchange,
         1 => fmi::fmi2::types::fmi2Type::fmi2CoSimulation,
@@ -197,10 +180,63 @@ pub extern "C" fn FMU_Load(
             return;
         },
     };
+    let visible = visible != 0;
+    let loggingOn = loggingOn != 0;
+    let resources_path = unzipdir.join("resources").join("");
+    let guid = unsafe { std::ffi::CStr::from_ptr(instantiationToken) };
+    let guid = guid.to_str().unwrap();
 
-    fmu.instantiate(instanceName, interfaceType, guid, resourceUrl.as_ref(), visible, loggingOn);
+    if fmiVersion == 2 {
 
-    instance.fmu = Some(fmu);
+        let path = unzipdir.join("binaries").join(PLATFORM).join(share_library_filename);
+
+        let mut fmu = FMU2::new(
+            path.as_path(),
+            instanceName,
+            if logFMICalls != 0 { Some(Box::new(log_fmi_call)) } else { None },
+            Some(Box::new(log_message))
+        ).unwrap();
+
+        let resourceUrl = if resources_path.is_dir() {
+            Some(Url::from_directory_path(&resources_path).unwrap())
+        } else {
+            None
+        };
+
+        fmu.instantiate(instanceName, interfaceType, guid, resourceUrl.as_ref(), visible, loggingOn);
+
+        instance.fmu2 = Some(fmu);
+
+    } else if fmiVersion == 3 {
+
+        let path = unzipdir.join("binaries").join(PLATFORM_TUPLE).join(share_library_filename);
+
+        let mut fmu = FMU3::new(
+            path.as_path(), 
+            instanceName, if logFMICalls != 0 { Some(Box::new(log_fmi_call)) } else { None },
+            Some(Box::new(log_message))
+        ).unwrap();
+
+        let resourcePath = if resources_path.is_dir() {
+            Some(resources_path.as_path())
+        } else {
+            None
+        };
+
+        let status = fmu.instantiateCoSimulation(
+            instanceName,
+            guid, 
+            resourcePath, 
+            visible, 
+            loggingOn, 
+            false,
+            false, 
+            &[],
+        );
+
+        instance.fmu3 = Some(fmu);
+    }
+
 }
 
 #[unsafe(no_mangle)]
