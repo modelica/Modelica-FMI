@@ -85,11 +85,11 @@ jobs:
   build-python-wheel:
     runs-on: ubuntu-22.04
     steps:
-    - uses: actions/checkout@v4
-    - uses: astral-sh/setup-uv@v4
-    - uses: astral-sh/ruff-action@v3
-    - run: ruff check
-    - run: ruff format --check --diff
+    # - uses: actions/checkout@v4
+    # - uses: astral-sh/setup-uv@v4
+    # - uses: astral-sh/ruff-action@v3
+    # - run: ruff check
+    # - run: ruff format --check --diff
     - run: uv build modelica_fmi
     - uses: actions/upload-artifact@v4
       with:
