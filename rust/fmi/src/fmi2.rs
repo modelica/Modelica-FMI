@@ -751,15 +751,8 @@ impl<'lib> FMU2<'lib> {
     }
 
     // Model Exchange specific methods
-    pub fn setTime(&self, _time: fmi2Real) -> fmi2Status {
-        fmi2Fatal
-        // let status = unsafe { (self.fmi2SetTime)(self.component, time) };
-        // if let Some(cb) = &self.logFMICall {
-        //     let message = format!("fmi2SetTime(time={}) -> {:?}", time, status);
-        //     cb(&status, message.as_str());
-        // }
-        // status
-    }
+
+    /* Enter and exit the different modes */
 
     pub fn enterEventMode(&self) -> fmi2Status {
         if let Some(f) = &self.fmi2EnterEventMode {
@@ -774,14 +767,128 @@ impl<'lib> FMU2<'lib> {
         }
     }
 
+    // typedef fmi2Status fmi2NewDiscreteStatesTYPE      (fmi2Component c, fmi2EventInfo* fmi2eventInfo);
+
     pub fn enterContinuousTimeMode(&self) -> fmi2Status {
-        fmi2Fatal
-        // let status = unsafe { (self.fmi2EnterContinuousTimeMode)(self.component) };
-        // if let Some(cb) = &self.logFMICall {
-        //     let message = format!("fmi2EnterContinuousTimeMode() -> {:?}", status);
-        //     cb(&status, message.as_str());
-        // }
-        // status
+        let status = unsafe { (self.fmi2EnterContinuousTimeMode.as_ref().unwrap())(self.component) };
+        if let Some(cb) = &self.logFMICall {
+            let message = format!("fmi2EnterContinuousTimeMode() -> {:?}", status);
+            cb(&status, message.as_str());
+        }
+        status
+    }
+
+    pub fn completedIntegratorStep(&self, noSetFMUStatePriorToCurrentPoint: fmi2Boolean) -> (fmi2Boolean, fmi2Boolean, fmi2Status) {
+        
+        let mut enterEventMode = 0;
+        let mut terminateSimulation = 0;
+        
+        let status = unsafe { (self.fmi2CompletedIntegratorStep.as_ref().unwrap())(self.component, noSetFMUStatePriorToCurrentPoint, &mut enterEventMode, &mut terminateSimulation) };
+        
+        if let Some(cb) = &self.logFMICall {
+            let message = format!("fmi2EnterContinuousTimeMode() -> {:?}", status);
+            cb(&status, message.as_str());
+        }
+
+        (enterEventMode, terminateSimulation, status)
+    }
+
+    /* Providing independent variables and re-initialization of caching */
+
+    pub fn setTime(&self, time: fmi2Real) -> fmi2Status {
+        let status = unsafe { (self.fmi2SetTime.as_ref().unwrap())(self.component, time) };
+        if let Some(cb) = &self.logFMICall {
+            let message = format!("fmi2SetTime(time={}) -> {:?}", time, status);
+            cb(&status, message.as_str());
+        }
+        status
+    }
+
+    pub fn setContinuousStates(&self, x: &[fmi2Real]) -> fmi2Status {
+        
+        let status = unsafe { (self.fmi2SetContinuousStates.as_ref().unwrap())(self.component, x.as_ptr(), x.len()) };
+
+        if let Some(cb) = &self.logFMICall {
+            let message = format!(
+                "fmi2SetContinuousStates(x={:?}, nx={}) -> {:?}",
+                x,
+                x.len(),
+                status
+            );
+            cb(&status, message.as_str());
+        }
+
+        status
+    }
+
+    /* Evaluation of the model equations */
+
+    pub fn getDerivatives(&self, derivatives: &mut [fmi2Real]) -> fmi2Status {
+        
+        let status = unsafe { (self.fmi2GetDerivatives.as_ref().unwrap())(self.component, derivatives.as_mut_ptr(), derivatives.len()) };
+
+        if let Some(cb) = &self.logFMICall {
+            let message = format!(
+                "fmi2GetDerivatives(derivatives={:?}, nx={}) -> {:?}",
+                derivatives,
+                derivatives.len(),
+                status
+            );
+            cb(&status, message.as_str());
+        }
+
+        status
+    }
+
+    pub fn getEventIndicators(&self, eventIndicators: &mut [fmi2Real]) -> fmi2Status {
+        
+        let status = unsafe { (self.fmi2GetEventIndicators.as_ref().unwrap())(self.component, eventIndicators.as_mut_ptr(), eventIndicators.len()) };
+
+        if let Some(cb) = &self.logFMICall {
+            let message = format!(
+                "fmi2GetEventIndicators(eventIndicators={:?}, ni={}) -> {:?}",
+                eventIndicators,
+                eventIndicators.len(),
+                status
+            );
+            cb(&status, message.as_str());
+        }
+
+        status
+    }
+
+    pub fn getContinuousStates(&self, x: &mut [fmi2Real]) -> fmi2Status {
+        
+        let status = unsafe { (self.fmi2GetContinuousStates.as_ref().unwrap())(self.component, x.as_mut_ptr(), x.len()) };
+
+        if let Some(cb) = &self.logFMICall {
+            let message = format!(
+                "fmi2GetContinuousStates(x={:?}, nx={}) -> {:?}",
+                x,
+                x.len(),
+                status
+            );
+            cb(&status, message.as_str());
+        }
+
+        status
+    }
+
+    pub fn getNominalsOfContinuousStates(&self, x_nominal: &mut [fmi2Real]) -> fmi2Status {
+        
+        let status = unsafe { (self.fmi2GetNominalsOfContinuousStates.as_ref().unwrap())(self.component, x_nominal.as_mut_ptr(), x_nominal.len()) };
+
+        if let Some(cb) = &self.logFMICall {
+            let message = format!(
+                "fmi2GetNominalsOfContinuousStates(x={:?}, nx={}) -> {:?}",
+                x_nominal,
+                x_nominal.len(),
+                status
+            );
+            cb(&status, message.as_str());
+        }
+
+        status
     }
 }
 // Explicitly implement Sync for FMU2 since all fields are now Sync

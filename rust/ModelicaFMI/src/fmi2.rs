@@ -187,7 +187,9 @@ Model Exchange
 
 #[unsafe(no_mangle)]
 pub extern "C" fn FMU_FMI2EnterEventMode(instance: *mut c_void) {
-    todo!()
+    let instance = get_instance!(instance);
+    let fmu = get_fmu!(instance);
+    call!(instance, fmu.enterEventMode());
 }
 
 #[unsafe(no_mangle)]
@@ -197,32 +199,48 @@ pub extern "C" fn FMU_FMI2NewDiscreteStates(instance: *mut c_void, valuesOfConti
 
 #[unsafe(no_mangle)]
 pub extern "C" fn FMU_FMI2EnterContinuousTimeMode(instance: *mut c_void) {
-    todo!()
+    let instance = get_instance!(instance);
+    let fmu = get_fmu!(instance);
+    call!(instance, fmu.enterContinuousTimeMode());
 }
 
 #[unsafe(no_mangle)]
 pub extern "C" fn FMU_FMI2SetTime(instance: *mut c_void, time: f64) {
-    todo!()
+    let instance = get_instance!(instance);
+    let fmu = get_fmu!(instance);
+    call!(instance, fmu.setTime(time));
 }
 
 #[unsafe(no_mangle)]
 pub extern "C" fn FMU_FMI2SetContinuousStates(instance: *mut c_void, x: *const f64, nx: i32) {
-    todo!()
+    let instance = get_instance!(instance);
+    let fmu = get_fmu!(instance);
+    let x = unsafe { std::slice::from_raw_parts(x as *const f64, nx as usize) };    
+    call!(instance, fmu.setContinuousStates(x));
 }
 
 #[unsafe(no_mangle)]
 pub extern "C" fn FMU_FMI2GetDerivatives(instance: *mut c_void, derivatives: *mut f64, nx: i32) {
-    todo!()
+    let instance = get_instance!(instance);
+    let fmu = get_fmu!(instance);
+    let derivatives = unsafe { std::slice::from_raw_parts_mut(derivatives as *mut f64, nx as usize) };    
+    call!(instance, fmu.getDerivatives(derivatives));
 }
 
 #[unsafe(no_mangle)]
 pub extern "C" fn FMU_FMI2GetEventIndicators(instance: *mut c_void, eventIndicators: *mut f64, ni: i32) {
-    todo!()
+    let instance = get_instance!(instance);
+    let fmu = get_fmu!(instance);
+    let eventIndicators = unsafe { std::slice::from_raw_parts_mut(eventIndicators as *mut f64, ni as usize) };    
+    call!(instance, fmu.getEventIndicators(eventIndicators));
 }
 
 #[unsafe(no_mangle)]
 pub extern "C" fn FMU_FMI2GetContinuousStates(instance: *mut c_void, x: *mut f64, nx: i32) {
-    todo!()
+    let instance = get_instance!(instance);
+    let fmu = get_fmu!(instance);
+    let x = unsafe { std::slice::from_raw_parts_mut(x as *mut f64, nx as usize) };    
+    call!(instance, fmu.getContinuousStates(x));
 }
 
 /***************************************************
