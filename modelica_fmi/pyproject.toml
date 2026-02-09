@@ -1,11 +1,11 @@
 [project]
 name = "modelica-fmi"
-version = "0.0.8"
+version = "0.0.9"
 description = "Import FMUs to Modelica"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
-    "fmpy>=0.3.25",
+    "fmpy>=0.3.27",
     "jinja2>=3.1.6",
     "pyside6>=6.9.1",
 ]
