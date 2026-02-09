@@ -25,7 +25,7 @@ package FMI "Import Functional Mock-up Units (FMUs) to Modelica"
               ="modelica://FMI/Resources/Images/FMI_package.svg")}));
 
   end Menu;
-annotation (version="0.0.8", uses(Modelica(version="4.0.0")), Icon(graphics={Bitmap(extent={{-80,-60},
+annotation (version="0.0.8", uses(Modelica(version="4.1.0")), Icon(graphics={Bitmap(extent={{-80,-60},
             {80,60}}, fileName="modelica://FMI/Resources/Images/FMI_bare.svg")}),
     Documentation(info="<html>
 
