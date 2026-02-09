@@ -90,5 +90,5 @@ uv run pyinstaller --name modelica-fmi --collect-data modelica_fmi .venv/Lib/sit
 
 ## License
 
-Copyright &copy; 2025 Modelica Association.
+Copyright &copy; 2026 Modelica Association.
 The code is released under the [2-Clause BSD license](LICENSE).
