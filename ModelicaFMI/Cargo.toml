@@ -1,0 +1,17 @@
+[package]
+name = "ModelicaFMI"
+version.workspace = true
+edition.workspace = true
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+fmi-rs.workspace = true
+url = "2"
+
+[build-dependencies]
+static_vcruntime = "3.0"
+
+[lints]
+workspace = true

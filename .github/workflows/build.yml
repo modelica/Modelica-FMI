@@ -5,56 +5,62 @@ on:
   pull_request:
     branches: [ main ]
 
+permissions:
+  contents: write
+
 jobs:
-  build-win64-binaries:
-    runs-on: windows-2022
+  build-binaries:
+    strategy:
+      matrix:
+        include:
+        - runner: windows-2022
+          artifact: win64
+          paths: |
+            ./target/release/modelica-fmi.exe
+            ./target/release/ModelicaFMI.dll
+        - runner: ubuntu-22.04
+          artifact: linux64
+          paths: |
+            ./target/release/modelica-fmi
+            ./target/release/libModelicaFMI.so
+        - runner: macos-14
+          artifact: darwin64
+          paths: |
+            ./target/release/modelica-fmi
+            ./target/release/libModelicaFMI.dylib
+    runs-on: ${{ matrix.runner }}
     steps:
-    - uses: actions/checkout@v4
-    - run: cargo build --manifest-path ./rust/Cargo.toml --release
-    - uses: actions/upload-artifact@v4
+    - uses: actions/checkout@v7
       with:
-        name: win64
-        path: ./rust/target/release/ModelicaFMI.dll
-        if-no-files-found: error
-  build-linux64-binaries:
-    runs-on: ubuntu-22.04
-    steps:
-    - uses: actions/checkout@v4
-    - run: cargo build --manifest-path ./rust/Cargo.toml --release
-    - uses: actions/upload-artifact@v4
+        submodules: recursive
+    - run: cargo clippy --workspace --all-targets -- -D warnings
+    - run: cargo build --workspace --release
+    - uses: actions/upload-artifact@v7
       with:
-        name: linux64
-        path: ./rust/target/release/libModelicaFMI.so
-        if-no-files-found: error
-  build-darwin64-binaries:
-    runs-on: macos-14
-    steps:
-    - uses: actions/checkout@v4
-    - run: cargo build --manifest-path ./rust/Cargo.toml --release
-    - uses: actions/upload-artifact@v4
-      with:
-        name: darwin64
-        path: ./rust/target/release/libModelicaFMI.dylib
+        name: ${{ matrix.artifact }}
+        path: ${{ matrix.paths }}
         if-no-files-found: error
   build-modelica-library:
     runs-on: ubuntu-22.04
-    needs: [build-win64-binaries, build-linux64-binaries, build-darwin64-binaries]
+    needs: build-binaries
     steps:
-    - uses: actions/checkout@v4
-    - uses: actions/download-artifact@v4
+    - uses: actions/checkout@v7
+      with:
+        submodules: recursive
+    - uses: actions/download-artifact@v8
       with:
         name: win64
         path: ./FMI/Resources/Library/win64/
-    - uses: actions/download-artifact@v4
+    - uses: actions/download-artifact@v8
       with:
         name: linux64
         path: ./FMI/Resources/Library/linux64/
-    - uses: actions/download-artifact@v4
+    - uses: actions/download-artifact@v8
       with:
         name: darwin64
         path: ./FMI/Resources/Library/darwin64/
     - run: tree
-    - uses: actions/upload-artifact@v4
+    - uses: actions/upload-artifact@v7
       with:
         name: Modelica-FMI
         path: |
@@ -62,45 +68,18 @@ jobs:
           LICENSE
           README.md
         if-no-files-found: error
-  build-python-wheel:
-    runs-on: ubuntu-22.04
-    steps:
-    - uses: actions/checkout@v4
-    - uses: astral-sh/setup-uv@v7
-    # - uses: astral-sh/ruff-action@v3
-    # - run: ruff check
-    # - run: ruff format --check --diff
-    - run: uv build modelica_fmi
-    - uses: actions/upload-artifact@v4
-      with:
-        name: dist
-        path: modelica_fmi/dist/*.whl
-        if-no-files-found: error
-  create-release:
-    runs-on: ubuntu-22.04
+  release:
     if: startsWith(github.ref, 'refs/tags/v')
-    needs: [build-modelica-library, build-python-wheel]
+    runs-on: ubuntu-22.04
+    needs: build-modelica-library
     steps:
-      - uses: actions/github-script@v4
-        id: get_version
-        with:
-          script: core.setOutput('version', context.ref.substring(11))
-      - uses: actions/download-artifact@v4
-        with:
-          name: Modelica-FMI
-          path: Modelica-FMI
-      - uses: actions/download-artifact@v4
-        with:
-          name: dist
-          path: dist  
-      - run: |
-          cd Modelica-FMI
-          zip -r ../dist/Modelica-FMI-${{steps.get_version.outputs.version}}.zip .
-          cd ..
-      - name: Release
-        uses: softprops/action-gh-release@v2
-        if: github.ref_type == 'tag'
-        with:
-          files: |
-            dist/*.zip
-            dist/*.whl
+    - uses: actions/download-artifact@v8
+      with:
+        name: Modelica-FMI
+        path: ./Modelica-FMI
+    - run: cd Modelica-FMI && zip -r ../Modelica-FMI.zip FMI LICENSE README.md
+    - uses: softprops/action-gh-release@v2
+      with:
+        files: Modelica-FMI.zip
+        generate_release_notes: true
+
