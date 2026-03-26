@@ -320,22 +320,23 @@ def dependencies3(
         vrs = []
         values = []
 
-        for dependency in unknown.dependencies:
-            if dependency.type != type or dependency.causality != "input":
-                continue
+        if unknown.dependencies is not None:
+            for dependency in unknown.dependencies:
+                if dependency.type != type or dependency.causality != "input":
+                    continue
 
-            vrs.append(str(dependency.valueReference))
-            s = shape(dependency)
+                vrs.append(str(dependency.valueReference))
+                s = shape(dependency)
 
-            if not s:
-                values.append(name(dependency))
-            elif len(s) == 1:
-                for i in range(1, numel(dependency) + 1):
-                    values.append(f"{name(dependency)}[{i}]")
-            elif len(s) == 2:
-                for i in range(1, s[0] + 1):
-                    for j in range(1, s[1] + 1):
-                        values.append(f"{name(dependency)}[{i},{j}]")
+                if not s:
+                    values.append(name(dependency))
+                elif len(s) == 1:
+                    for i in range(1, numel(dependency) + 1):
+                        values.append(f"{name(dependency)}[{i}]")
+                elif len(s) == 2:
+                    for i in range(1, s[0] + 1):
+                        for j in range(1, s[1] + 1):
+                            values.append(f"{name(dependency)}[{i},{j}]")
 
         if vrs:
             arguments.append(
