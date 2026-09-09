@@ -24,7 +24,7 @@ macro_rules! get_instance {
 //         Some(fmu) => fmu,
 //         None => {
 //             let mut guard = $instance.errorMessages.lock().unwrap();
-//             if !guard.is_empty() {   
+//             if !guard.is_empty() {
 //                 guard.push("FMU is not instantiated.".to_string());
 //             }
 //             return
@@ -34,16 +34,16 @@ macro_rules! get_instance {
 // }
 
 // set an error message if it has not been set yet by the FMU
-macro_rules! call {
-    ($instance:expr, $status:expr) => {
-        if !matches!($status, fmi2OK | fmi2Warning) {
-            let mut guard = $instance.errorMessages.lock().unwrap();
-            if !guard.is_empty() {   
-                guard.push("FMI call failed.".to_string());
-            }
-        }
-    };
-}
+// macro_rules! call {
+//     ($instance:expr, $status:expr) => {
+//         if !matches!($status, fmi2Status::Ok | fmi2Status::Warning) {
+//             let mut guard = $instance.errorMessages.lock().unwrap();
+//             if !guard.is_empty() {
+//                 guard.push("FMI call failed.".to_string());
+//             }
+//         }
+//     };
+// }
 
 pub mod common;
 pub mod fmi2;

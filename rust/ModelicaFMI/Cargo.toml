@@ -7,7 +7,7 @@ edition = "2024"
 crate-type = ["cdylib"]
 
 [dependencies]
-fmi = { path = "../fmi" }
+fmi-rs = { version = "0.1.0" }
 url = "2"
 
 [build-dependencies]

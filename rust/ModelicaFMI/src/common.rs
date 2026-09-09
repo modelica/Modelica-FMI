@@ -1,16 +1,26 @@
 #![allow(non_camel_case_types, non_snake_case, non_upper_case_globals, unused)]
-use std::{ffi::{CStr, c_char, c_void}, io::Write, path::Path, sync::{Arc, Mutex}};
-use fmi::{fmi2::{FMU2, PLATFORM}, fmi3::{FMU3, PLATFORM_TUPLE}};
-use fmi::SHARED_LIBRARY_EXTENSION;
-use fmi::fmi2::types::{fmi2OK, fmi2Warning, fmi2Error, fmi2Type::fmi2CoSimulation};
-use url::Url;
-use fmi::types::fmiStatus::{fmiOK, fmiWarning, fmiError};
+use fmi_rs::{
+    SHARED_LIBRARY_EXTENSION,
+    fmi2::{CS, FMU2, PLATFORM},
+    fmi3::FMU3,
+};
 use std::fs::File;
+use std::{
+    ffi::{CStr, c_char, c_void},
+    io::Write,
+    path::Path,
+    sync::{Arc, Mutex},
+};
+use url::Url;
 
-pub struct FMUInstance<'a> {
-    pub fmu2: Option<FMU2<'a>>,
-    pub fmu3: Option<FMU3<'a>>,
-    
+pub enum FMU {
+    FMI2(Box<FMU2<CS>>),
+    FMI3(Arc<FMU3>),
+}
+
+pub struct FMUInstance {
+    pub fmu: Option<FMU>,
+
     pub infoMessages: Arc<Mutex<Vec<String>>>,
     pub infoMessageBuffer: Arc<Mutex<Vec<u8>>>,
 
@@ -42,14 +52,14 @@ macro_rules! get_instance_mut {
 macro_rules! get_fmu {
     ($instance:expr) => {{
         match $instance.fmu.as_ref() {
-        Some(fmu) => fmu,
-        None => {
-            let mut guard = $instance.errorMessages.lock().unwrap();
-            if !guard.is_empty() {   
-                guard.push("FMU is not instantiated.".to_string());
+            Some(fmu) => fmu,
+            None => {
+                let mut guard = $instance.errorMessages.lock().unwrap();
+                if !guard.is_empty() {
+                    guard.push("FMU is not instantiated.".to_string());
+                }
+                return;
             }
-            return
-        },
         }
     }};
 }
@@ -59,19 +69,29 @@ macro_rules! call {
     ($instance:expr, $status:expr) => {
         if !matches!($status, fmi2OK | fmi2Warning) {
             let mut guard = $instance.errorMessages.lock().unwrap();
-            if !guard.is_empty() {   
+            if !guard.is_empty() {
                 guard.push("FMI call failed.".to_string());
             }
         }
     };
 }
 
+pub struct MyLogger;
+
+impl fmi_rs::fmi2::log::Logger for MyLogger {
+    fn log_call(&self, status: fmi_rs::fmi2::types::fmi2Status, message: &str) {
+        todo!()
+    }
+
+    fn log_message(&self, status: fmi_rs::fmi2::types::fmi2Status, category: &str, message: &str) {
+        todo!()
+    }
+}
+
 #[unsafe(no_mangle)]
 pub extern "C" fn FMU_Create() -> *mut c_void {
-
     let instance = FMUInstance {
-        fmu2: None,
-        fmu3: None,
+        fmu: None,
         infoMessages: Arc::new(Mutex::new(Vec::new())),
         infoMessageBuffer: Arc::new(Mutex::new(Vec::new())),
         warningMessages: Arc::new(Mutex::new(Vec::new())),
@@ -85,21 +105,20 @@ pub extern "C" fn FMU_Create() -> *mut c_void {
 
 #[unsafe(no_mangle)]
 pub extern "C" fn FMU_Free(instance: *mut c_void) {
-
     if instance.is_null() {
         return;
     }
-    
+
     let instance = unsafe { Box::from_raw(instance as *mut FMUInstance) };
 
-    if let Some(mut fmu) = instance.fmu2 {
-        fmu.terminate();
-        fmu.freeInstance();
-    }
-
-    if let Some(mut fmu) = instance.fmu3 {
-        fmu.terminate();
-        fmu.freeInstance();
+    match instance.fmu {
+        Some(FMU::FMI2(fmu)) => {
+            fmu.terminate();
+        }
+        Some(FMU::FMI3(fmu)) => {
+            fmu.terminate();
+        }
+        _ => (),
     }
 }
 
@@ -119,7 +138,7 @@ pub extern "C" fn FMU_Load(
     logFile: *const c_char,
     copyPlatformBinary: i32,
 ) {
-    let instance: &mut FMUInstance<'_> = unsafe { &mut *(instance as *mut FMUInstance) };
+    let instance: &mut FMUInstance = unsafe { &mut *(instance as *mut FMUInstance) };
 
     let unzipdir = unsafe { std::ffi::CStr::from_ptr(unzipdir) };
     let unzipdir = Path::new(unzipdir.to_str().unwrap());
@@ -143,105 +162,84 @@ pub extern "C" fn FMU_Load(
     } else {
         None
     };
-    
-    let log_fmi_call = move |status: &fmi::types::fmiStatus, message: &str| {
-        if let Some(log_file_ref) = &log_file_option {
-            let mut log_file = log_file_ref.lock().unwrap();
-            log_file.write_all(message.as_bytes()).unwrap();
-            log_file.write_all(b"\n").unwrap();
-        } else {
-            let mut messages = info_messages.lock().unwrap();
-            messages.push(message.to_string());
-        }
-    };
-    
 
-    let mut info_messages = instance.infoMessages.clone();
-    let mut warning_messages = instance.warningMessages.clone();
-    let mut error_messages = instance.errorMessages.clone();
+    // let log_fmi_call = move |status: &fmi::types::fmiStatus, message: &str| {
+    //     if let Some(log_file_ref) = &log_file_option {
+    //         let mut log_file = log_file_ref.lock().unwrap();
+    //         log_file.write_all(message.as_bytes()).unwrap();
+    //         log_file.write_all(b"\n").unwrap();
+    //     } else {
+    //         let mut messages = info_messages.lock().unwrap();
+    //         messages.push(message.to_string());
+    //     }
+    // };
 
-    let log_message = move |status: &fmi::types::fmiStatus, category: &str, message: &str| {
+    // let mut info_messages = instance.infoMessages.clone();
+    // let mut warning_messages = instance.warningMessages.clone();
+    // let mut error_messages = instance.errorMessages.clone();
 
-        let messages = match status {
-            fmiOK => &info_messages,
-            fmiWarning => &warning_messages,
-            _ => &error_messages,
-        };
+    // let log_message = move |status: &fmi::types::fmiStatus, category: &str, message: &str| {
+    //     let messages = match status {
+    //         fmiOK => &info_messages,
+    //         fmiWarning => &warning_messages,
+    //         _ => &error_messages,
+    //     };
 
-        messages.lock().unwrap().push(message.to_string());
-    };
+    //     messages.lock().unwrap().push(message.to_string());
+    // };
 
-    let interfaceType = match interfaceType {
-        0 => fmi::fmi2::types::fmi2Type::fmi2ModelExchange,
-        1 => fmi::fmi2::types::fmi2Type::fmi2CoSimulation,
-        _ => {
-            let mut guard = instance.errorMessages.lock().unwrap();
-            guard.push("Invalid interface type.".to_string());
-            return;
-        },
-    };
+    // let interfaceType = match interfaceType {
+    //     0 => fmi::fmi2::types::fmi2Type::fmi2ModelExchange,
+    //     1 => fmi::fmi2::types::fmi2Type::fmi2CoSimulation,
+    //     _ => {
+    //         let mut guard = instance.errorMessages.lock().unwrap();
+    //         guard.push("Invalid interface type.".to_string());
+    //         return;
+    //     }
+    // };
     let visible = visible != 0;
     let loggingOn = loggingOn != 0;
     let resources_path = unzipdir.join("resources").join("");
     let guid = unsafe { std::ffi::CStr::from_ptr(instantiationToken) };
     let guid = guid.to_str().unwrap();
+    let logCalls = logFMICalls != 0;
 
     if fmiVersion == 2 {
-
-        let path = unzipdir.join("binaries").join(PLATFORM).join(share_library_filename);
-
-        let mut fmu = FMU2::new(
-            path.as_path(),
+        let mut fmu = FMU2::<CS>::new(
+            unzipdir,
+            modelIdentifier,
             instanceName,
-            if logFMICalls != 0 { Some(Box::new(log_fmi_call)) } else { None },
-            Some(Box::new(log_message))
-        ).unwrap();
+            guid,
+            visible,
+            loggingOn,
+            logCalls,
+            Box::new(fmi_rs::fmi2::log::DefaultLogger::default()),
+            true,
+        )
+        .unwrap();
 
-        let resourceUrl = if resources_path.is_dir() {
-            Some(Url::from_directory_path(&resources_path).unwrap())
-        } else {
-            None
-        };
-
-        fmu.instantiate(instanceName, interfaceType, guid, resourceUrl.as_ref(), visible, loggingOn);
-
-        instance.fmu2 = Some(fmu);
-
+        instance.fmu = Some(FMU::FMI2(Box::new(fmu)));
     } else if fmiVersion == 3 {
-
-        let path = unzipdir.join("binaries").join(PLATFORM_TUPLE).join(share_library_filename);
-
-        let mut fmu = FMU3::new(
-            path.as_path(), 
-            instanceName, if logFMICalls != 0 { Some(Box::new(log_fmi_call)) } else { None },
-            Some(Box::new(log_message))
-        ).unwrap();
-
-        let resourcePath = if resources_path.is_dir() {
-            Some(resources_path.as_path())
-        } else {
-            None
-        };
-
-        let status = fmu.instantiateCoSimulation(
-            instanceName,
-            guid, 
-            resourcePath, 
+        let fmu = FMU3::instantiateCoSimulation(
+            unzipdir, 
+            modelIdentifier, 
+            instanceName, 
+            guid,
             visible, 
             loggingOn, 
-            false,
             false, 
-            &[],
-        );
+            false, 
+            Box::new(fmi_rs::fmi3::log::DefaultLogger::default()),
+            logCalls, 
+            None,
+        ).unwrap();
 
-        instance.fmu3 = Some(fmu);
+        instance.fmu = Some(FMU::FMI3(fmu));
     }
-
 }
 
 #[unsafe(no_mangle)]
 pub extern "C" fn FMU_getInfoMessage(instance: *mut c_void) -> *const c_char {
-
     if instance.is_null() {
         return "\0" as *const str as *const c_char;
     }
@@ -264,7 +262,6 @@ pub extern "C" fn FMU_getInfoMessage(instance: *mut c_void) -> *const c_char {
 
 #[unsafe(no_mangle)]
 pub extern "C" fn FMU_getWarningMessage(instance: *mut c_void) -> *const c_char {
-
     if instance.is_null() {
         return "\0" as *const str as *const c_char;
     }
@@ -287,7 +284,6 @@ pub extern "C" fn FMU_getWarningMessage(instance: *mut c_void) -> *const c_char 
 
 #[unsafe(no_mangle)]
 pub extern "C" fn FMU_getErrorMessage(instance: *mut c_void) -> *const c_char {
-    
     if instance.is_null() {
         return "\0" as *const str as *const c_char;
     }
