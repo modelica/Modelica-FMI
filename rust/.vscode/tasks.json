@@ -1,0 +1,19 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "build modelica-fmi",
+            "type": "process",
+            "command": "cargo",
+            "args": [
+                "build",
+                "-p",
+                "modelica-fmi"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": "$rustc"
+        }
+    ]
+}
