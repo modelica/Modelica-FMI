@@ -1,0 +1,4 @@
+within;
+model {{ model_name }}
+  "{{ description }}";
+end {{ model_name }};
