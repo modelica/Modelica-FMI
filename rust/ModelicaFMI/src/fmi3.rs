@@ -1,5 +1,13 @@
-#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals, unused)]
+#![allow(
+    non_camel_case_types,
+    non_snake_case,
+    non_upper_case_globals,
+    unused,
+    clippy::missing_safety_doc
+)]
+
 use crate::common::{FMU, FMUInstance};
+use fmi_rs::fmi3::types::fmi3Status;
 use std::fs::File;
 use std::{
     ffi::{CStr, c_char, c_void},
@@ -8,17 +16,13 @@ use std::{
     sync::{Arc, Mutex},
 };
 use url::Url;
-use fmi_rs::fmi3::types::fmi3Status;
 
 macro_rules! get_fmu {
     ($instance:expr) => {{
         match &$instance.fmu {
             Some(FMU::FMI3(fmu)) => fmu,
             _ => {
-                let mut guard = $instance.errorMessages.lock().unwrap();
-                if !guard.is_empty() {
-                    guard.push("FMU is not instantiated.".to_string());
-                }
+                $instance.log_error("FMU is not instantiated.".to_string());
                 return;
             }
         }
@@ -28,10 +32,7 @@ macro_rules! get_fmu {
 macro_rules! call {
     ($instance:expr, $status:expr) => {
         if !matches!($status, fmi3Status::Ok | fmi3Status::Warning) {
-            let mut guard = $instance.errorMessages.lock().unwrap();
-            if !guard.is_empty() {
-                guard.push("FMI call failed.".to_string());
-            }
+            $instance.log_error("FMI call failed.".to_string());
         }
     };
 }
@@ -98,7 +99,7 @@ pub extern "C" fn FMU_FMI3ExitConfigurationMode(instance: *mut c_void) {
 }
 
 #[unsafe(no_mangle)]
-pub extern "C" fn FMU_FMI3GetFloat32(
+pub unsafe extern "C" fn FMU_FMI3GetFloat32(
     instance: *mut c_void,
     valueReference: i32,
     values: *mut f64,
@@ -108,7 +109,7 @@ pub extern "C" fn FMU_FMI3GetFloat32(
     let fmu = get_fmu!(instance);
 
     let valueReferences = [valueReference as u32];
-    let values = unsafe { std::slice::from_raw_parts_mut(values as *mut f64, nValues as usize) };
+    let values = unsafe { std::slice::from_raw_parts_mut(values, nValues as usize) };
 
     let mut buffer = vec![0f32; nValues as usize];
 
@@ -120,7 +121,7 @@ pub extern "C" fn FMU_FMI3GetFloat32(
 }
 
 #[unsafe(no_mangle)]
-pub extern "C" fn FMU_FMI3GetFloat64(
+pub unsafe extern "C" fn FMU_FMI3GetFloat64(
     instance: *mut c_void,
     valueReference: i32,
     values: *mut f64,
@@ -130,13 +131,13 @@ pub extern "C" fn FMU_FMI3GetFloat64(
     let fmu = get_fmu!(instance);
 
     let valueReferences = [valueReference as u32];
-    let values = unsafe { std::slice::from_raw_parts_mut(values as *mut f64, nValues as usize) };
+    let values = unsafe { std::slice::from_raw_parts_mut(values, nValues as usize) };
 
     call!(instance, fmu.getFloat64(&valueReferences, values));
 }
 
 #[unsafe(no_mangle)]
-pub extern "C" fn FMU_FMI3GetInt8(
+pub unsafe extern "C" fn FMU_FMI3GetInt8(
     instance: *mut c_void,
     valueReference: i32,
     values: *mut i32,
@@ -146,7 +147,7 @@ pub extern "C" fn FMU_FMI3GetInt8(
     let fmu = get_fmu!(instance);
 
     let valueReferences = [valueReference as u32];
-    let values = unsafe { std::slice::from_raw_parts_mut(values as *mut i32, nValues as usize) };
+    let values = unsafe { std::slice::from_raw_parts_mut(values, nValues as usize) };
 
     let mut buffer = vec![0i8; nValues as usize];
 
@@ -158,7 +159,7 @@ pub extern "C" fn FMU_FMI3GetInt8(
 }
 
 #[unsafe(no_mangle)]
-pub extern "C" fn FMU_FMI3GetUInt8(
+pub unsafe extern "C" fn FMU_FMI3GetUInt8(
     instance: *mut c_void,
     valueReference: i32,
     values: *mut i32,
@@ -168,7 +169,7 @@ pub extern "C" fn FMU_FMI3GetUInt8(
     let fmu = get_fmu!(instance);
 
     let valueReferences = [valueReference as u32];
-    let values = unsafe { std::slice::from_raw_parts_mut(values as *mut i32, nValues as usize) };
+    let values = unsafe { std::slice::from_raw_parts_mut(values, nValues as usize) };
 
     let mut buffer = vec![0u8; nValues as usize];
 
@@ -180,7 +181,7 @@ pub extern "C" fn FMU_FMI3GetUInt8(
 }
 
 #[unsafe(no_mangle)]
-pub extern "C" fn FMU_FMI3GetInt16(
+pub unsafe extern "C" fn FMU_FMI3GetInt16(
     instance: *mut c_void,
     valueReference: i32,
     values: *mut i32,
@@ -190,7 +191,7 @@ pub extern "C" fn FMU_FMI3GetInt16(
     let fmu = get_fmu!(instance);
 
     let valueReferences = [valueReference as u32];
-    let values = unsafe { std::slice::from_raw_parts_mut(values as *mut i32, nValues as usize) };
+    let values = unsafe { std::slice::from_raw_parts_mut(values, nValues as usize) };
 
     let mut buffer = vec![0i16; nValues as usize];
 
@@ -202,7 +203,7 @@ pub extern "C" fn FMU_FMI3GetInt16(
 }
 
 #[unsafe(no_mangle)]
-pub extern "C" fn FMU_FMI3GetUInt16(
+pub unsafe extern "C" fn FMU_FMI3GetUInt16(
     instance: *mut c_void,
     valueReference: i32,
     values: *mut i32,
@@ -212,7 +213,7 @@ pub extern "C" fn FMU_FMI3GetUInt16(
     let fmu = get_fmu!(instance);
 
     let valueReferences = [valueReference as u32];
-    let values = unsafe { std::slice::from_raw_parts_mut(values as *mut i32, nValues as usize) };
+    let values = unsafe { std::slice::from_raw_parts_mut(values, nValues as usize) };
 
     let mut buffer = vec![0u16; nValues as usize];
 
@@ -224,7 +225,7 @@ pub extern "C" fn FMU_FMI3GetUInt16(
 }
 
 #[unsafe(no_mangle)]
-pub extern "C" fn FMU_FMI3GetInt32(
+pub unsafe extern "C" fn FMU_FMI3GetInt32(
     instance: *mut c_void,
     valueReference: i32,
     values: *mut i32,
@@ -234,13 +235,13 @@ pub extern "C" fn FMU_FMI3GetInt32(
     let fmu = get_fmu!(instance);
 
     let valueReferences = [valueReference as u32];
-    let values = unsafe { std::slice::from_raw_parts_mut(values as *mut i32, nValues as usize) };
+    let values = unsafe { std::slice::from_raw_parts_mut(values, nValues as usize) };
 
     call!(instance, fmu.getInt32(&valueReferences, values));
 }
 
 #[unsafe(no_mangle)]
-pub extern "C" fn FMU_FMI3GetUInt32(
+pub unsafe extern "C" fn FMU_FMI3GetUInt32(
     instance: *mut c_void,
     valueReference: i32,
     values: *mut i32,
@@ -250,7 +251,7 @@ pub extern "C" fn FMU_FMI3GetUInt32(
     let fmu = get_fmu!(instance);
 
     let valueReferences = [valueReference as u32];
-    let values = unsafe { std::slice::from_raw_parts_mut(values as *mut i32, nValues as usize) };
+    let values = unsafe { std::slice::from_raw_parts_mut(values, nValues as usize) };
 
     let mut buffer = vec![0u32; nValues as usize];
 
@@ -262,7 +263,7 @@ pub extern "C" fn FMU_FMI3GetUInt32(
 }
 
 #[unsafe(no_mangle)]
-pub extern "C" fn FMU_FMI3GetInt64(
+pub unsafe extern "C" fn FMU_FMI3GetInt64(
     instance: *mut c_void,
     valueReference: i32,
     values: *mut i32,
@@ -272,7 +273,7 @@ pub extern "C" fn FMU_FMI3GetInt64(
     let fmu = get_fmu!(instance);
 
     let valueReferences = [valueReference as u32];
-    let values = unsafe { std::slice::from_raw_parts_mut(values as *mut i32, nValues as usize) };
+    let values = unsafe { std::slice::from_raw_parts_mut(values, nValues as usize) };
 
     let mut buffer = vec![0i64; nValues as usize];
 
@@ -284,7 +285,7 @@ pub extern "C" fn FMU_FMI3GetInt64(
 }
 
 #[unsafe(no_mangle)]
-pub extern "C" fn FMU_FMI3GetUInt64(
+pub unsafe extern "C" fn FMU_FMI3GetUInt64(
     instance: *mut c_void,
     valueReference: i32,
     values: *mut i32,
@@ -294,7 +295,7 @@ pub extern "C" fn FMU_FMI3GetUInt64(
     let fmu = get_fmu!(instance);
 
     let valueReferences = [valueReference as u32];
-    let values = unsafe { std::slice::from_raw_parts_mut(values as *mut i32, nValues as usize) };
+    let values = unsafe { std::slice::from_raw_parts_mut(values, nValues as usize) };
 
     let mut buffer = vec![0u64; nValues as usize];
 
@@ -306,7 +307,7 @@ pub extern "C" fn FMU_FMI3GetUInt64(
 }
 
 #[unsafe(no_mangle)]
-pub extern "C" fn FMU_FMI3GetBoolean(
+pub unsafe extern "C" fn FMU_FMI3GetBoolean(
     instance: *mut c_void,
     valueReference: i32,
     values: *mut i32,
@@ -316,7 +317,7 @@ pub extern "C" fn FMU_FMI3GetBoolean(
     let fmu = get_fmu!(instance);
 
     let valueReferences = [valueReference as u32];
-    let values = unsafe { std::slice::from_raw_parts_mut(values as *mut i32, nValues as usize) };
+    let values = unsafe { std::slice::from_raw_parts_mut(values, nValues as usize) };
 
     let mut buffer = vec![false; nValues as usize];
 
@@ -328,7 +329,7 @@ pub extern "C" fn FMU_FMI3GetBoolean(
 }
 
 #[unsafe(no_mangle)]
-pub extern "C" fn FMU_FMI3SetFloat32(
+pub unsafe extern "C" fn FMU_FMI3SetFloat32(
     instance: *mut c_void,
     valueReferences: *const i32,
     nValueReferences: i32,
@@ -353,7 +354,7 @@ pub extern "C" fn FMU_FMI3SetFloat32(
 }
 
 #[unsafe(no_mangle)]
-pub extern "C" fn FMU_FMI3SetFloat64(
+pub unsafe extern "C" fn FMU_FMI3SetFloat64(
     instance: *mut c_void,
     valueReferences: *const i32,
     nValueReferences: i32,
@@ -372,7 +373,7 @@ pub extern "C" fn FMU_FMI3SetFloat64(
 }
 
 #[unsafe(no_mangle)]
-pub extern "C" fn FMU_FMI3SetInt8(
+pub unsafe extern "C" fn FMU_FMI3SetInt8(
     instance: *mut c_void,
     valueReferences: *const i32,
     nValueReferences: i32,
@@ -397,7 +398,7 @@ pub extern "C" fn FMU_FMI3SetInt8(
 }
 
 #[unsafe(no_mangle)]
-pub extern "C" fn FMU_FMI3SetUInt8(
+pub unsafe extern "C" fn FMU_FMI3SetUInt8(
     instance: *mut c_void,
     valueReferences: *const i32,
     nValueReferences: i32,
@@ -422,7 +423,7 @@ pub extern "C" fn FMU_FMI3SetUInt8(
 }
 
 #[unsafe(no_mangle)]
-pub extern "C" fn FMU_FMI3SetInt16(
+pub unsafe extern "C" fn FMU_FMI3SetInt16(
     instance: *mut c_void,
     valueReferences: *const i32,
     nValueReferences: i32,
@@ -447,7 +448,7 @@ pub extern "C" fn FMU_FMI3SetInt16(
 }
 
 #[unsafe(no_mangle)]
-pub extern "C" fn FMU_FMI3SetUInt16(
+pub unsafe extern "C" fn FMU_FMI3SetUInt16(
     instance: *mut c_void,
     valueReferences: *const i32,
     nValueReferences: i32,
@@ -472,7 +473,7 @@ pub extern "C" fn FMU_FMI3SetUInt16(
 }
 
 #[unsafe(no_mangle)]
-pub extern "C" fn FMU_FMI3SetInt32(
+pub unsafe extern "C" fn FMU_FMI3SetInt32(
     instance: *mut c_void,
     valueReferences: *const i32,
     nValueReferences: i32,
@@ -491,7 +492,7 @@ pub extern "C" fn FMU_FMI3SetInt32(
 }
 
 #[unsafe(no_mangle)]
-pub extern "C" fn FMU_FMI3SetUInt32(
+pub unsafe extern "C" fn FMU_FMI3SetUInt32(
     instance: *mut c_void,
     valueReferences: *const i32,
     nValueReferences: i32,
@@ -516,7 +517,7 @@ pub extern "C" fn FMU_FMI3SetUInt32(
 }
 
 #[unsafe(no_mangle)]
-pub extern "C" fn FMU_FMI3SetInt64(
+pub unsafe extern "C" fn FMU_FMI3SetInt64(
     instance: *mut c_void,
     valueReferences: *const i32,
     nValueReferences: i32,
@@ -541,7 +542,7 @@ pub extern "C" fn FMU_FMI3SetInt64(
 }
 
 #[unsafe(no_mangle)]
-pub extern "C" fn FMU_FMI3SetUInt64(
+pub unsafe extern "C" fn FMU_FMI3SetUInt64(
     instance: *mut c_void,
     valueReferences: *const i32,
     nValueReferences: i32,
@@ -566,7 +567,7 @@ pub extern "C" fn FMU_FMI3SetUInt64(
 }
 
 #[unsafe(no_mangle)]
-pub extern "C" fn FMU_FMI3SetBoolean(
+pub unsafe extern "C" fn FMU_FMI3SetBoolean(
     instance: *mut c_void,
     valueReferences: *const i32,
     nValueReferences: i32,
@@ -579,6 +580,7 @@ pub extern "C" fn FMU_FMI3SetBoolean(
     let valueReferences = unsafe {
         std::slice::from_raw_parts(valueReferences as *const u32, nValueReferences as usize)
     };
+
     let values = unsafe { std::slice::from_raw_parts(values, nValues as usize) };
 
     let mut buffer = vec![false; nValues as usize];
@@ -591,7 +593,7 @@ pub extern "C" fn FMU_FMI3SetBoolean(
 }
 
 #[unsafe(no_mangle)]
-pub extern "C" fn FMU_FMI3SetString(
+pub unsafe extern "C" fn FMU_FMI3SetString(
     instance: *mut c_void,
     valueReferences: *const i32,
     nValueReferences: i32,
@@ -617,7 +619,7 @@ pub extern "C" fn FMU_FMI3SetString(
 }
 
 #[unsafe(no_mangle)]
-pub extern "C" fn FMU_FMI3UpdateDiscreteStates(
+pub unsafe extern "C" fn FMU_FMI3UpdateDiscreteStates(
     instance: *mut c_void,
     valuesOfContinuousStatesChanged: *mut i32,
     nextEventTime: *mut f64,
@@ -631,13 +633,16 @@ pub extern "C" fn FMU_FMI3UpdateDiscreteStates(
     let mut values_of_continuous_states_changed = false;
     let mut next_event_time = None;
 
-    call!(instance, fmu.updateDiscreteStates(
-        &mut discrete_states_need_update,
-        &mut terminate_simulation,
-        &mut nominals_of_continuous_states_changed,
-        &mut values_of_continuous_states_changed,
-        &mut next_event_time,
-    ));
+    call!(
+        instance,
+        fmu.updateDiscreteStates(
+            &mut discrete_states_need_update,
+            &mut terminate_simulation,
+            &mut nominals_of_continuous_states_changed,
+            &mut values_of_continuous_states_changed,
+            &mut next_event_time,
+        )
+    );
 
     if !valuesOfContinuousStatesChanged.is_null() {
         unsafe {
@@ -645,7 +650,9 @@ pub extern "C" fn FMU_FMI3UpdateDiscreteStates(
         }
     }
 
-    if let Some(next_event_time) = next_event_time && !nextEventTime.is_null() {
+    if let Some(next_event_time) = next_event_time
+        && !nextEventTime.is_null()
+    {
         unsafe { *nextEventTime = next_event_time };
     }
 }
@@ -669,58 +676,54 @@ pub extern "C" fn FMU_FMI3SetTime(instance: *mut c_void, time: f64) {
 }
 
 #[unsafe(no_mangle)]
-pub extern "C" fn FMU_FMI3SetContinuousStates(
+pub unsafe extern "C" fn FMU_FMI3SetContinuousStates(
     instance: *mut c_void,
     continuousStates: *const f64,
     nContinuousStates: i32,
 ) {
     let instance = get_instance!(instance);
     let fmu = get_fmu!(instance);
-    let continuousStates = unsafe {
-        std::slice::from_raw_parts(continuousStates as *const f64, nContinuousStates as usize)
-    };
+    let continuousStates =
+        unsafe { std::slice::from_raw_parts(continuousStates, nContinuousStates as usize) };
     call!(instance, fmu.setContinuousStates(continuousStates));
 }
 
 #[unsafe(no_mangle)]
-pub extern "C" fn FMU_FMI3GetContinuousStateDerivatives(
+pub unsafe extern "C" fn FMU_FMI3GetContinuousStateDerivatives(
     instance: *mut c_void,
     derivatives: *mut f64,
     nContinuousStates: i32,
 ) {
     let instance = get_instance!(instance);
     let fmu = get_fmu!(instance);
-    let derivatives = unsafe {
-        std::slice::from_raw_parts_mut(derivatives as *mut f64, nContinuousStates as usize)
-    };
+    let derivatives =
+        unsafe { std::slice::from_raw_parts_mut(derivatives, nContinuousStates as usize) };
     call!(instance, fmu.getContinuousStateDerivatives(derivatives));
 }
 
 #[unsafe(no_mangle)]
-pub extern "C" fn FMU_FMI3GetEventIndicators(
+pub unsafe extern "C" fn FMU_FMI3GetEventIndicators(
     instance: *mut c_void,
     eventIndicators: *mut f64,
     nEventIndicators: i32,
 ) {
     let instance = get_instance!(instance);
     let fmu = get_fmu!(instance);
-    let eventIndicators = unsafe {
-        std::slice::from_raw_parts_mut(eventIndicators as *mut f64, nEventIndicators as usize)
-    };
+    let eventIndicators =
+        unsafe { std::slice::from_raw_parts_mut(eventIndicators, nEventIndicators as usize) };
     call!(instance, fmu.getEventIndicators(eventIndicators));
 }
 
 #[unsafe(no_mangle)]
-pub extern "C" fn FMU_FMI3GetContinuousStates(
+pub unsafe extern "C" fn FMU_FMI3GetContinuousStates(
     instance: *mut c_void,
     continuousStates: *mut f64,
     nContinuousStates: i32,
 ) {
     let instance = get_instance!(instance);
     let fmu = get_fmu!(instance);
-    let continuousStates = unsafe {
-        std::slice::from_raw_parts_mut(continuousStates as *mut f64, nContinuousStates as usize)
-    };
+    let continuousStates =
+        unsafe { std::slice::from_raw_parts_mut(continuousStates, nContinuousStates as usize) };
     call!(instance, fmu.getContinuousStates(continuousStates));
 }
 

@@ -1,0 +1,14 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Debug dymosim.exe",
+            "type": "cppvsdbg",
+            "request": "launch",
+            "program": "C:/Users/tsr2/Documents/Dymola/dymosim.exe",
+            // "args": ["--exact", "test_fmi3_start_values", "--nocapture", "--test-threads=1"],
+            "cwd": "C:/Users/tsr2/Documents/Dymola",
+            "console": "integratedTerminal"
+        }
+    ]
+}

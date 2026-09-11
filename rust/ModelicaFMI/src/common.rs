@@ -1,10 +1,15 @@
-#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals, unused)]
+#![allow(
+    non_camel_case_types,
+    non_snake_case,
+    non_upper_case_globals,
+    unused,
+    clippy::missing_safety_doc
+)]
+
 use fmi_rs::{
-    SHARED_LIBRARY_EXTENSION,
-    fmi2::{CS, FMU2, PLATFORM},
-    fmi3::FMU3,
+    SHARED_LIBRARY_EXTENSION, fmi2::{CS, FMU2, PLATFORM, log, types::fmi2Status}, fmi3::{FMU3, types::fmi3Status},
 };
-use std::fs::File;
+use std::{cell::RefCell, fs::File};
 use std::{
     ffi::{CStr, c_char, c_void},
     io::Write,
@@ -14,21 +19,17 @@ use std::{
 use url::Url;
 
 pub enum FMU {
-    FMI2(Box<FMU2<CS>>),
+    FMI2(Arc<FMU2<CS>>),
     FMI3(Arc<FMU3>),
 }
 
 pub struct FMUInstance {
     pub fmu: Option<FMU>,
-
-    pub infoMessages: Arc<Mutex<Vec<String>>>,
-    pub infoMessageBuffer: Arc<Mutex<Vec<u8>>>,
-
-    pub warningMessages: Arc<Mutex<Vec<String>>>,
-    pub warningMessageBuffer: Arc<Mutex<Vec<u8>>>,
-
-    pub errorMessages: Arc<Mutex<Vec<String>>>,
-    pub errorMessageBuffer: Arc<Mutex<Vec<u8>>>,
+    log_file: Option<RefCell<File>>,
+    info_messages: RefCell<Vec<String>>,
+    warning_messages: RefCell<Vec<String>>,
+    error_messages: RefCell<Vec<String>>,
+    message_buffer: RefCell<Vec<u8>>,
 }
 
 macro_rules! get_instance {
@@ -76,31 +77,69 @@ macro_rules! call {
     };
 }
 
-pub struct MyLogger;
+// pub struct MyLogger;
 
-impl fmi_rs::fmi2::log::Logger for MyLogger {
-    fn log_call(&self, status: fmi_rs::fmi2::types::fmi2Status, message: &str) {
-        todo!()
+impl FMUInstance {
+    pub fn log_call(&self, message: &str) {
+        self.info_messages.borrow_mut().push(format!("[FMI] {message}"));
     }
 
-    fn log_message(&self, status: fmi_rs::fmi2::types::fmi2Status, category: &str, message: &str) {
-        todo!()
+    pub fn log_info(&self, message: String) {
+        self.info_messages.borrow_mut().push(message);
+    }
+    
+    pub fn log_warning(&self, message: String) {
+        self.warning_messages.borrow_mut().push(message);
+    }
+    
+    pub fn log_error(&self, message: String) {
+        self.error_messages.borrow_mut().push(message);
+    }
+}
+
+impl fmi_rs::fmi2::log::Logger for FMUInstance {
+    fn log_call(&self, _status: fmi2Status, message: &str) {
+        self.log_call(message);
+    }
+
+    fn log_message(&self, status: fmi2Status, category: &str, message: &str) {
+        let message = format!("[{category}] {message}");
+        match status {
+            fmi2Status::Ok => self.log_info(message),
+            fmi2Status::Warning => self.log_warning(message),
+            _ => self.log_error(message),
+        }
+    }
+}
+
+impl fmi_rs::fmi3::log::Logger for FMUInstance {
+    fn log_call(&self, _status: fmi3Status, message: &str) {
+        self.log_call(message);
+    }
+
+    fn log_message(&self, status: fmi3Status, category: &str, message: &str) {
+        let message = format!("[{category}] {message}");
+        match status {
+            fmi3Status::Ok => self.log_info(message),
+            fmi3Status::Warning => self.log_warning(message),
+            _ => self.log_error(message),
+        }
     }
 }
 
 #[unsafe(no_mangle)]
 pub extern "C" fn FMU_Create() -> *mut c_void {
-    let instance = FMUInstance {
+    #[allow(clippy::arc_with_non_send_sync)]
+    let instance = Arc::new(FMUInstance {
         fmu: None,
-        infoMessages: Arc::new(Mutex::new(Vec::new())),
-        infoMessageBuffer: Arc::new(Mutex::new(Vec::new())),
-        warningMessages: Arc::new(Mutex::new(Vec::new())),
-        warningMessageBuffer: Arc::new(Mutex::new(Vec::new())),
-        errorMessages: Arc::new(Mutex::new(Vec::new())),
-        errorMessageBuffer: Arc::new(Mutex::new(Vec::new())),
-    };
+        log_file: None,
+        info_messages: RefCell::new(Vec::new()),
+        warning_messages: RefCell::new(Vec::new()),
+        error_messages: RefCell::new(Vec::new()),
+        message_buffer: RefCell::new(Vec::new()),
+    });
 
-    Box::into_raw(Box::new(instance)) as *mut c_void
+    Arc::into_raw(instance) as *mut c_void
 }
 
 #[unsafe(no_mangle)]
@@ -109,9 +148,11 @@ pub extern "C" fn FMU_Free(instance: *mut c_void) {
         return;
     }
 
-    let instance = unsafe { Box::from_raw(instance as *mut FMUInstance) };
+    let instance = unsafe { Arc::from_raw(instance as *mut FMUInstance) };
 
-    match instance.fmu {
+    // let instance = unsafe { Box::from_raw(instance as *mut FMUInstance) };
+
+    match &instance.fmu {
         Some(FMU::FMI2(fmu)) => {
             fmu.terminate();
         }
@@ -123,7 +164,7 @@ pub extern "C" fn FMU_Free(instance: *mut c_void) {
 }
 
 #[unsafe(no_mangle)]
-pub extern "C" fn FMU_Load(
+pub unsafe extern "C" fn FMU_Load(
     instance: *mut c_void,
     unzipdir: *const c_char,
     fmiVersion: i32,
@@ -151,52 +192,15 @@ pub extern "C" fn FMU_Load(
     let instanceName = unsafe { std::ffi::CStr::from_ptr(instanceName) };
     let instanceName = instanceName.to_str().unwrap();
 
-    let mut info_messages = instance.infoMessages.clone();
-
-    let log_file_option = if logToFile != 0 {
+    instance.log_file = if logToFile != 0 {
         let log_file_cstr = unsafe { std::ffi::CStr::from_ptr(logFile) };
         let log_file_str = log_file_cstr.to_str().unwrap();
         let mut log_file = File::create(log_file_str).unwrap();
-        let mut log_file_ref = Arc::new(Mutex::new(log_file));
-        Some(log_file_ref)
+        Some(RefCell::new(log_file))
     } else {
         None
     };
 
-    // let log_fmi_call = move |status: &fmi::types::fmiStatus, message: &str| {
-    //     if let Some(log_file_ref) = &log_file_option {
-    //         let mut log_file = log_file_ref.lock().unwrap();
-    //         log_file.write_all(message.as_bytes()).unwrap();
-    //         log_file.write_all(b"\n").unwrap();
-    //     } else {
-    //         let mut messages = info_messages.lock().unwrap();
-    //         messages.push(message.to_string());
-    //     }
-    // };
-
-    // let mut info_messages = instance.infoMessages.clone();
-    // let mut warning_messages = instance.warningMessages.clone();
-    // let mut error_messages = instance.errorMessages.clone();
-
-    // let log_message = move |status: &fmi::types::fmiStatus, category: &str, message: &str| {
-    //     let messages = match status {
-    //         fmiOK => &info_messages,
-    //         fmiWarning => &warning_messages,
-    //         _ => &error_messages,
-    //     };
-
-    //     messages.lock().unwrap().push(message.to_string());
-    // };
-
-    // let interfaceType = match interfaceType {
-    //     0 => fmi::fmi2::types::fmi2Type::fmi2ModelExchange,
-    //     1 => fmi::fmi2::types::fmi2Type::fmi2CoSimulation,
-    //     _ => {
-    //         let mut guard = instance.errorMessages.lock().unwrap();
-    //         guard.push("Invalid interface type.".to_string());
-    //         return;
-    //     }
-    // };
     let visible = visible != 0;
     let loggingOn = loggingOn != 0;
     let resources_path = unzipdir.join("resources").join("");
@@ -204,7 +208,11 @@ pub extern "C" fn FMU_Load(
     let guid = guid.to_str().unwrap();
     let logCalls = logFMICalls != 0;
 
+    let instance_arc: Arc<FMUInstance> = unsafe { Arc::from_raw(instance as *mut FMUInstance) };
+
     if fmiVersion == 2 {
+        let logger: Arc<dyn fmi_rs::fmi2::log::Logger> = instance_arc.clone();
+
         let mut fmu = FMU2::<CS>::new(
             unzipdir,
             modelIdentifier,
@@ -213,26 +221,29 @@ pub extern "C" fn FMU_Load(
             visible,
             loggingOn,
             logCalls,
-            Box::new(fmi_rs::fmi2::log::DefaultLogger::default()),
+            logger,
             true,
         )
         .unwrap();
 
-        instance.fmu = Some(FMU::FMI2(Box::new(fmu)));
+        instance.fmu = Some(FMU::FMI2(fmu));
     } else if fmiVersion == 3 {
+        let logger: Arc<dyn fmi_rs::fmi3::log::Logger> = instance_arc.clone();
+
         let fmu = FMU3::instantiateCoSimulation(
-            unzipdir, 
-            modelIdentifier, 
-            instanceName, 
+            unzipdir,
+            modelIdentifier,
+            instanceName,
             guid,
-            visible, 
-            loggingOn, 
-            false, 
-            false, 
-            Box::new(fmi_rs::fmi3::log::DefaultLogger::default()),
-            logCalls, 
+            visible,
+            loggingOn,
+            false,
+            false,
+            logger,
+            logCalls,
             None,
-        ).unwrap();
+        )
+        .unwrap();
 
         instance.fmu = Some(FMU::FMI3(fmu));
     }
@@ -246,12 +257,11 @@ pub extern "C" fn FMU_getInfoMessage(instance: *mut c_void) -> *const c_char {
 
     let instance = unsafe { &mut *(instance as *mut FMUInstance) };
 
-    let mut buffer = instance.infoMessageBuffer.lock().unwrap();
+    let mut buffer = instance.message_buffer.borrow_mut();
+
     buffer.clear();
 
-    let mut messages = instance.infoMessages.lock().unwrap();
-
-    if let Some(message) = messages.pop() {
+    if let Some(message) = instance.info_messages.borrow_mut().pop() {
         buffer.extend_from_slice(message.as_bytes());
     }
 
@@ -268,12 +278,11 @@ pub extern "C" fn FMU_getWarningMessage(instance: *mut c_void) -> *const c_char 
 
     let instance = unsafe { &mut *(instance as *mut FMUInstance) };
 
-    let mut buffer = instance.warningMessageBuffer.lock().unwrap();
+    let mut buffer = instance.message_buffer.borrow_mut();
+
     buffer.clear();
 
-    let mut messages = instance.warningMessages.lock().unwrap();
-
-    if let Some(message) = messages.pop() {
+    if let Some(message) = instance.warning_messages.borrow_mut().pop() {
         buffer.extend_from_slice(message.as_bytes());
     }
 
@@ -290,12 +299,11 @@ pub extern "C" fn FMU_getErrorMessage(instance: *mut c_void) -> *const c_char {
 
     let instance = unsafe { &mut *(instance as *mut FMUInstance) };
 
-    let mut buffer = instance.errorMessageBuffer.lock().unwrap();
+    let mut buffer = instance.message_buffer.borrow_mut();
+
     buffer.clear();
 
-    let mut messages = instance.errorMessages.lock().unwrap();
-
-    for message in messages.drain(..) {
+    for message in instance.error_messages.borrow_mut().drain(..) {
         buffer.extend_from_slice(message.as_bytes());
         buffer.push(b'\n');
     }
