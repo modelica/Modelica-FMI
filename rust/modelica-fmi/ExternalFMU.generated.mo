@@ -15,9 +15,11 @@ block BouncingBall
   parameter FMI2Real e = 0.7 "Coefficient of restitution";
 
 
-  FMI2RealOutput h(unit="m", quantity="Position") "Position of the ball" annotation(Placement(transformation(extent={ { 100, -60 }, { 120, -40 } }), iconTransformation(extent={ { 100, -60 }, { 120, -40 } })));
 
-  FMI2RealOutput v(unit="m/s", quantity="Velocity") "Velocity of the ball" annotation(Placement(transformation(extent={ { 100, 40 }, { 120, 60 } }), iconTransformation(extent={ { 100, 40 }, { 120, 60 } })));
+  FMI2RealOutput h "Position of the ball";
+
+  FMI2RealOutput v "Velocity of the ball";
+
 
 protected
 
@@ -26,8 +28,11 @@ protected
   Boolean initialized(start=false, fixed=true);
 
   record OutputVariables
+
     Real h;
+
     Real v;
+
   end OutputVariables;
 
   OutputVariables outputVariables;
@@ -83,8 +88,11 @@ algorithm
     end if;
 
     if not initial() then
-      outputVariables.h := FMI2GetReal(instance, valueReference=1);
-      outputVariables.v := FMI2GetReal(instance, valueReference=3);
+
+    outputVariables.h := FMI2GetReal(instance, valueReference=1);
+
+    outputVariables.v := FMI2GetReal(instance, valueReference=3);
+
     end if;
 
   end when;

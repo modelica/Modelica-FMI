@@ -8,14 +8,12 @@ block {{ model_name }}
   import FMI.FMI2.Functions.*;
 
   parameter Modelica.Units.SI.Time communicationStepSize = 0.01 annotation(Dialog(tab="FMI", group="Parameters"));
-
 {% for parameter in parameters %}
   {{ parameter }}
-{% endfor %}
-
-  FMI2RealOutput h(unit="m", quantity="Position") "Position of the ball" annotation(Placement(transformation(extent={ { 100, -60 }, { 120, -40 } }), iconTransformation(extent={ { 100, -60 }, { 120, -40 } })));
-
-  FMI2RealOutput v(unit="m/s", quantity="Velocity") "Velocity of the ball" annotation(Placement(transformation(extent={ { 100, 40 }, { 120, 60 } }), iconTransformation(extent={ { 100, 40 }, { 120, 60 } })));
+{%- endfor %}
+{% for output in outputs %}
+  {{ output }}
+{%- endfor %}
 
 protected
 
@@ -24,8 +22,9 @@ protected
   Boolean initialized(start=false, fixed=true);
 
   record OutputVariables
-    Real h;
-    Real v;
+{%- for output_variable in output_variables %}
+    {{ output_variable }}
+{%- endfor %}
   end OutputVariables;
 
   OutputVariables outputVariables;
@@ -81,8 +80,9 @@ algorithm
     end if;
 
     if not initial() then
-      outputVariables.h := FMI2GetReal(instance, valueReference=1);
-      outputVariables.v := FMI2GetReal(instance, valueReference=3);
+{%- for output_update in output_updates %}
+    {{ output_update }}
+{%- endfor %}
     end if;
 
   end when;

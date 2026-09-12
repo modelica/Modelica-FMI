@@ -7,7 +7,9 @@
 )]
 
 use fmi_rs::{
-    SHARED_LIBRARY_EXTENSION, fmi2::{CS, FMU2, PLATFORM, log, types::fmi2Status}, fmi3::{FMU3, types::fmi3Status},
+    SHARED_LIBRARY_EXTENSION,
+    fmi2::{CS, FMU2, PLATFORM, log, types::fmi2Status},
+    fmi3::{FMU3, types::fmi3Status},
 };
 use std::{cell::RefCell, fs::File};
 use std::{
@@ -81,17 +83,19 @@ macro_rules! call {
 
 impl FMUInstance {
     pub fn log_call(&self, message: &str) {
-        self.info_messages.borrow_mut().push(format!("[FMI] {message}"));
+        self.info_messages
+            .borrow_mut()
+            .push(format!("[FMI] {message}"));
     }
 
     pub fn log_info(&self, message: String) {
         self.info_messages.borrow_mut().push(message);
     }
-    
+
     pub fn log_warning(&self, message: String) {
         self.warning_messages.borrow_mut().push(message);
     }
-    
+
     pub fn log_error(&self, message: String) {
         self.error_messages.borrow_mut().push(message);
     }
