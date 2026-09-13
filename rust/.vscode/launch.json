@@ -16,9 +16,10 @@
             "request": "launch",
             "program": "${workspaceFolder}/target/debug/modelica-fmi.exe",
             "args": [
-                "C:/Users/tsr2/Downloads/Reference-FMUs/2.0/BouncingBall2.fmu",
-                "E:/WS/Modelica-FMI/FMI/Examples/BouncingBall.mo",
-                "--verbose"
+                "C:/Users/tsr2/Downloads/Reference-FMUs/2.0/BouncingBall.fmu",
+                "E:/WS/Modelica-FMI/FMI/Examples/BouncingBall2.mo",
+                "--verbose",
+                "--overwrite"
             ],
             "cwd": "${workspaceFolder}",
             "preLaunchTask": "build modelica-fmi",

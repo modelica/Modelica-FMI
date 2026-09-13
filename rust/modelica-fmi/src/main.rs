@@ -1,4 +1,5 @@
 use anyhow::Context;
+use anyhow::bail;
 use clap::Parser;
 use fmi_rs::{
     model_description::{
@@ -10,29 +11,33 @@ use fmi_rs::{
 };
 use sha2::{Digest, Sha256};
 use std::{
-    error::Error,
     fs::{self, File},
     io::{self, Read},
     path::{Path, PathBuf},
 };
-use tera;
 
 const MODELICA_TEMPLATE: &str = include_str!("../templates/ExternalFMU.mo.tera");
 
 #[derive(Debug, Parser)]
 #[command(
     name = "modelica-fmi",
-    about = "Render a Modelica file from a Tera template"
+    about = "Import an FMU into a Modelica library"
 )]
 struct Cli {
-    #[arg(help = "Path to the FMU")]
-    input_file: PathBuf,
+    #[arg(help = "Path to the FMU to import")]
+    fmu_file: PathBuf,
 
-    #[arg(help = "Path for the rendered Modelica file")]
-    output_file: PathBuf,
+    #[arg(help = "Path to the Modelica file to create")]
+    modelica_file: PathBuf,
 
     #[arg(short, long, help = "Enable progress messages")]
     verbose: bool,
+
+    #[arg(
+        long,
+        help = "Overwrite an existing extraction directory or Modelica file"
+    )]
+    overwrite: bool,
 }
 
 fn get_library_root<P: AsRef<Path>>(path: P) -> Option<PathBuf> {
@@ -46,23 +51,34 @@ fn get_library_root<P: AsRef<Path>>(path: P) -> Option<PathBuf> {
         .map(Path::to_path_buf)
 }
 
-fn main() -> Result<(), Box<dyn Error>> {
+fn main() -> anyhow::Result<()> {
     let arguments = Cli::parse();
 
-    let fmu_path = arguments.input_file;
-    let output_file = &arguments.output_file;
+    let fmu_path = arguments.fmu_file;
+    let output_file = &arguments.modelica_file;
     let verbose = arguments.verbose;
-    
+    let overwrite = arguments.overwrite;
+
     let library_root =
-    get_library_root(output_file).ok_or(anyhow::anyhow!("Failed to find library root"))?;
-    
+        get_library_root(output_file).ok_or(anyhow::anyhow!("Failed to find library root"))?;
+
     let hash = sha256_file(&fmu_path).context(format!("Failed to read {}", fmu_path.display()))?;
 
     let unzipdir = library_root.join("Resources").join("FMUs").join(&hash[..7]);
 
     if unzipdir.exists() {
-        fs::remove_dir_all(&unzipdir)
-            .with_context(|| format!("Failed to remove existing FMU directory {unzipdir:?}"))?;
+        if overwrite {
+            if verbose {
+                println!("Removing FMU directory {}", output_file.display());
+            }
+            fs::remove_dir_all(&unzipdir)
+                .with_context(|| format!("Failed to remove existing FMU directory {unzipdir:?}"))?;
+        } else {
+            bail!(
+                "FMU directory {} already exists (use --overwrite)",
+                unzipdir.display()
+            )
+        }
     }
 
     if verbose {
@@ -71,12 +87,19 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     extract_zip_archive(&fmu_path, &unzipdir).context("Failed to extract FMU")?;
 
+    if !overwrite && output_file.exists() {
+        bail!(
+            "Modelica file {} already exists (use --overwrite)",
+            output_file.display()
+        );
+    }
+
     let xml_path: PathBuf = unzipdir.join("modelDescription.xml");
 
     let fmi_major_version =
         peek_fmi_major_version(&xml_path).context("Failed to determine FMI version")?;
     if fmi_major_version != FMIMajorVersion::V2 {
-        return Err(format!("Expected an FMI 2.0 FMU, found FMI {:?}", fmi_major_version).into());
+        bail!("Expected an FMI 2.0 FMU, found FMI {:?}", fmi_major_version);
     }
 
     let model_description = ModelDescription::from_path(&xml_path)?;
@@ -98,7 +121,7 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     let modelica = tera::Tera::one_off(MODELICA_TEMPLATE, &context, false)?;
 
-    fs::write(&output_file, modelica)?;
+    fs::write(output_file, modelica)?;
     update_package_order(output_file)?;
 
     if verbose {
@@ -113,7 +136,7 @@ fn update_package_order(output_file: &Path) -> io::Result<()> {
         .parent()
         .unwrap_or_else(|| Path::new("."))
         .join("package.order");
-    
+
     let entry = output_file
         .file_stem()
         .and_then(|stem| stem.to_str())
