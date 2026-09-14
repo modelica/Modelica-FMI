@@ -1,0 +1,3269 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fmiModelDescription
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  fmiVersion="2.0"
+  modelName="Drive_FMU_2"
+  guid="{00c03ef7-4b7c-4917-8c9e-7a2416506381}"
+  generationTool="Dymola Version 2026x Refresh 1, 2026-04-08 (Co-simulation using Cvode)"
+  generationDateAndTime="2026-09-08T07:08:27Z"
+  variableNamingConvention="structured"
+  numberOfEventIndicators="4">
+  <ModelExchange
+    modelIdentifier="Drive_FMU_2"
+    completedIntegratorStepNotNeeded="true"
+    canNotUseMemoryManagementFunctions="true"
+    canGetAndSetFMUstate="true"
+    canSerializeFMUstate="true"
+    providesDirectionalDerivative="true">
+    <SourceFiles>
+      <File
+        name="all_Drive_FMU_2.c"/>
+    </SourceFiles>
+  </ModelExchange>
+  <CoSimulation
+    modelIdentifier="Drive_FMU_2"
+    canHandleVariableCommunicationStepSize="true"
+    canInterpolateInputs="true"
+    maxOutputDerivativeOrder="1"
+    canNotUseMemoryManagementFunctions="true"
+    canGetAndSetFMUstate="true"
+    canSerializeFMUstate="true"
+    providesDirectionalDerivative="true">
+    <SourceFiles>
+      <File
+        name="all_Drive_FMU_2.c"/>
+    </SourceFiles>
+  </CoSimulation>
+  <UnitDefinitions>
+    <Unit
+      name="1"/>
+    <Unit
+      name="1/K">
+      <BaseUnit K="-1"/>
+    </Unit>
+    <Unit
+      name="A">
+      <BaseUnit A="1"/>
+    </Unit>
+    <Unit
+      name="A/s">
+      <BaseUnit s="-1"
+        A="1"/>
+    </Unit>
+    <Unit
+      name="H">
+      <BaseUnit kg="1"
+        m="2"
+        s="-2"
+        A="-2"/>
+    </Unit>
+    <Unit
+      name="K">
+      <BaseUnit K="1"/>
+      <DisplayUnit
+        name="degC"
+        offset="-273.15"/>
+    </Unit>
+    <Unit
+      name="N.m">
+      <BaseUnit kg="1"
+        m="2"
+        s="-2"/>
+    </Unit>
+    <Unit
+      name="Ohm">
+      <BaseUnit kg="1"
+        m="2"
+        s="-3"
+        A="-2"/>
+    </Unit>
+    <Unit
+      name="S">
+      <BaseUnit kg="-1"
+        m="-2"
+        s="3"
+        A="2"/>
+    </Unit>
+    <Unit
+      name="V">
+      <BaseUnit kg="1"
+        m="2"
+        s="-3"
+        A="-1"/>
+    </Unit>
+    <Unit
+      name="W">
+      <BaseUnit kg="1"
+        m="2"
+        s="-3"/>
+    </Unit>
+    <Unit
+      name="Wb">
+      <BaseUnit kg="1"
+        m="2"
+        s="-2"
+        A="-1"/>
+    </Unit>
+    <Unit
+      name="kg.m2">
+      <BaseUnit kg="1"
+        m="2"/>
+    </Unit>
+    <Unit
+      name="rad">
+      <BaseUnit rad="1"/>
+      <DisplayUnit
+        name="deg"
+        factor="57.29577951308232"/>
+    </Unit>
+    <Unit
+      name="rad-1">
+      <BaseUnit rad="-1"/>
+    </Unit>
+    <Unit
+      name="rad/s">
+      <BaseUnit s="-1"
+        rad="1"/>
+      <DisplayUnit
+        name="rev/min"
+        factor="9.549296585513721"/>
+    </Unit>
+    <Unit
+      name="rad/s2">
+      <BaseUnit s="-2"
+        rad="1"/>
+    </Unit>
+  </UnitDefinitions>
+  <TypeDefinitions>
+    <SimpleType
+      name="Modelica.Blocks.Interfaces.RealInput">
+      <Real/>
+    </SimpleType>
+    <SimpleType
+      name="Modelica.Blocks.Interfaces.RealOutput">
+      <Real/>
+    </SimpleType>
+    <SimpleType
+      name="Modelica.Electrical.Machines.Thermal.LinearTemperatureCoefficient20">
+      <Real
+        quantity="LinearTemperatureCoefficient"
+        unit="1/K"/>
+    </SimpleType>
+    <SimpleType
+      name="Modelica.Units.SI.Angle">
+      <Real
+        quantity="Angle"
+        unit="rad"
+        displayUnit="deg"/>
+    </SimpleType>
+    <SimpleType
+      name="Modelica.Units.SI.AngularAcceleration">
+      <Real
+        quantity="AngularAcceleration"
+        unit="rad/s2"/>
+    </SimpleType>
+    <SimpleType
+      name="Modelica.Units.SI.AngularVelocity">
+      <Real
+        quantity="AngularVelocity"
+        unit="rad/s"/>
+    </SimpleType>
+    <SimpleType
+      name="Modelica.Units.SI.Conductance">
+      <Real
+        quantity="Conductance"
+        unit="S"/>
+    </SimpleType>
+    <SimpleType
+      name="Modelica.Units.SI.Current">
+      <Real
+        quantity="ElectricCurrent"
+        unit="A"/>
+    </SimpleType>
+    <SimpleType
+      name="Modelica.Units.SI.ElectricPotential">
+      <Real
+        quantity="ElectricPotential"
+        unit="V"/>
+    </SimpleType>
+    <SimpleType
+      name="Modelica.Units.SI.HeatFlowRate">
+      <Real
+        quantity="Power"
+        unit="W"/>
+    </SimpleType>
+    <SimpleType
+      name="Modelica.Units.SI.Inductance">
+      <Real
+        quantity="Inductance"
+        unit="H"/>
+    </SimpleType>
+    <SimpleType
+      name="Modelica.Units.SI.Inertia">
+      <Real
+        quantity="MomentOfInertia"
+        unit="kg.m2"/>
+    </SimpleType>
+    <SimpleType
+      name="Modelica.Units.SI.LinearTemperatureCoefficient">
+      <Real
+        quantity="LinearTemperatureCoefficient"
+        unit="1/K"/>
+    </SimpleType>
+    <SimpleType
+      name="Modelica.Units.SI.MagneticFlux">
+      <Real
+        quantity="MagneticFlux"
+        unit="Wb"/>
+    </SimpleType>
+    <SimpleType
+      name="Modelica.Units.SI.Power">
+      <Real
+        quantity="Power"
+        unit="W"/>
+    </SimpleType>
+    <SimpleType
+      name="Modelica.Units.SI.Resistance">
+      <Real
+        quantity="Resistance"
+        unit="Ohm"/>
+    </SimpleType>
+    <SimpleType
+      name="Modelica.Units.SI.Temperature">
+      <Real
+        quantity="ThermodynamicTemperature"
+        unit="K"
+        displayUnit="degC"
+        min="0.0"
+        nominal="300.0"/>
+    </SimpleType>
+    <SimpleType
+      name="Modelica.Units.SI.Torque">
+      <Real
+        quantity="Torque"
+        unit="N.m"/>
+    </SimpleType>
+    <SimpleType
+      name="Modelica.Units.SI.Voltage">
+      <Real
+        quantity="ElectricPotential"
+        unit="V"/>
+    </SimpleType>
+  </TypeDefinitions>
+  <DefaultExperiment startTime="0.0"
+    stopTime="1.0"
+    tolerance="0.0001"/>
+  <ModelVariables>
+    <!-- Index for next variable = 1 -->
+    <ScalarVariable
+      name="V"
+      valueReference="620756992"
+      causality="input">
+      <Real
+        declaredType="Modelica.Blocks.Interfaces.RealInput"
+        unit="V"
+        start="0.0"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 2 -->
+    <ScalarVariable
+      name="signalVoltage.p.v"
+      valueReference="1711276259"
+      description="Potential at the pin">
+      <Real
+        declaredType="Modelica.Units.SI.ElectricPotential"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 3 -->
+    <ScalarVariable
+      name="signalVoltage.p.i"
+      valueReference="1711276266"
+      description="Current flowing into the pin">
+      <Real
+        declaredType="Modelica.Units.SI.Current"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 4 -->
+    <ScalarVariable
+      name="signalVoltage.n.v"
+      valueReference="100663296"
+      description="Potential at the pin"
+      variability="constant">
+      <Real
+        declaredType="Modelica.Units.SI.ElectricPotential"
+        start="0"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 5 -->
+    <ScalarVariable
+      name="signalVoltage.n.i"
+      valueReference="1711276258"
+      description="Current flowing into the pin">
+      <Real
+        declaredType="Modelica.Units.SI.Current"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 6 -->
+    <ScalarVariable
+      name="signalVoltage.v"
+      valueReference="1711276259"
+      description="Voltage between pin p and n (= p.v - n.v) as input signal">
+      <Real
+        declaredType="Modelica.Blocks.Interfaces.RealInput"
+        unit="V"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 7 -->
+    <ScalarVariable
+      name="signalVoltage.i"
+      valueReference="1711276266"
+      description="Current flowing from pin p to pin n">
+      <Real
+        declaredType="Modelica.Units.SI.Current"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 8 -->
+    <ScalarVariable
+      name="ground.p.v"
+      valueReference="100663297"
+      description="Potential at the pin"
+      variability="constant">
+      <Real
+        declaredType="Modelica.Units.SI.ElectricPotential"
+        start="0"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 9 -->
+    <ScalarVariable
+      name="ground.p.i"
+      valueReference="1711276034"
+      description="Current flowing into the pin"
+      variability="constant">
+      <Real
+        declaredType="Modelica.Units.SI.Current"
+        start="0.0"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 10 -->
+    <ScalarVariable
+      name="loadInertia1.flange_a.phi"
+      valueReference="33554432"
+      description="Absolute rotation angle of flange">
+      <Real
+        declaredType="Modelica.Units.SI.Angle"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 11 -->
+    <ScalarVariable
+      name="loadInertia1.flange_a.tau"
+      valueReference="1174405329"
+      description="Cut torque in the flange">
+      <Real
+        declaredType="Modelica.Units.SI.Torque"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 12 -->
+    <ScalarVariable
+      name="loadInertia1.flange_b.phi"
+      valueReference="33554432"
+      description="Absolute rotation angle of flange">
+      <Real
+        declaredType="Modelica.Units.SI.Angle"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 13 -->
+    <ScalarVariable
+      name="loadInertia1.flange_b.tau"
+      valueReference="1711276242"
+      description="Cut torque in the flange">
+      <Real
+        declaredType="Modelica.Units.SI.Torque"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 14 -->
+    <ScalarVariable
+      name="loadInertia1.J"
+      valueReference="16777216"
+      description="Moment of inertia"
+      causality="parameter"
+      variability="tunable">
+      <Real
+        declaredType="Modelica.Units.SI.Inertia"
+        min="0.0"
+        start="1"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 15 -->
+    <ScalarVariable
+      name="loadInertia1.phi"
+      valueReference="33554432"
+      description="Absolute rotation angle of component"
+      initial="exact">
+      <Real
+        declaredType="Modelica.Units.SI.Angle"
+        start="0"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 16 -->
+    <ScalarVariable
+      name="der(loadInertia1.phi)"
+      valueReference="1124073472"
+      description="der(Absolute rotation angle of component)">
+      <Real
+        unit="rad/s"
+        derivative="15"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 17 -->
+    <ScalarVariable
+      name="loadInertia1.w"
+      valueReference="33554433"
+      description="Absolute angular velocity of component (= der(phi))"
+      initial="exact">
+      <Real
+        declaredType="Modelica.Units.SI.AngularVelocity"
+        start="0"
+        derivative="15"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 18 -->
+    <ScalarVariable
+      name="der(loadInertia1.w)"
+      valueReference="1124073473"
+      description="der(Absolute angular velocity of component (= der(phi)))">
+      <Real
+        unit="rad/s2"
+        derivative="17"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 19 -->
+    <ScalarVariable
+      name="loadInertia1.a"
+      valueReference="1124073473"
+      description="Absolute angular acceleration of component (= der(w))">
+      <Real
+        declaredType="Modelica.Units.SI.AngularAcceleration"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 20 -->
+    <ScalarVariable
+      name="idealGear.flange_a.phi"
+      valueReference="1711276245"
+      description="Absolute rotation angle of flange">
+      <Real
+        declaredType="Modelica.Units.SI.Angle"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 21 -->
+    <ScalarVariable
+      name="idealGear.flange_a.tau"
+      valueReference="1174405331"
+      description="Cut torque in the flange">
+      <Real
+        declaredType="Modelica.Units.SI.Torque"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 22 -->
+    <ScalarVariable
+      name="idealGear.flange_b.phi"
+      valueReference="33554432"
+      description="Absolute rotation angle of flange">
+      <Real
+        declaredType="Modelica.Units.SI.Angle"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 23 -->
+    <ScalarVariable
+      name="idealGear.flange_b.tau"
+      valueReference="1174405332"
+      description="Cut torque in the flange">
+      <Real
+        declaredType="Modelica.Units.SI.Torque"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 24 -->
+    <ScalarVariable
+      name="idealGear.ratio"
+      valueReference="16777217"
+      description="Transmission ratio (flange_a.phi/flange_b.phi)"
+      causality="parameter"
+      variability="fixed">
+      <Real
+        unit="1"
+        start="10"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 25 -->
+    <ScalarVariable
+      name="idealGear.phi_a"
+      valueReference="1711276245"
+      description="Angle between left shaft flange and support">
+      <Real
+        declaredType="Modelica.Units.SI.Angle"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 26 -->
+    <ScalarVariable
+      name="idealGear.phi_b"
+      valueReference="33554432"
+      description="Angle between right shaft flange and support">
+      <Real
+        declaredType="Modelica.Units.SI.Angle"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 27 -->
+    <ScalarVariable
+      name="speedSensor.flange.phi"
+      valueReference="1711276245"
+      description="Absolute rotation angle of flange">
+      <Real
+        declaredType="Modelica.Units.SI.Angle"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 28 -->
+    <ScalarVariable
+      name="der(speedSensor.flange.phi)"
+      valueReference="603979776"
+      description="der(Absolute rotation angle of flange)">
+      <Real
+        unit="rad/s"
+        derivative="27"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 29 -->
+    <ScalarVariable
+      name="speedSensor.flange.tau"
+      valueReference="100663302"
+      description="Cut torque in the flange"
+      variability="constant">
+      <Real
+        declaredType="Modelica.Units.SI.Torque"
+        start="0"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 30 -->
+    <ScalarVariable
+      name="speedSensor.w"
+      valueReference="603979776"
+      description="Absolute angular velocity of flange as output signal">
+      <Real
+        declaredType="Modelica.Blocks.Interfaces.RealOutput"
+        unit="rad/s"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 31 -->
+    <ScalarVariable
+      name="w"
+      valueReference="603979776"
+      causality="output">
+      <Real
+        declaredType="Modelica.Blocks.Interfaces.RealOutput"
+        unit="rad/s"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 32 -->
+    <ScalarVariable
+      name="torque.flange.phi"
+      valueReference="33554432"
+      description="Absolute rotation angle of flange">
+      <Real
+        declaredType="Modelica.Units.SI.Angle"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 33 -->
+    <ScalarVariable
+      name="torque.flange.tau"
+      valueReference="1711276246"
+      description="Cut torque in the flange">
+      <Real
+        declaredType="Modelica.Units.SI.Torque"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 34 -->
+    <ScalarVariable
+      name="torque.tau"
+      valueReference="1711276242"
+      description="Accelerating torque acting at flange (= -flange.tau)">
+      <Real
+        declaredType="Modelica.Blocks.Interfaces.RealInput"
+        unit="N.m"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 35 -->
+    <ScalarVariable
+      name="LoadTorque_Nm"
+      valueReference="620756993"
+      causality="input">
+      <Real
+        declaredType="Modelica.Blocks.Interfaces.RealInput"
+        unit="N.m"
+        start="0.0"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 36 -->
+    <ScalarVariable
+      name="dcpm.TaOperational"
+      valueReference="16777218"
+      description="Operational armature temperature"
+      causality="parameter"
+      variability="tunable">
+      <Real
+        declaredType="Modelica.Units.SI.Temperature"
+        start="293.15"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 37 -->
+    <ScalarVariable
+      name="dcpm.VaNominal"
+      valueReference="100663440"
+      description="Nominal armature voltage"
+      variability="tunable">
+      <Real
+        declaredType="Modelica.Units.SI.Voltage"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 38 -->
+    <ScalarVariable
+      name="dcpm.IaNominal"
+      valueReference="100663441"
+      description="Nominal armature current (&gt;0..Motor, &lt;0..Generator)"
+      variability="tunable">
+      <Real
+        declaredType="Modelica.Units.SI.Current"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 39 -->
+    <ScalarVariable
+      name="dcpm.wNominal"
+      valueReference="100663442"
+      description="Nominal speed"
+      variability="tunable">
+      <Real
+        declaredType="Modelica.Units.SI.AngularVelocity"
+        displayUnit="rev/min"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 40 -->
+    <ScalarVariable
+      name="dcpm.TaNominal"
+      valueReference="100663443"
+      description="Nominal armature temperature"
+      variability="tunable">
+      <Real
+        declaredType="Modelica.Units.SI.Temperature"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 41 -->
+    <ScalarVariable
+      name="dcpm.Ra"
+      valueReference="100663444"
+      description="Armature resistance at TaRef"
+      variability="tunable">
+      <Real
+        declaredType="Modelica.Units.SI.Resistance"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 42 -->
+    <ScalarVariable
+      name="dcpm.TaRef"
+      valueReference="100663445"
+      description="Reference temperature of armature resistance"
+      variability="tunable">
+      <Real
+        declaredType="Modelica.Units.SI.Temperature"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 43 -->
+    <ScalarVariable
+      name="dcpm.alpha20a"
+      valueReference="100663446"
+      description="Temperature coefficient of armature resistance"
+      variability="tunable">
+      <Real
+        declaredType="Modelica.Electrical.Machines.Thermal.LinearTemperatureCoefficient20"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 44 -->
+    <ScalarVariable
+      name="dcpm.La"
+      valueReference="100663447"
+      description="Armature inductance"
+      variability="tunable">
+      <Real
+        declaredType="Modelica.Units.SI.Inductance"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 45 -->
+    <ScalarVariable
+      name="dcpm.Jr"
+      valueReference="100663448"
+      description="Rotor&#39;s moment of inertia"
+      variability="tunable">
+      <Real
+        declaredType="Modelica.Units.SI.Inertia"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 46 -->
+    <ScalarVariable
+      name="dcpm.useSupport"
+      valueReference="100663305"
+      description="Enable / disable (=fixed stator) support"
+      variability="constant">
+      <Boolean start="false"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 47 -->
+    <ScalarVariable
+      name="dcpm.Js"
+      valueReference="100663449"
+      description="Stator&#39;s moment of inertia"
+      variability="tunable">
+      <Real
+        declaredType="Modelica.Units.SI.Inertia"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 48 -->
+    <ScalarVariable
+      name="dcpm.useThermalPort"
+      valueReference="100663306"
+      description="Enable / disable (=fixed temperatures) thermal port"
+      variability="constant">
+      <Boolean start="false"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 49 -->
+    <ScalarVariable
+      name="dcpm.frictionParameters.PRef"
+      valueReference="100663307"
+      description="Reference friction losses at wRef"
+      variability="constant">
+      <Real
+        declaredType="Modelica.Units.SI.Power"
+        min="0.0"
+        start="0"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 50 -->
+    <ScalarVariable
+      name="dcpm.frictionParameters.wRef"
+      valueReference="100663450"
+      description="Reference angular velocity that the PRef refer to"
+      variability="tunable">
+      <Real
+        declaredType="Modelica.Units.SI.AngularVelocity"
+        displayUnit="rev/min"
+        min="2.2250738585072014E-308"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 51 -->
+    <ScalarVariable
+      name="dcpm.frictionParameters.power_w"
+      valueReference="100663451"
+      description="Exponent of friction torque w.r.t. angular velocity"
+      variability="fixed">
+      <Real
+        unit="1"
+        min="2.2250738585072014E-308"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 52 -->
+    <ScalarVariable
+      name="dcpm.frictionParameters.tauRef"
+      valueReference="100663452"
+      description="Reference friction torque at reference angular velocity"
+      variability="tunable">
+      <Real
+        declaredType="Modelica.Units.SI.Torque"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 53 -->
+    <ScalarVariable
+      name="dcpm.frictionParameters.linear"
+      valueReference="100663308"
+      description="Linear angular velocity range with respect to reference angular velocity"
+      variability="constant">
+      <Real
+        unit="1"
+        start="0.001"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 54 -->
+    <ScalarVariable
+      name="dcpm.frictionParameters.wLinear"
+      valueReference="100663453"
+      description="Linear angular velocity range"
+      variability="tunable">
+      <Real
+        declaredType="Modelica.Units.SI.AngularVelocity"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 55 -->
+    <ScalarVariable
+      name="dcpm.frictionParameters.tauLinear"
+      valueReference="100663454"
+      description="Torque corresponding with linear angular velocity range"
+      variability="tunable">
+      <Real
+        declaredType="Modelica.Units.SI.Torque"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 56 -->
+    <ScalarVariable
+      name="dcpm.phiMechanical"
+      valueReference="1711276247"
+      description="Mechanical angle of rotor against stator">
+      <Real
+        declaredType="Modelica.Units.SI.Angle"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 57 -->
+    <ScalarVariable
+      name="der(dcpm.phiMechanical)"
+      valueReference="603979776"
+      description="der(Mechanical angle of rotor against stator)">
+      <Real
+        unit="rad/s"
+        derivative="56"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 58 -->
+    <ScalarVariable
+      name="dcpm.wMechanical"
+      valueReference="603979776"
+      description="Mechanical angular velocity of rotor against stator">
+      <Real
+        declaredType="Modelica.Units.SI.AngularVelocity"
+        displayUnit="rev/min"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 59 -->
+    <ScalarVariable
+      name="dcpm.tauElectrical"
+      valueReference="1174405336"
+      description="Electromagnetic torque">
+      <Real
+        declaredType="Modelica.Units.SI.Torque"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 60 -->
+    <ScalarVariable
+      name="dcpm.tauShaft"
+      valueReference="1174405331"
+      description="Shaft torque">
+      <Real
+        declaredType="Modelica.Units.SI.Torque"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 61 -->
+    <ScalarVariable
+      name="dcpm.flange.phi"
+      valueReference="1711276245"
+      description="Absolute rotation angle of flange">
+      <Real
+        declaredType="Modelica.Units.SI.Angle"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 62 -->
+    <ScalarVariable
+      name="dcpm.flange.tau"
+      valueReference="1174405337"
+      description="Cut torque in the flange">
+      <Real
+        declaredType="Modelica.Units.SI.Torque"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 63 -->
+    <ScalarVariable
+      name="dcpm.inertiaRotor.flange_a.phi"
+      valueReference="1711276245"
+      description="Absolute rotation angle of flange">
+      <Real
+        declaredType="Modelica.Units.SI.Angle"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 64 -->
+    <ScalarVariable
+      name="dcpm.inertiaRotor.flange_a.tau"
+      valueReference="1174405336"
+      description="Cut torque in the flange">
+      <Real
+        declaredType="Modelica.Units.SI.Torque"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 65 -->
+    <ScalarVariable
+      name="dcpm.inertiaRotor.flange_b.phi"
+      valueReference="1711276245"
+      description="Absolute rotation angle of flange">
+      <Real
+        declaredType="Modelica.Units.SI.Angle"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 66 -->
+    <ScalarVariable
+      name="dcpm.inertiaRotor.flange_b.tau"
+      valueReference="1174405337"
+      description="Cut torque in the flange">
+      <Real
+        declaredType="Modelica.Units.SI.Torque"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 67 -->
+    <ScalarVariable
+      name="dcpm.inertiaRotor.J"
+      valueReference="100663455"
+      description="Moment of inertia"
+      variability="tunable">
+      <Real
+        declaredType="Modelica.Units.SI.Inertia"
+        min="0.0"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 68 -->
+    <ScalarVariable
+      name="dcpm.inertiaRotor.phi"
+      valueReference="1711276245"
+      description="Absolute rotation angle of component">
+      <Real
+        declaredType="Modelica.Units.SI.Angle"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 69 -->
+    <ScalarVariable
+      name="der(dcpm.inertiaRotor.phi)"
+      valueReference="603979776"
+      description="der(Absolute rotation angle of component)">
+      <Real
+        unit="rad/s"
+        derivative="68"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 70 -->
+    <ScalarVariable
+      name="dcpm.inertiaRotor.w"
+      valueReference="603979776"
+      description="Absolute angular velocity of component (= der(phi))">
+      <Real
+        declaredType="Modelica.Units.SI.AngularVelocity"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 71 -->
+    <ScalarVariable
+      name="der(dcpm.inertiaRotor.w)"
+      valueReference="1174405338"
+      description="der(Absolute angular velocity of component (= der(phi)))">
+      <Real
+        unit="rad/s2"
+        derivative="70"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 72 -->
+    <ScalarVariable
+      name="dcpm.inertiaRotor.a"
+      valueReference="1174405338"
+      description="Absolute angular acceleration of component (= der(w))">
+      <Real
+        declaredType="Modelica.Units.SI.AngularAcceleration"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 73 -->
+    <ScalarVariable
+      name="dcpm.inertiaStator.flange_a.phi"
+      valueReference="234881027"
+      description="Absolute rotation angle of flange"
+      variability="fixed">
+      <Real
+        declaredType="Modelica.Units.SI.Angle"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 74 -->
+    <ScalarVariable
+      name="dcpm.inertiaStator.flange_a.tau"
+      valueReference="100663310"
+      description="Cut torque in the flange"
+      variability="constant">
+      <Real
+        declaredType="Modelica.Units.SI.Torque"
+        start="0.0"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 75 -->
+    <ScalarVariable
+      name="dcpm.inertiaStator.flange_b.phi"
+      valueReference="234881027"
+      description="Absolute rotation angle of flange"
+      variability="fixed">
+      <Real
+        declaredType="Modelica.Units.SI.Angle"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 76 -->
+    <ScalarVariable
+      name="dcpm.inertiaStator.flange_b.tau"
+      valueReference="100663311"
+      description="Cut torque in the flange"
+      variability="constant">
+      <Real
+        declaredType="Modelica.Units.SI.Torque"
+        start="0.0"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 77 -->
+    <ScalarVariable
+      name="dcpm.inertiaStator.J"
+      valueReference="100663456"
+      description="Moment of inertia"
+      variability="tunable">
+      <Real
+        declaredType="Modelica.Units.SI.Inertia"
+        min="0.0"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 78 -->
+    <ScalarVariable
+      name="dcpm.inertiaStator.phi"
+      valueReference="234881027"
+      description="Absolute rotation angle of component"
+      variability="fixed">
+      <Real
+        declaredType="Modelica.Units.SI.Angle"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 79 -->
+    <ScalarVariable
+      name="der(dcpm.inertiaStator.phi)"
+      valueReference="100663313"
+      description="der(Absolute rotation angle of component)"
+      variability="constant">
+      <Real
+        unit="rad/s"
+        start="0.0"
+        derivative="78"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 80 -->
+    <ScalarVariable
+      name="dcpm.inertiaStator.w"
+      valueReference="100663314"
+      description="Absolute angular velocity of component (= der(phi))"
+      variability="constant">
+      <Real
+        declaredType="Modelica.Units.SI.AngularVelocity"
+        start="0.0"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 81 -->
+    <ScalarVariable
+      name="der(dcpm.inertiaStator.w)"
+      valueReference="100663315"
+      description="der(Absolute angular velocity of component (= der(phi)))"
+      variability="constant">
+      <Real
+        unit="rad/s2"
+        start="0.0"
+        derivative="80"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 82 -->
+    <ScalarVariable
+      name="dcpm.inertiaStator.a"
+      valueReference="100663316"
+      description="Absolute angular acceleration of component (= der(w))"
+      variability="constant">
+      <Real
+        declaredType="Modelica.Units.SI.AngularAcceleration"
+        start="0.0"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 83 -->
+    <ScalarVariable
+      name="dcpm.fixed.phi0"
+      valueReference="16777219"
+      description="Fixed offset angle of housing"
+      causality="parameter"
+      variability="fixed">
+      <Real
+        declaredType="Modelica.Units.SI.Angle"
+        start="0"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 84 -->
+    <ScalarVariable
+      name="dcpm.fixed.flange.phi"
+      valueReference="234881027"
+      description="Absolute rotation angle of flange"
+      variability="fixed">
+      <Real
+        declaredType="Modelica.Units.SI.Angle"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 85 -->
+    <ScalarVariable
+      name="dcpm.fixed.flange.tau"
+      valueReference="1174405361"
+      description="Cut torque in the flange">
+      <Real
+        declaredType="Modelica.Units.SI.Torque"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 86 -->
+    <ScalarVariable
+      name="dcpm.friction.flange.phi"
+      valueReference="1711276245"
+      description="Absolute rotation angle of flange">
+      <Real
+        declaredType="Modelica.Units.SI.Angle"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 87 -->
+    <ScalarVariable
+      name="dcpm.friction.flange.tau"
+      valueReference="100663317"
+      description="Cut torque in the flange"
+      variability="constant">
+      <Real
+        declaredType="Modelica.Units.SI.Torque"
+        start="0"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 88 -->
+    <ScalarVariable
+      name="dcpm.friction.support.phi"
+      valueReference="234881027"
+      description="Absolute rotation angle of flange"
+      variability="fixed">
+      <Real
+        declaredType="Modelica.Units.SI.Angle"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 89 -->
+    <ScalarVariable
+      name="dcpm.friction.support.tau"
+      valueReference="100663318"
+      description="Cut torque in the flange"
+      variability="constant">
+      <Real
+        declaredType="Modelica.Units.SI.Torque"
+        start="0"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 90 -->
+    <ScalarVariable
+      name="dcpm.friction.phi"
+      valueReference="1711276251"
+      description="Angle between shaft and support">
+      <Real
+        declaredType="Modelica.Units.SI.Angle"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 91 -->
+    <ScalarVariable
+      name="der(dcpm.friction.phi)"
+      valueReference="603979776"
+      description="der(Angle between shaft and support)">
+      <Real
+        unit="rad/s"
+        derivative="90"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 92 -->
+    <ScalarVariable
+      name="dcpm.friction.tau"
+      valueReference="100663319"
+      description="Torque"
+      variability="constant">
+      <Real
+        declaredType="Modelica.Units.SI.Torque"
+        start="0"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 93 -->
+    <ScalarVariable
+      name="dcpm.friction.w"
+      valueReference="603979776"
+      description="Relative angular velocity of flange and support">
+      <Real
+        declaredType="Modelica.Units.SI.AngularVelocity"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 94 -->
+    <ScalarVariable
+      name="dcpm.friction.frictionParameters.PRef"
+      valueReference="100663320"
+      description="Reference friction losses at wRef"
+      variability="constant">
+      <Real
+        declaredType="Modelica.Units.SI.Power"
+        min="0.0"
+        start="0"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 95 -->
+    <ScalarVariable
+      name="dcpm.friction.frictionParameters.wRef"
+      valueReference="100663457"
+      description="Reference angular velocity that the PRef refer to"
+      variability="tunable">
+      <Real
+        declaredType="Modelica.Units.SI.AngularVelocity"
+        displayUnit="rev/min"
+        min="2.2250738585072014E-308"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 96 -->
+    <ScalarVariable
+      name="dcpm.friction.frictionParameters.power_w"
+      valueReference="100663458"
+      description="Exponent of friction torque w.r.t. angular velocity"
+      variability="fixed">
+      <Real
+        unit="1"
+        min="2.2250738585072014E-308"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 97 -->
+    <ScalarVariable
+      name="dcpm.friction.frictionParameters.tauRef"
+      valueReference="100663459"
+      description="Reference friction torque at reference angular velocity"
+      variability="tunable">
+      <Real
+        declaredType="Modelica.Units.SI.Torque"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 98 -->
+    <ScalarVariable
+      name="dcpm.friction.frictionParameters.linear"
+      valueReference="100663321"
+      description="Linear angular velocity range with respect to reference angular velocity"
+      variability="constant">
+      <Real
+        unit="1"
+        start="0.001"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 99 -->
+    <ScalarVariable
+      name="dcpm.friction.frictionParameters.wLinear"
+      valueReference="100663460"
+      description="Linear angular velocity range"
+      variability="tunable">
+      <Real
+        declaredType="Modelica.Units.SI.AngularVelocity"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 100 -->
+    <ScalarVariable
+      name="dcpm.friction.frictionParameters.tauLinear"
+      valueReference="100663461"
+      description="Torque corresponding with linear angular velocity range"
+      variability="tunable">
+      <Real
+        declaredType="Modelica.Units.SI.Torque"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 101 -->
+    <ScalarVariable
+      name="dcpm.friction.heatPort.T"
+      valueReference="100663323"
+      description="Port temperature"
+      variability="constant">
+      <Real
+        declaredType="Modelica.Units.SI.Temperature"
+        start="293.15"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 102 -->
+    <ScalarVariable
+      name="dcpm.friction.heatPort.Q_flow"
+      valueReference="100663324"
+      description="Heat flow rate (positive if flowing from outside into the component)"
+      variability="constant">
+      <Real
+        declaredType="Modelica.Units.SI.HeatFlowRate"
+        start="0.0"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 103 -->
+    <ScalarVariable
+      name="dcpm.friction.lossPower"
+      valueReference="100663325"
+      description="Loss power leaving component via heatPort (&gt; 0, if heat is flowing out of component)"
+      variability="constant">
+      <Real
+        declaredType="Modelica.Units.SI.Power"
+        start="0.0"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 104 -->
+    <ScalarVariable
+      name="dcpm.coreParameters.m"
+      valueReference="100663327"
+      description="Number of phases (1 for DC, 3 for induction machines)"
+      variability="constant">
+      <Integer start="1"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 105 -->
+    <ScalarVariable
+      name="dcpm.coreParameters.PRef"
+      valueReference="100663328"
+      description="Reference core losses at reference inner voltage VRef"
+      variability="constant">
+      <Real
+        declaredType="Modelica.Units.SI.Power"
+        min="0.0"
+        start="0"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 106 -->
+    <ScalarVariable
+      name="dcpm.coreParameters.VRef"
+      valueReference="100663462"
+      description="Reference inner RMS voltage that reference core losses PRef refer to"
+      variability="tunable">
+      <Real
+        declaredType="Modelica.Units.SI.Voltage"
+        min="2.2250738585072014E-308"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 107 -->
+    <ScalarVariable
+      name="dcpm.coreParameters.wRef"
+      valueReference="100663463"
+      description="Reference angular velocity that reference core losses PRef refer to"
+      variability="tunable">
+      <Real
+        declaredType="Modelica.Units.SI.AngularVelocity"
+        min="2.2250738585072014E-308"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 108 -->
+    <ScalarVariable
+      name="dcpm.coreParameters.ratioHysteresis"
+      valueReference="100663329"
+      description="Ratio of hysteresis losses with respect to the total core losses at VRef and fRef"
+      variability="constant">
+      <Real min="0.0"
+        max="1.0"
+        start="0.0"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 109 -->
+    <ScalarVariable
+      name="dcpm.coreParameters.GcRef"
+      valueReference="100663464"
+      description="Reference conductance at reference frequency and voltage"
+      variability="tunable">
+      <Real
+        declaredType="Modelica.Units.SI.Conductance"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 110 -->
+    <ScalarVariable
+      name="dcpm.coreParameters.wMin"
+      valueReference="100663465"
+      description="Angular velocity limit"
+      variability="tunable">
+      <Real
+        declaredType="Modelica.Units.SI.AngularVelocity"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 111 -->
+    <ScalarVariable
+      name="dcpm.strayLoadParameters.PRef"
+      valueReference="100663330"
+      description="Reference stray load losses at IRef and wRef"
+      variability="constant">
+      <Real
+        declaredType="Modelica.Units.SI.Power"
+        min="0.0"
+        start="0"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 112 -->
+    <ScalarVariable
+      name="dcpm.strayLoadParameters.IRef"
+      valueReference="100663466"
+      description="Reference RMS current that PRef refers to"
+      variability="tunable">
+      <Real
+        declaredType="Modelica.Units.SI.Current"
+        min="2.2250738585072014E-308"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 113 -->
+    <ScalarVariable
+      name="dcpm.strayLoadParameters.wRef"
+      valueReference="100663467"
+      description="Reference angular velocity that PRef refers to"
+      variability="tunable">
+      <Real
+        declaredType="Modelica.Units.SI.AngularVelocity"
+        displayUnit="rev/min"
+        min="2.2250738585072014E-308"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 114 -->
+    <ScalarVariable
+      name="dcpm.strayLoadParameters.power_w"
+      valueReference="100663468"
+      description="Exponent of stray load loss torque w.r.t. angular velocity"
+      variability="fixed">
+      <Real
+        unit="1"
+        min="2.2250738585072014E-308"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 115 -->
+    <ScalarVariable
+      name="dcpm.strayLoadParameters.tauRef"
+      valueReference="100663469"
+      description="Reference stray load torque at reference angular velocity and reference current"
+      variability="tunable">
+      <Real
+        declaredType="Modelica.Units.SI.Torque"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 116 -->
+    <ScalarVariable
+      name="dcpm.brushParameters.V"
+      valueReference="100663331"
+      description="Total voltage drop of brushes for currents &gt; ILinear"
+      variability="constant">
+      <Real
+        declaredType="Modelica.Units.SI.Voltage"
+        start="0.7"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 117 -->
+    <ScalarVariable
+      name="dcpm.brushParameters.ILinear"
+      valueReference="100663470"
+      description="Current indicating linear voltage region of brush voltage drop"
+      variability="tunable">
+      <Real
+        declaredType="Modelica.Units.SI.Current"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 118 -->
+    <ScalarVariable
+      name="dcpm.powerBalance.powerArmature"
+      valueReference="1711276252"
+      description="Electrical armature power">
+      <Real
+        declaredType="Modelica.Units.SI.Power"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 119 -->
+    <ScalarVariable
+      name="dcpm.powerBalance.powerMechanical"
+      valueReference="1711276253"
+      description="Mechanical power">
+      <Real
+        declaredType="Modelica.Units.SI.Power"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 120 -->
+    <ScalarVariable
+      name="dcpm.powerBalance.powerInertiaStator"
+      valueReference="100663332"
+      description="Stator inertia power"
+      variability="constant">
+      <Real
+        declaredType="Modelica.Units.SI.Power"
+        start="0.0"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 121 -->
+    <ScalarVariable
+      name="dcpm.powerBalance.powerInertiaRotor"
+      valueReference="1711276254"
+      description="Rotor inertia power">
+      <Real
+        declaredType="Modelica.Units.SI.Power"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 122 -->
+    <ScalarVariable
+      name="dcpm.powerBalance.lossPowerTotal"
+      valueReference="1711276255"
+      description="Total loss power">
+      <Real
+        declaredType="Modelica.Units.SI.Power"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 123 -->
+    <ScalarVariable
+      name="dcpm.powerBalance.lossPowerArmature"
+      valueReference="1711276256"
+      description="Armature copper losses">
+      <Real
+        declaredType="Modelica.Units.SI.Power"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 124 -->
+    <ScalarVariable
+      name="dcpm.powerBalance.lossPowerCore"
+      valueReference="100663333"
+      description="Core losses"
+      variability="constant">
+      <Real
+        declaredType="Modelica.Units.SI.Power"
+        start="0.0"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 125 -->
+    <ScalarVariable
+      name="dcpm.powerBalance.lossPowerStrayLoad"
+      valueReference="100663334"
+      description="Stray load losses"
+      variability="constant">
+      <Real
+        declaredType="Modelica.Units.SI.Power"
+        start="0.0"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 126 -->
+    <ScalarVariable
+      name="dcpm.powerBalance.lossPowerFriction"
+      valueReference="100663335"
+      description="Friction losses"
+      variability="constant">
+      <Real
+        declaredType="Modelica.Units.SI.Power"
+        start="0.0"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 127 -->
+    <ScalarVariable
+      name="dcpm.powerBalance.lossPowerBrush"
+      valueReference="1711276257"
+      description="Brush losses">
+      <Real
+        declaredType="Modelica.Units.SI.Power"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 128 -->
+    <ScalarVariable
+      name="dcpm.powerBalance.lossPowerPermanentMagnet"
+      valueReference="100663336"
+      description="Permanent magnet losses"
+      variability="constant">
+      <Real
+        declaredType="Modelica.Units.SI.Power"
+        start="0"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 129 -->
+    <ScalarVariable
+      name="dcpm.va"
+      valueReference="1711276259"
+      description="Armature voltage">
+      <Real
+        declaredType="Modelica.Units.SI.Voltage"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 130 -->
+    <ScalarVariable
+      name="dcpm.ia"
+      valueReference="1711276258"
+      description="Armature current"
+      initial="exact">
+      <Real
+        declaredType="Modelica.Units.SI.Current"
+        start="0"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 131 -->
+    <ScalarVariable
+      name="dcpm.pin_ap.v"
+      valueReference="1711276259"
+      description="Potential at the pin">
+      <Real
+        declaredType="Modelica.Units.SI.ElectricPotential"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 132 -->
+    <ScalarVariable
+      name="dcpm.pin_ap.i"
+      valueReference="1711276258"
+      description="Current flowing into the pin">
+      <Real
+        declaredType="Modelica.Units.SI.Current"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 133 -->
+    <ScalarVariable
+      name="dcpm.pin_an.v"
+      valueReference="100663337"
+      description="Potential at the pin"
+      variability="constant">
+      <Real
+        declaredType="Modelica.Units.SI.ElectricPotential"
+        start="0"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 134 -->
+    <ScalarVariable
+      name="dcpm.pin_an.i"
+      valueReference="1711276266"
+      description="Current flowing into the pin">
+      <Real
+        declaredType="Modelica.Units.SI.Current"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 135 -->
+    <ScalarVariable
+      name="dcpm.ra.R"
+      valueReference="100663471"
+      description="Resistance at temperature T_ref"
+      variability="tunable">
+      <Real
+        declaredType="Modelica.Units.SI.Resistance"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 136 -->
+    <ScalarVariable
+      name="dcpm.ra.T_ref"
+      valueReference="100663472"
+      description="Reference temperature"
+      variability="tunable">
+      <Real
+        declaredType="Modelica.Units.SI.Temperature"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 137 -->
+    <ScalarVariable
+      name="dcpm.ra.alpha"
+      valueReference="100663473"
+      description="Temperature coefficient of resistance (R_actual = R*(1 + alpha*(T_heatPort - T_ref))"
+      variability="tunable">
+      <Real
+        declaredType="Modelica.Units.SI.LinearTemperatureCoefficient"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 138 -->
+    <ScalarVariable
+      name="dcpm.ra.v"
+      valueReference="1174405348"
+      description="Voltage drop of the two pins (= p.v - n.v)">
+      <Real
+        declaredType="Modelica.Units.SI.Voltage"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 139 -->
+    <ScalarVariable
+      name="dcpm.ra.p.v"
+      valueReference="1711276259"
+      description="Potential at the pin">
+      <Real
+        declaredType="Modelica.Units.SI.ElectricPotential"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 140 -->
+    <ScalarVariable
+      name="dcpm.ra.p.i"
+      valueReference="1711276258"
+      description="Current flowing into the pin">
+      <Real
+        declaredType="Modelica.Units.SI.Current"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 141 -->
+    <ScalarVariable
+      name="dcpm.ra.n.v"
+      valueReference="1174405349"
+      description="Potential at the pin">
+      <Real
+        declaredType="Modelica.Units.SI.ElectricPotential"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 142 -->
+    <ScalarVariable
+      name="dcpm.ra.n.i"
+      valueReference="1711276266"
+      description="Current flowing into the pin">
+      <Real
+        declaredType="Modelica.Units.SI.Current"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 143 -->
+    <ScalarVariable
+      name="dcpm.ra.i"
+      valueReference="1711276258"
+      description="Current flowing from pin p to pin n">
+      <Real
+        declaredType="Modelica.Units.SI.Current"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 144 -->
+    <ScalarVariable
+      name="dcpm.ra.T"
+      valueReference="100663474"
+      description="Fixed device temperature if useHeatPort = false"
+      variability="tunable">
+      <Real
+        declaredType="Modelica.Units.SI.Temperature"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 145 -->
+    <ScalarVariable
+      name="dcpm.ra.heatPort.T"
+      valueReference="100663487"
+      description="Port temperature"
+      variability="tunable">
+      <Real
+        declaredType="Modelica.Units.SI.Temperature"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 146 -->
+    <ScalarVariable
+      name="dcpm.ra.heatPort.Q_flow"
+      valueReference="1711276262"
+      description="Heat flow rate (positive if flowing from outside into the component)">
+      <Real
+        declaredType="Modelica.Units.SI.HeatFlowRate"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 147 -->
+    <ScalarVariable
+      name="dcpm.ra.LossPower"
+      valueReference="1711276256"
+      description="Loss power leaving component via heatPort">
+      <Real
+        declaredType="Modelica.Units.SI.Power"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 148 -->
+    <ScalarVariable
+      name="dcpm.ra.T_heatPort"
+      valueReference="100663487"
+      description="Temperature of heatPort"
+      variability="tunable">
+      <Real
+        declaredType="Modelica.Units.SI.Temperature"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 149 -->
+    <ScalarVariable
+      name="dcpm.ra.R_actual"
+      valueReference="100663475"
+      description="Actual resistance = R*(1 + alpha*(T_heatPort - T_ref))"
+      variability="tunable">
+      <Real
+        declaredType="Modelica.Units.SI.Resistance"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 150 -->
+    <ScalarVariable
+      name="dcpm.la.v"
+      valueReference="1174405351"
+      description="Voltage drop of the two pins (= p.v - n.v)">
+      <Real
+        declaredType="Modelica.Units.SI.Voltage"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 151 -->
+    <ScalarVariable
+      name="dcpm.la.p.v"
+      valueReference="1174405349"
+      description="Potential at the pin">
+      <Real
+        declaredType="Modelica.Units.SI.ElectricPotential"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 152 -->
+    <ScalarVariable
+      name="dcpm.la.p.i"
+      valueReference="33554434"
+      description="Current flowing into the pin">
+      <Real
+        declaredType="Modelica.Units.SI.Current"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 153 -->
+    <ScalarVariable
+      name="dcpm.la.n.v"
+      valueReference="1174405352"
+      description="Potential at the pin">
+      <Real
+        declaredType="Modelica.Units.SI.ElectricPotential"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 154 -->
+    <ScalarVariable
+      name="dcpm.la.n.i"
+      valueReference="100663538"
+      description="Current flowing into the pin">
+      <Real
+        declaredType="Modelica.Units.SI.Current"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 155 -->
+    <ScalarVariable
+      name="dcpm.la.i"
+      valueReference="33554434"
+      description="Current flowing from pin p to pin n">
+      <Real
+        declaredType="Modelica.Units.SI.Current"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 156 -->
+    <ScalarVariable
+      name="der(dcpm.la.i)"
+      valueReference="1124073474"
+      description="der(Current flowing from pin p to pin n)">
+      <Real
+        unit="A/s"
+        derivative="155"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 157 -->
+    <ScalarVariable
+      name="dcpm.la.L"
+      valueReference="100663476"
+      description="Inductance"
+      variability="tunable">
+      <Real
+        declaredType="Modelica.Units.SI.Inductance"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 158 -->
+    <ScalarVariable
+      name="dcpm.la.quasiStatic"
+      valueReference="100663339"
+      description="No electrical transients if true"
+      variability="constant">
+      <Boolean start="false"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 159 -->
+    <ScalarVariable
+      name="dcpm.brush.v"
+      valueReference="1174405353"
+      description="Voltage drop of the two pins (= p.v - n.v)">
+      <Real
+        declaredType="Modelica.Units.SI.Voltage"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 160 -->
+    <ScalarVariable
+      name="dcpm.brush.p.v"
+      valueReference="1174405353"
+      description="Potential at the pin">
+      <Real
+        declaredType="Modelica.Units.SI.ElectricPotential"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 161 -->
+    <ScalarVariable
+      name="dcpm.brush.p.i"
+      valueReference="1711276258"
+      description="Current flowing into the pin">
+      <Real
+        declaredType="Modelica.Units.SI.Current"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 162 -->
+    <ScalarVariable
+      name="dcpm.brush.n.v"
+      valueReference="100663340"
+      description="Potential at the pin"
+      variability="constant">
+      <Real
+        declaredType="Modelica.Units.SI.ElectricPotential"
+        start="0"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 163 -->
+    <ScalarVariable
+      name="dcpm.brush.n.i"
+      valueReference="1711276266"
+      description="Current flowing into the pin">
+      <Real
+        declaredType="Modelica.Units.SI.Current"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 164 -->
+    <ScalarVariable
+      name="dcpm.brush.i"
+      valueReference="1711276258"
+      description="Current flowing from pin p to pin n">
+      <Real
+        declaredType="Modelica.Units.SI.Current"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 165 -->
+    <ScalarVariable
+      name="dcpm.brush.brushParameters.V"
+      valueReference="100663341"
+      description="Total voltage drop of brushes for currents &gt; ILinear"
+      variability="constant">
+      <Real
+        declaredType="Modelica.Units.SI.Voltage"
+        start="0.7"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 166 -->
+    <ScalarVariable
+      name="dcpm.brush.brushParameters.ILinear"
+      valueReference="100663477"
+      description="Current indicating linear voltage region of brush voltage drop"
+      variability="tunable">
+      <Real
+        declaredType="Modelica.Units.SI.Current"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 167 -->
+    <ScalarVariable
+      name="dcpm.brush.heatPort.T"
+      valueReference="100663343"
+      description="Port temperature"
+      variability="constant">
+      <Real
+        declaredType="Modelica.Units.SI.Temperature"
+        start="293.15"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 168 -->
+    <ScalarVariable
+      name="dcpm.brush.heatPort.Q_flow"
+      valueReference="1711276267"
+      description="Heat flow rate (positive if flowing from outside into the component)">
+      <Real
+        declaredType="Modelica.Units.SI.HeatFlowRate"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 169 -->
+    <ScalarVariable
+      name="dcpm.brush.lossPower"
+      valueReference="1711276257"
+      description="Loss power leaving component via heatPort (&gt; 0, if heat is flowing out of component)">
+      <Real
+        declaredType="Modelica.Units.SI.Power"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 170 -->
+    <ScalarVariable
+      name="dcpm.core.v"
+      valueReference="1711276268"
+      description="Voltage drop of the two pins (= p.v - n.v)">
+      <Real
+        declaredType="Modelica.Units.SI.Voltage"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 171 -->
+    <ScalarVariable
+      name="dcpm.core.p.v"
+      valueReference="1174405349"
+      description="Potential at the pin">
+      <Real
+        declaredType="Modelica.Units.SI.ElectricPotential"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 172 -->
+    <ScalarVariable
+      name="dcpm.core.p.i"
+      valueReference="100663344"
+      description="Current flowing into the pin"
+      variability="constant">
+      <Real
+        declaredType="Modelica.Units.SI.Current"
+        start="0"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 173 -->
+    <ScalarVariable
+      name="dcpm.core.n.v"
+      valueReference="1174405353"
+      description="Potential at the pin">
+      <Real
+        declaredType="Modelica.Units.SI.ElectricPotential"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 174 -->
+    <ScalarVariable
+      name="dcpm.core.n.i"
+      valueReference="100663345"
+      description="Current flowing into the pin"
+      variability="constant">
+      <Real
+        declaredType="Modelica.Units.SI.Current"
+        start="0"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 175 -->
+    <ScalarVariable
+      name="dcpm.core.i"
+      valueReference="100663346"
+      description="Current flowing from pin p to pin n"
+      variability="constant">
+      <Real
+        declaredType="Modelica.Units.SI.Current"
+        start="0"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 176 -->
+    <ScalarVariable
+      name="dcpm.core.coreParameters.m"
+      valueReference="100663347"
+      description="Number of phases (1 for DC, 3 for induction machines)"
+      variability="constant">
+      <Integer start="1"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 177 -->
+    <ScalarVariable
+      name="dcpm.core.coreParameters.PRef"
+      valueReference="100663348"
+      description="Reference core losses at reference inner voltage VRef"
+      variability="constant">
+      <Real
+        declaredType="Modelica.Units.SI.Power"
+        min="0.0"
+        start="0"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 178 -->
+    <ScalarVariable
+      name="dcpm.core.coreParameters.VRef"
+      valueReference="100663478"
+      description="Reference inner RMS voltage that reference core losses PRef refer to"
+      variability="tunable">
+      <Real
+        declaredType="Modelica.Units.SI.Voltage"
+        min="2.2250738585072014E-308"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 179 -->
+    <ScalarVariable
+      name="dcpm.core.coreParameters.wRef"
+      valueReference="100663479"
+      description="Reference angular velocity that reference core losses PRef refer to"
+      variability="tunable">
+      <Real
+        declaredType="Modelica.Units.SI.AngularVelocity"
+        min="2.2250738585072014E-308"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 180 -->
+    <ScalarVariable
+      name="dcpm.core.coreParameters.ratioHysteresis"
+      valueReference="100663349"
+      description="Ratio of hysteresis losses with respect to the total core losses at VRef and fRef"
+      variability="constant">
+      <Real min="0.0"
+        max="1.0"
+        start="0.0"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 181 -->
+    <ScalarVariable
+      name="dcpm.core.coreParameters.GcRef"
+      valueReference="100663480"
+      description="Reference conductance at reference frequency and voltage"
+      variability="tunable">
+      <Real
+        declaredType="Modelica.Units.SI.Conductance"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 182 -->
+    <ScalarVariable
+      name="dcpm.core.coreParameters.wMin"
+      valueReference="100663481"
+      description="Angular velocity limit"
+      variability="tunable">
+      <Real
+        declaredType="Modelica.Units.SI.AngularVelocity"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 183 -->
+    <ScalarVariable
+      name="dcpm.core.heatPort.T"
+      valueReference="100663351"
+      description="Port temperature"
+      variability="constant">
+      <Real
+        declaredType="Modelica.Units.SI.Temperature"
+        start="293.15"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 184 -->
+    <ScalarVariable
+      name="dcpm.core.heatPort.Q_flow"
+      valueReference="100663352"
+      description="Heat flow rate (positive if flowing from outside into the component)"
+      variability="constant">
+      <Real
+        declaredType="Modelica.Units.SI.HeatFlowRate"
+        start="0.0"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 185 -->
+    <ScalarVariable
+      name="dcpm.core.lossPower"
+      valueReference="100663353"
+      description="Loss power leaving component via heatPort (&gt; 0, if heat is flowing out of component)"
+      variability="constant">
+      <Real
+        declaredType="Modelica.Units.SI.Power"
+        start="0.0"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 186 -->
+    <ScalarVariable
+      name="dcpm.core.w"
+      valueReference="603979776"
+      description="Remagnetization angular velocity">
+      <Real
+        declaredType="Modelica.Units.SI.AngularVelocity"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 187 -->
+    <ScalarVariable
+      name="dcpm.core.Gc"
+      valueReference="100663354"
+      description="Variable core loss conductance"
+      variability="constant">
+      <Real
+        declaredType="Modelica.Units.SI.Conductance"
+        start="0"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 188 -->
+    <ScalarVariable
+      name="dcpm.strayLoad.v"
+      valueReference="100663355"
+      description="Voltage drop of the two pins (= p.v - n.v)"
+      variability="constant">
+      <Real
+        declaredType="Modelica.Units.SI.Voltage"
+        start="0"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 189 -->
+    <ScalarVariable
+      name="dcpm.strayLoad.p.v"
+      valueReference="1711276259"
+      description="Potential at the pin">
+      <Real
+        declaredType="Modelica.Units.SI.ElectricPotential"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 190 -->
+    <ScalarVariable
+      name="dcpm.strayLoad.p.i"
+      valueReference="1711276258"
+      description="Current flowing into the pin">
+      <Real
+        declaredType="Modelica.Units.SI.Current"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 191 -->
+    <ScalarVariable
+      name="dcpm.strayLoad.n.v"
+      valueReference="1711276259"
+      description="Potential at the pin">
+      <Real
+        declaredType="Modelica.Units.SI.ElectricPotential"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 192 -->
+    <ScalarVariable
+      name="dcpm.strayLoad.n.i"
+      valueReference="1711276266"
+      description="Current flowing into the pin">
+      <Real
+        declaredType="Modelica.Units.SI.Current"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 193 -->
+    <ScalarVariable
+      name="dcpm.strayLoad.i"
+      valueReference="1711276258"
+      description="Current flowing from pin p to pin n">
+      <Real
+        declaredType="Modelica.Units.SI.Current"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 194 -->
+    <ScalarVariable
+      name="dcpm.strayLoad.flange.phi"
+      valueReference="1711276245"
+      description="Absolute rotation angle of flange">
+      <Real
+        declaredType="Modelica.Units.SI.Angle"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 195 -->
+    <ScalarVariable
+      name="dcpm.strayLoad.flange.tau"
+      valueReference="100663356"
+      description="Cut torque in the flange"
+      variability="constant">
+      <Real
+        declaredType="Modelica.Units.SI.Torque"
+        start="0"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 196 -->
+    <ScalarVariable
+      name="dcpm.strayLoad.support.phi"
+      valueReference="234881027"
+      description="Absolute rotation angle of flange"
+      variability="fixed">
+      <Real
+        declaredType="Modelica.Units.SI.Angle"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 197 -->
+    <ScalarVariable
+      name="dcpm.strayLoad.support.tau"
+      valueReference="100663357"
+      description="Cut torque in the flange"
+      variability="constant">
+      <Real
+        declaredType="Modelica.Units.SI.Torque"
+        start="0"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 198 -->
+    <ScalarVariable
+      name="dcpm.strayLoad.phi"
+      valueReference="1711276270"
+      description="Angle between shaft and support">
+      <Real
+        declaredType="Modelica.Units.SI.Angle"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 199 -->
+    <ScalarVariable
+      name="der(dcpm.strayLoad.phi)"
+      valueReference="603979776"
+      description="der(Angle between shaft and support)">
+      <Real
+        unit="rad/s"
+        derivative="198"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 200 -->
+    <ScalarVariable
+      name="dcpm.strayLoad.tau"
+      valueReference="100663358"
+      description="Torque"
+      variability="constant">
+      <Real
+        declaredType="Modelica.Units.SI.Torque"
+        start="0"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 201 -->
+    <ScalarVariable
+      name="dcpm.strayLoad.w"
+      valueReference="603979776"
+      description="Relative angular velocity of flange and support">
+      <Real
+        declaredType="Modelica.Units.SI.AngularVelocity"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 202 -->
+    <ScalarVariable
+      name="dcpm.strayLoad.strayLoadParameters.PRef"
+      valueReference="100663359"
+      description="Reference stray load losses at IRef and wRef"
+      variability="constant">
+      <Real
+        declaredType="Modelica.Units.SI.Power"
+        min="0.0"
+        start="0"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 203 -->
+    <ScalarVariable
+      name="dcpm.strayLoad.strayLoadParameters.IRef"
+      valueReference="100663482"
+      description="Reference RMS current that PRef refers to"
+      variability="tunable">
+      <Real
+        declaredType="Modelica.Units.SI.Current"
+        min="2.2250738585072014E-308"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 204 -->
+    <ScalarVariable
+      name="dcpm.strayLoad.strayLoadParameters.wRef"
+      valueReference="100663483"
+      description="Reference angular velocity that PRef refers to"
+      variability="tunable">
+      <Real
+        declaredType="Modelica.Units.SI.AngularVelocity"
+        displayUnit="rev/min"
+        min="2.2250738585072014E-308"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 205 -->
+    <ScalarVariable
+      name="dcpm.strayLoad.strayLoadParameters.power_w"
+      valueReference="100663484"
+      description="Exponent of stray load loss torque w.r.t. angular velocity"
+      variability="fixed">
+      <Real
+        unit="1"
+        min="2.2250738585072014E-308"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 206 -->
+    <ScalarVariable
+      name="dcpm.strayLoad.strayLoadParameters.tauRef"
+      valueReference="100663485"
+      description="Reference stray load torque at reference angular velocity and reference current"
+      variability="tunable">
+      <Real
+        declaredType="Modelica.Units.SI.Torque"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 207 -->
+    <ScalarVariable
+      name="dcpm.strayLoad.heatPort.T"
+      valueReference="100663361"
+      description="Port temperature"
+      variability="constant">
+      <Real
+        declaredType="Modelica.Units.SI.Temperature"
+        start="293.15"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 208 -->
+    <ScalarVariable
+      name="dcpm.strayLoad.heatPort.Q_flow"
+      valueReference="100663362"
+      description="Heat flow rate (positive if flowing from outside into the component)"
+      variability="constant">
+      <Real
+        declaredType="Modelica.Units.SI.HeatFlowRate"
+        start="0.0"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 209 -->
+    <ScalarVariable
+      name="dcpm.strayLoad.lossPower"
+      valueReference="100663363"
+      description="Loss power leaving component via heatPort (&gt; 0, if heat is flowing out of component)"
+      variability="constant">
+      <Real
+        declaredType="Modelica.Units.SI.Power"
+        start="0.0"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 210 -->
+    <ScalarVariable
+      name="dcpm.thermalAmbient.useTemperatureInputs"
+      valueReference="100663364"
+      description="If true, temperature inputs are used; else, temperatures are constant"
+      variability="constant">
+      <Boolean start="false"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 211 -->
+    <ScalarVariable
+      name="dcpm.thermalAmbient.TDefault"
+      valueReference="100663365"
+      description="Default temperature"
+      variability="constant">
+      <Real
+        declaredType="Modelica.Units.SI.Temperature"
+        start="293.15"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 212 -->
+    <ScalarVariable
+      name="dcpm.thermalAmbient.Ta"
+      valueReference="100663486"
+      description="Temperature of armature"
+      variability="tunable">
+      <Real
+        declaredType="Modelica.Units.SI.Temperature"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 213 -->
+    <ScalarVariable
+      name="dcpm.thermalAmbient.Q_flowArmature"
+      valueReference="1711276256"
+      description="Heat flow rate of armature">
+      <Real
+        declaredType="Modelica.Units.SI.HeatFlowRate"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 214 -->
+    <ScalarVariable
+      name="dcpm.thermalAmbient.Q_flowCore"
+      valueReference="100663366"
+      description="Heat flow rate of core losses"
+      variability="constant">
+      <Real
+        declaredType="Modelica.Units.SI.HeatFlowRate"
+        start="0.0"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 215 -->
+    <ScalarVariable
+      name="dcpm.thermalAmbient.Q_flowStrayLoad"
+      valueReference="100663367"
+      description="Heat flow rate of stray load losses"
+      variability="constant">
+      <Real
+        declaredType="Modelica.Units.SI.HeatFlowRate"
+        start="0.0"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 216 -->
+    <ScalarVariable
+      name="dcpm.thermalAmbient.Q_flowFriction"
+      valueReference="100663368"
+      description="Heat flow rate of friction losses"
+      variability="constant">
+      <Real
+        declaredType="Modelica.Units.SI.HeatFlowRate"
+        start="0.0"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 217 -->
+    <ScalarVariable
+      name="dcpm.thermalAmbient.Q_flowBrush"
+      valueReference="1711276257"
+      description="Heat flow rate of brushes">
+      <Real
+        declaredType="Modelica.Units.SI.HeatFlowRate"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 218 -->
+    <ScalarVariable
+      name="dcpm.thermalAmbient.thermalPort.heatPortArmature.T"
+      valueReference="100663487"
+      description="Port temperature"
+      variability="tunable">
+      <Real
+        declaredType="Modelica.Units.SI.Temperature"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 219 -->
+    <ScalarVariable
+      name="dcpm.thermalAmbient.thermalPort.heatPortArmature.Q_flow"
+      valueReference="1711276256"
+      description="Heat flow rate (positive if flowing from outside into the component)">
+      <Real
+        declaredType="Modelica.Units.SI.HeatFlowRate"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 220 -->
+    <ScalarVariable
+      name="dcpm.thermalAmbient.thermalPort.heatPortCore.T"
+      valueReference="100663369"
+      description="Port temperature"
+      variability="constant">
+      <Real
+        declaredType="Modelica.Units.SI.Temperature"
+        start="293.15"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 221 -->
+    <ScalarVariable
+      name="dcpm.thermalAmbient.thermalPort.heatPortCore.Q_flow"
+      valueReference="100663370"
+      description="Heat flow rate (positive if flowing from outside into the component)"
+      variability="constant">
+      <Real
+        declaredType="Modelica.Units.SI.HeatFlowRate"
+        start="0.0"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 222 -->
+    <ScalarVariable
+      name="dcpm.thermalAmbient.thermalPort.heatPortStrayLoad.T"
+      valueReference="100663371"
+      description="Port temperature"
+      variability="constant">
+      <Real
+        declaredType="Modelica.Units.SI.Temperature"
+        start="293.15"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 223 -->
+    <ScalarVariable
+      name="dcpm.thermalAmbient.thermalPort.heatPortStrayLoad.Q_flow"
+      valueReference="100663372"
+      description="Heat flow rate (positive if flowing from outside into the component)"
+      variability="constant">
+      <Real
+        declaredType="Modelica.Units.SI.HeatFlowRate"
+        start="0.0"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 224 -->
+    <ScalarVariable
+      name="dcpm.thermalAmbient.thermalPort.heatPortFriction.T"
+      valueReference="100663373"
+      description="Port temperature"
+      variability="constant">
+      <Real
+        declaredType="Modelica.Units.SI.Temperature"
+        start="293.15"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 225 -->
+    <ScalarVariable
+      name="dcpm.thermalAmbient.thermalPort.heatPortFriction.Q_flow"
+      valueReference="100663374"
+      description="Heat flow rate (positive if flowing from outside into the component)"
+      variability="constant">
+      <Real
+        declaredType="Modelica.Units.SI.HeatFlowRate"
+        start="0.0"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 226 -->
+    <ScalarVariable
+      name="dcpm.thermalAmbient.thermalPort.heatPortBrush.T"
+      valueReference="100663375"
+      description="Port temperature"
+      variability="constant">
+      <Real
+        declaredType="Modelica.Units.SI.Temperature"
+        start="293.15"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 227 -->
+    <ScalarVariable
+      name="dcpm.thermalAmbient.thermalPort.heatPortBrush.Q_flow"
+      valueReference="1711276257"
+      description="Heat flow rate (positive if flowing from outside into the component)">
+      <Real
+        declaredType="Modelica.Units.SI.HeatFlowRate"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 228 -->
+    <ScalarVariable
+      name="dcpm.thermalAmbient.thermalPort.heatPortPermanentMagnet.T"
+      valueReference="100663376"
+      description="Port temperature"
+      variability="constant">
+      <Real
+        declaredType="Modelica.Units.SI.Temperature"
+        start="293.15"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 229 -->
+    <ScalarVariable
+      name="dcpm.thermalAmbient.thermalPort.heatPortPermanentMagnet.Q_flow"
+      valueReference="100663377"
+      description="Heat flow rate (positive if flowing from outside into the component)"
+      variability="constant">
+      <Real
+        declaredType="Modelica.Units.SI.HeatFlowRate"
+        start="0.0"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 230 -->
+    <ScalarVariable
+      name="dcpm.thermalAmbient.temperatureArmature.port.T"
+      valueReference="100663487"
+      description="Port temperature"
+      variability="tunable">
+      <Real
+        declaredType="Modelica.Units.SI.Temperature"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 231 -->
+    <ScalarVariable
+      name="dcpm.thermalAmbient.temperatureArmature.port.Q_flow"
+      valueReference="1711276256"
+      description="Heat flow rate (positive if flowing from outside into the component)">
+      <Real
+        declaredType="Modelica.Units.SI.HeatFlowRate"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 232 -->
+    <ScalarVariable
+      name="dcpm.thermalAmbient.temperatureArmature.T"
+      valueReference="100663487"
+      variability="tunable">
+      <Real
+        declaredType="Modelica.Blocks.Interfaces.RealInput"
+        unit="K"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 233 -->
+    <ScalarVariable
+      name="dcpm.thermalAmbient.temperatureCore.T"
+      valueReference="100663378"
+      description="Fixed temperature at port"
+      variability="constant">
+      <Real
+        declaredType="Modelica.Units.SI.Temperature"
+        start="293.15"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 234 -->
+    <ScalarVariable
+      name="dcpm.thermalAmbient.temperatureCore.port.T"
+      valueReference="100663379"
+      description="Port temperature"
+      variability="constant">
+      <Real
+        declaredType="Modelica.Units.SI.Temperature"
+        start="293.15"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 235 -->
+    <ScalarVariable
+      name="dcpm.thermalAmbient.temperatureCore.port.Q_flow"
+      valueReference="100663380"
+      description="Heat flow rate (positive if flowing from outside into the component)"
+      variability="constant">
+      <Real
+        declaredType="Modelica.Units.SI.HeatFlowRate"
+        start="0.0"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 236 -->
+    <ScalarVariable
+      name="dcpm.thermalAmbient.temperatureStrayLoad.T"
+      valueReference="100663381"
+      description="Fixed temperature at port"
+      variability="constant">
+      <Real
+        declaredType="Modelica.Units.SI.Temperature"
+        start="293.15"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 237 -->
+    <ScalarVariable
+      name="dcpm.thermalAmbient.temperatureStrayLoad.port.T"
+      valueReference="100663382"
+      description="Port temperature"
+      variability="constant">
+      <Real
+        declaredType="Modelica.Units.SI.Temperature"
+        start="293.15"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 238 -->
+    <ScalarVariable
+      name="dcpm.thermalAmbient.temperatureStrayLoad.port.Q_flow"
+      valueReference="100663383"
+      description="Heat flow rate (positive if flowing from outside into the component)"
+      variability="constant">
+      <Real
+        declaredType="Modelica.Units.SI.HeatFlowRate"
+        start="0.0"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 239 -->
+    <ScalarVariable
+      name="dcpm.thermalAmbient.temperatureFriction.T"
+      valueReference="100663384"
+      description="Fixed temperature at port"
+      variability="constant">
+      <Real
+        declaredType="Modelica.Units.SI.Temperature"
+        start="293.15"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 240 -->
+    <ScalarVariable
+      name="dcpm.thermalAmbient.temperatureFriction.port.T"
+      valueReference="100663385"
+      description="Port temperature"
+      variability="constant">
+      <Real
+        declaredType="Modelica.Units.SI.Temperature"
+        start="293.15"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 241 -->
+    <ScalarVariable
+      name="dcpm.thermalAmbient.temperatureFriction.port.Q_flow"
+      valueReference="100663386"
+      description="Heat flow rate (positive if flowing from outside into the component)"
+      variability="constant">
+      <Real
+        declaredType="Modelica.Units.SI.HeatFlowRate"
+        start="0.0"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 242 -->
+    <ScalarVariable
+      name="dcpm.thermalAmbient.constTa.k"
+      valueReference="100663487"
+      description="Constant output value"
+      variability="tunable">
+      <Real
+        unit="K"
+        min="0.0"
+        nominal="300.0"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 243 -->
+    <ScalarVariable
+      name="dcpm.thermalAmbient.constTa.y"
+      valueReference="100663487"
+      description="Connector of Real output signal"
+      variability="tunable">
+      <Real
+        declaredType="Modelica.Blocks.Interfaces.RealOutput"
+        unit="K"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 244 -->
+    <ScalarVariable
+      name="dcpm.thermalAmbient.temperatureBrush.T"
+      valueReference="100663387"
+      description="Fixed temperature at port"
+      variability="constant">
+      <Real
+        declaredType="Modelica.Units.SI.Temperature"
+        start="293.15"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 245 -->
+    <ScalarVariable
+      name="dcpm.thermalAmbient.temperatureBrush.port.T"
+      valueReference="100663388"
+      description="Port temperature"
+      variability="constant">
+      <Real
+        declaredType="Modelica.Units.SI.Temperature"
+        start="293.15"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 246 -->
+    <ScalarVariable
+      name="dcpm.thermalAmbient.temperatureBrush.port.Q_flow"
+      valueReference="1711276257"
+      description="Heat flow rate (positive if flowing from outside into the component)">
+      <Real
+        declaredType="Modelica.Units.SI.HeatFlowRate"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 247 -->
+    <ScalarVariable
+      name="dcpm.thermalAmbient.Tpm"
+      valueReference="100663389"
+      description="Temperature of permanent magnet"
+      variability="constant">
+      <Real
+        declaredType="Modelica.Units.SI.Temperature"
+        start="293.15"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 248 -->
+    <ScalarVariable
+      name="dcpm.thermalAmbient.Q_flowPermanentMagnet"
+      valueReference="100663390"
+      description="Heat flow rate of permanent magnets"
+      variability="constant">
+      <Real
+        declaredType="Modelica.Units.SI.HeatFlowRate"
+        start="0.0"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 249 -->
+    <ScalarVariable
+      name="dcpm.thermalAmbient.Q_flowTotal"
+      valueReference="1711276271">
+      <Real
+        declaredType="Modelica.Units.SI.HeatFlowRate"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 250 -->
+    <ScalarVariable
+      name="dcpm.thermalAmbient.temperaturePermanentMagnet.port.T"
+      valueReference="100663391"
+      description="Port temperature"
+      variability="constant">
+      <Real
+        declaredType="Modelica.Units.SI.Temperature"
+        start="293.15"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 251 -->
+    <ScalarVariable
+      name="dcpm.thermalAmbient.temperaturePermanentMagnet.port.Q_flow"
+      valueReference="100663392"
+      description="Heat flow rate (positive if flowing from outside into the component)"
+      variability="constant">
+      <Real
+        declaredType="Modelica.Units.SI.HeatFlowRate"
+        start="0.0"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 252 -->
+    <ScalarVariable
+      name="dcpm.thermalAmbient.temperaturePermanentMagnet.T"
+      valueReference="100663393"
+      variability="constant">
+      <Real
+        declaredType="Modelica.Blocks.Interfaces.RealInput"
+        unit="K"
+        start="293.15"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 253 -->
+    <ScalarVariable
+      name="dcpm.thermalAmbient.constTpm.k"
+      valueReference="100663394"
+      description="Constant output value"
+      variability="constant">
+      <Real
+        unit="K"
+        start="293.15"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 254 -->
+    <ScalarVariable
+      name="dcpm.thermalAmbient.constTpm.y"
+      valueReference="100663395"
+      description="Connector of Real output signal"
+      variability="constant">
+      <Real
+        declaredType="Modelica.Blocks.Interfaces.RealOutput"
+        unit="K"
+        start="293.15"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 255 -->
+    <ScalarVariable
+      name="dcpm.TpmOperational"
+      valueReference="100663410"
+      description="Operational temperature of permanent magnet"
+      variability="constant">
+      <Real
+        declaredType="Modelica.Units.SI.Temperature"
+        start="293.15"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 256 -->
+    <ScalarVariable
+      name="dcpm.airGapDC.quasiStatic"
+      valueReference="100663411"
+      description="No electrical transients if true"
+      variability="constant">
+      <Boolean start="false"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 257 -->
+    <ScalarVariable
+      name="dcpm.airGapDC.turnsRatio"
+      valueReference="100663490"
+      description="Ratio of armature turns over number of turns of the excitation winding"
+      variability="tunable">
+      <Real
+        unit="rad-1"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 258 -->
+    <ScalarVariable
+      name="dcpm.airGapDC.w"
+      valueReference="603979776"
+      description="Angular velocity">
+      <Real
+        declaredType="Modelica.Units.SI.AngularVelocity"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 259 -->
+    <ScalarVariable
+      name="dcpm.airGapDC.vei"
+      valueReference="100663412"
+      description="Voltage drop across field excitation inductance"
+      variability="constant">
+      <Real
+        declaredType="Modelica.Units.SI.Voltage"
+        start="0.0"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 260 -->
+    <ScalarVariable
+      name="dcpm.airGapDC.ie"
+      valueReference="100663413"
+      description="Excitation current"
+      variability="constant">
+      <Real
+        declaredType="Modelica.Units.SI.Current"
+        start="1.0"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 261 -->
+    <ScalarVariable
+      name="dcpm.airGapDC.psi_e"
+      valueReference="100663414"
+      description="Excitation flux"
+      variability="constant">
+      <Real
+        declaredType="Modelica.Units.SI.MagneticFlux"
+        start="1.0"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 262 -->
+    <ScalarVariable
+      name="der(dcpm.airGapDC.psi_e)"
+      valueReference="100663415"
+      description="der(Excitation flux)"
+      variability="constant">
+      <Real
+        unit="V"
+        start="0.0"
+        derivative="261"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 263 -->
+    <ScalarVariable
+      name="dcpm.airGapDC.vai"
+      valueReference="1174405360"
+      description="Induced armature voltage">
+      <Real
+        declaredType="Modelica.Units.SI.Voltage"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 264 -->
+    <ScalarVariable
+      name="dcpm.airGapDC.ia"
+      valueReference="33554434"
+      description="Armature current">
+      <Real
+        declaredType="Modelica.Units.SI.Current"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 265 -->
+    <ScalarVariable
+      name="dcpm.airGapDC.tauElectrical"
+      valueReference="1174405336">
+      <Real
+        declaredType="Modelica.Units.SI.Torque"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 266 -->
+    <ScalarVariable
+      name="dcpm.airGapDC.flange.phi"
+      valueReference="1711276245"
+      description="Absolute rotation angle of flange">
+      <Real
+        declaredType="Modelica.Units.SI.Angle"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 267 -->
+    <ScalarVariable
+      name="der(dcpm.airGapDC.flange.phi)"
+      valueReference="603979776"
+      description="der(Absolute rotation angle of flange)">
+      <Real
+        unit="rad/s"
+        derivative="266"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 268 -->
+    <ScalarVariable
+      name="dcpm.airGapDC.flange.tau"
+      valueReference="1174405361"
+      description="Cut torque in the flange">
+      <Real
+        declaredType="Modelica.Units.SI.Torque"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 269 -->
+    <ScalarVariable
+      name="dcpm.airGapDC.support.phi"
+      valueReference="234881027"
+      description="Absolute rotation angle of flange"
+      variability="fixed">
+      <Real
+        declaredType="Modelica.Units.SI.Angle"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 270 -->
+    <ScalarVariable
+      name="der(dcpm.airGapDC.support.phi)"
+      valueReference="100663416"
+      description="der(Absolute rotation angle of flange)"
+      variability="constant">
+      <Real
+        unit="rad/s"
+        start="0.0"
+        derivative="269"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 271 -->
+    <ScalarVariable
+      name="dcpm.airGapDC.support.tau"
+      valueReference="1174405336"
+      description="Cut torque in the flange">
+      <Real
+        declaredType="Modelica.Units.SI.Torque"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 272 -->
+    <ScalarVariable
+      name="dcpm.airGapDC.pin_ap.v"
+      valueReference="1174405352"
+      description="Potential at the pin">
+      <Real
+        declaredType="Modelica.Units.SI.ElectricPotential"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 273 -->
+    <ScalarVariable
+      name="dcpm.airGapDC.pin_ap.i"
+      valueReference="33554434"
+      description="Current flowing into the pin">
+      <Real
+        declaredType="Modelica.Units.SI.Current"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 274 -->
+    <ScalarVariable
+      name="dcpm.airGapDC.pin_ep.v"
+      valueReference="100663417"
+      description="Potential at the pin"
+      variability="constant">
+      <Real
+        declaredType="Modelica.Units.SI.ElectricPotential"
+        start="0.0"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 275 -->
+    <ScalarVariable
+      name="dcpm.airGapDC.pin_ep.i"
+      valueReference="100663418"
+      description="Current flowing into the pin"
+      variability="constant">
+      <Real
+        declaredType="Modelica.Units.SI.Current"
+        start="1.0"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 276 -->
+    <ScalarVariable
+      name="dcpm.airGapDC.pin_an.v"
+      valueReference="1174405353"
+      description="Potential at the pin">
+      <Real
+        declaredType="Modelica.Units.SI.ElectricPotential"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 277 -->
+    <ScalarVariable
+      name="dcpm.airGapDC.pin_an.i"
+      valueReference="100663538"
+      description="Current flowing into the pin">
+      <Real
+        declaredType="Modelica.Units.SI.Current"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 278 -->
+    <ScalarVariable
+      name="dcpm.airGapDC.pin_en.v"
+      valueReference="100663419"
+      description="Potential at the pin"
+      variability="constant">
+      <Real
+        declaredType="Modelica.Units.SI.ElectricPotential"
+        start="0"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 279 -->
+    <ScalarVariable
+      name="dcpm.airGapDC.pin_en.i"
+      valueReference="100663420"
+      description="Current flowing into the pin"
+      variability="constant">
+      <Real
+        declaredType="Modelica.Units.SI.Current"
+        start="-1.0"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 280 -->
+    <ScalarVariable
+      name="dcpm.airGapDC.Le"
+      valueReference="100663421"
+      description="Excitation inductance"
+      variability="constant">
+      <Real
+        declaredType="Modelica.Units.SI.Inductance"
+        start="1.0"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 281 -->
+    <ScalarVariable
+      name="dcpm.eGround.p.v"
+      valueReference="100663422"
+      description="Potential at the pin"
+      variability="constant">
+      <Real
+        declaredType="Modelica.Units.SI.ElectricPotential"
+        start="0"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 282 -->
+    <ScalarVariable
+      name="dcpm.eGround.p.i"
+      valueReference="100663423"
+      description="Current flowing into the pin"
+      variability="constant">
+      <Real
+        declaredType="Modelica.Units.SI.Current"
+        start="0.0"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 283 -->
+    <ScalarVariable
+      name="dcpm.ie.I"
+      valueReference="100663424"
+      description="Value of constant current"
+      variability="constant">
+      <Real
+        declaredType="Modelica.Units.SI.Current"
+        start="1.0"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 284 -->
+    <ScalarVariable
+      name="dcpm.ie.v"
+      valueReference="100663425"
+      description="Voltage drop of the two pins (= p.v - n.v)"
+      variability="constant">
+      <Real
+        declaredType="Modelica.Units.SI.Voltage"
+        start="0.0"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 285 -->
+    <ScalarVariable
+      name="dcpm.ie.p.v"
+      valueReference="100663426"
+      description="Potential at the pin"
+      variability="constant">
+      <Real
+        declaredType="Modelica.Units.SI.ElectricPotential"
+        start="0"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 286 -->
+    <ScalarVariable
+      name="dcpm.ie.p.i"
+      valueReference="100663427"
+      description="Current flowing into the pin"
+      variability="constant">
+      <Real
+        declaredType="Modelica.Units.SI.Current"
+        start="1.0"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 287 -->
+    <ScalarVariable
+      name="dcpm.ie.n.v"
+      valueReference="100663428"
+      description="Potential at the pin"
+      variability="constant">
+      <Real
+        declaredType="Modelica.Units.SI.ElectricPotential"
+        start="0.0"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 288 -->
+    <ScalarVariable
+      name="dcpm.ie.n.i"
+      valueReference="100663429"
+      description="Current flowing into the pin"
+      variability="constant">
+      <Real
+        declaredType="Modelica.Units.SI.Current"
+        start="-1.0"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 289 -->
+    <ScalarVariable
+      name="dcpm.ie.i"
+      valueReference="100663430"
+      description="Current flowing from pin p to pin n"
+      variability="constant">
+      <Real
+        declaredType="Modelica.Units.SI.Current"
+        start="1.0"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 290 -->
+    <ScalarVariable
+      name="dcpmData.Jr"
+      valueReference="16777220"
+      description="Rotor&#39;s moment of inertia"
+      causality="parameter"
+      variability="tunable">
+      <Real
+        declaredType="Modelica.Units.SI.Inertia"
+        start="0.001"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 291 -->
+    <ScalarVariable
+      name="dcpmData.Js"
+      valueReference="100663491"
+      description="Stator&#39;s moment of inertia"
+      variability="tunable">
+      <Real
+        declaredType="Modelica.Units.SI.Inertia"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 292 -->
+    <ScalarVariable
+      name="dcpmData.VaNominal"
+      valueReference="16777221"
+      description="Nominal armature voltage"
+      causality="parameter"
+      variability="tunable">
+      <Real
+        declaredType="Modelica.Units.SI.Voltage"
+        start="100"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 293 -->
+    <ScalarVariable
+      name="dcpmData.IaNominal"
+      valueReference="16777222"
+      description="Nominal armature current (&gt;0..Motor, &lt;0..Generator)"
+      causality="parameter"
+      variability="tunable">
+      <Real
+        declaredType="Modelica.Units.SI.Current"
+        start="100"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 294 -->
+    <ScalarVariable
+      name="dcpmData.wNominal"
+      valueReference="16777223"
+      description="Nominal speed"
+      causality="parameter"
+      variability="tunable">
+      <Real
+        declaredType="Modelica.Units.SI.AngularVelocity"
+        displayUnit="rev/min"
+        start="149.22565104552"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 295 -->
+    <ScalarVariable
+      name="dcpmData.TaNominal"
+      valueReference="16777224"
+      description="Nominal armature temperature"
+      causality="parameter"
+      variability="tunable">
+      <Real
+        declaredType="Modelica.Units.SI.Temperature"
+        start="293.15"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 296 -->
+    <ScalarVariable
+      name="dcpmData.Ra"
+      valueReference="16777225"
+      description="Armature resistance at TaRef"
+      causality="parameter"
+      variability="tunable">
+      <Real
+        declaredType="Modelica.Units.SI.Resistance"
+        start="0.05"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 297 -->
+    <ScalarVariable
+      name="dcpmData.TaRef"
+      valueReference="16777226"
+      description="Reference temperature of armature resistance"
+      causality="parameter"
+      variability="tunable">
+      <Real
+        declaredType="Modelica.Units.SI.Temperature"
+        start="293.15"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 298 -->
+    <ScalarVariable
+      name="dcpmData.alpha20a"
+      valueReference="16777227"
+      description="Temperature coefficient of armature resistance"
+      causality="parameter"
+      variability="tunable">
+      <Real
+        declaredType="Modelica.Electrical.Machines.Thermal.LinearTemperatureCoefficient20"
+        start="0"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 299 -->
+    <ScalarVariable
+      name="dcpmData.La"
+      valueReference="16777228"
+      description="Armature inductance"
+      causality="parameter"
+      variability="tunable">
+      <Real
+        declaredType="Modelica.Units.SI.Inductance"
+        start="0.0015"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 300 -->
+    <ScalarVariable
+      name="dcpmData.frictionParameters.PRef"
+      valueReference="100663433"
+      description="Reference friction losses at wRef"
+      variability="constant">
+      <Real
+        declaredType="Modelica.Units.SI.Power"
+        min="0.0"
+        start="0"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 301 -->
+    <ScalarVariable
+      name="dcpmData.frictionParameters.wRef"
+      valueReference="100663492"
+      description="Reference angular velocity that the PRef refer to"
+      variability="tunable">
+      <Real
+        declaredType="Modelica.Units.SI.AngularVelocity"
+        displayUnit="rev/min"
+        min="2.2250738585072014E-308"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 302 -->
+    <ScalarVariable
+      name="dcpmData.frictionParameters.power_w"
+      valueReference="16777229"
+      description="Exponent of friction torque w.r.t. angular velocity"
+      causality="parameter"
+      variability="fixed">
+      <Real
+        unit="1"
+        min="2.2250738585072014E-308"
+        start="2"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 303 -->
+    <ScalarVariable
+      name="dcpmData.frictionParameters.tauRef"
+      valueReference="100663493"
+      description="Reference friction torque at reference angular velocity"
+      variability="tunable">
+      <Real
+        declaredType="Modelica.Units.SI.Torque"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 304 -->
+    <ScalarVariable
+      name="dcpmData.frictionParameters.linear"
+      valueReference="100663434"
+      description="Linear angular velocity range with respect to reference angular velocity"
+      variability="constant">
+      <Real
+        unit="1"
+        start="0.001"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 305 -->
+    <ScalarVariable
+      name="dcpmData.frictionParameters.wLinear"
+      valueReference="100663494"
+      description="Linear angular velocity range"
+      variability="tunable">
+      <Real
+        declaredType="Modelica.Units.SI.AngularVelocity"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 306 -->
+    <ScalarVariable
+      name="dcpmData.frictionParameters.tauLinear"
+      valueReference="100663495"
+      description="Torque corresponding with linear angular velocity range"
+      variability="tunable">
+      <Real
+        declaredType="Modelica.Units.SI.Torque"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 307 -->
+    <ScalarVariable
+      name="dcpmData.ViNominal"
+      valueReference="100663496"
+      description="Induced voltage at nominal operating point"
+      variability="tunable">
+      <Real
+        declaredType="Modelica.Units.SI.Voltage"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 308 -->
+    <ScalarVariable
+      name="dcpmData.coreParameters.m"
+      valueReference="100663435"
+      description="Number of phases (1 for DC, 3 for induction machines)"
+      variability="constant">
+      <Integer start="1"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 309 -->
+    <ScalarVariable
+      name="dcpmData.coreParameters.PRef"
+      valueReference="100663436"
+      description="Reference core losses at reference inner voltage VRef"
+      variability="constant">
+      <Real
+        declaredType="Modelica.Units.SI.Power"
+        min="0.0"
+        start="0"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 310 -->
+    <ScalarVariable
+      name="dcpmData.coreParameters.VRef"
+      valueReference="100663497"
+      description="Reference inner RMS voltage that reference core losses PRef refer to"
+      variability="tunable">
+      <Real
+        declaredType="Modelica.Units.SI.Voltage"
+        min="2.2250738585072014E-308"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 311 -->
+    <ScalarVariable
+      name="dcpmData.coreParameters.wRef"
+      valueReference="100663498"
+      description="Reference angular velocity that reference core losses PRef refer to"
+      variability="tunable">
+      <Real
+        declaredType="Modelica.Units.SI.AngularVelocity"
+        min="2.2250738585072014E-308"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 312 -->
+    <ScalarVariable
+      name="dcpmData.coreParameters.ratioHysteresis"
+      valueReference="100663437"
+      description="Ratio of hysteresis losses with respect to the total core losses at VRef and fRef"
+      variability="constant">
+      <Real min="0.0"
+        max="1.0"
+        start="0"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 313 -->
+    <ScalarVariable
+      name="dcpmData.coreParameters.GcRef"
+      valueReference="100663499"
+      description="Reference conductance at reference frequency and voltage"
+      variability="tunable">
+      <Real
+        declaredType="Modelica.Units.SI.Conductance"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 314 -->
+    <ScalarVariable
+      name="dcpmData.coreParameters.wMin"
+      valueReference="100663500"
+      description="Angular velocity limit"
+      variability="tunable">
+      <Real
+        declaredType="Modelica.Units.SI.AngularVelocity"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 315 -->
+    <ScalarVariable
+      name="dcpmData.strayLoadParameters.PRef"
+      valueReference="100663438"
+      description="Reference stray load losses at IRef and wRef"
+      variability="constant">
+      <Real
+        declaredType="Modelica.Units.SI.Power"
+        min="0.0"
+        start="0"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 316 -->
+    <ScalarVariable
+      name="dcpmData.strayLoadParameters.IRef"
+      valueReference="100663501"
+      description="Reference RMS current that PRef refers to"
+      variability="tunable">
+      <Real
+        declaredType="Modelica.Units.SI.Current"
+        min="2.2250738585072014E-308"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 317 -->
+    <ScalarVariable
+      name="dcpmData.strayLoadParameters.wRef"
+      valueReference="100663502"
+      description="Reference angular velocity that PRef refers to"
+      variability="tunable">
+      <Real
+        declaredType="Modelica.Units.SI.AngularVelocity"
+        displayUnit="rev/min"
+        min="2.2250738585072014E-308"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 318 -->
+    <ScalarVariable
+      name="dcpmData.strayLoadParameters.power_w"
+      valueReference="16777230"
+      description="Exponent of stray load loss torque w.r.t. angular velocity"
+      causality="parameter"
+      variability="fixed">
+      <Real
+        unit="1"
+        min="2.2250738585072014E-308"
+        start="1"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 319 -->
+    <ScalarVariable
+      name="dcpmData.strayLoadParameters.tauRef"
+      valueReference="100663503"
+      description="Reference stray load torque at reference angular velocity and reference current"
+      variability="tunable">
+      <Real
+        declaredType="Modelica.Units.SI.Torque"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 320 -->
+    <ScalarVariable
+      name="dcpmData.brushParameters.V"
+      valueReference="100663439"
+      description="Total voltage drop of brushes for currents &gt; ILinear"
+      variability="constant">
+      <Real
+        declaredType="Modelica.Units.SI.Voltage"
+        start="0.7"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 321 -->
+    <ScalarVariable
+      name="dcpmData.brushParameters.ILinear"
+      valueReference="100663504"
+      description="Current indicating linear voltage region of brush voltage drop"
+      variability="tunable">
+      <Real
+        declaredType="Modelica.Units.SI.Current"/>
+    </ScalarVariable>
+  </ModelVariables>
+  <ModelStructure>
+    <Outputs>
+      <Unknown index="31"
+        dependencies="17"
+        dependenciesKind="fixed"/>
+    </Outputs>
+    <Derivatives>
+      <Unknown index="16"
+        dependencies="17"
+        dependenciesKind="fixed"/>
+      <Unknown index="18"
+        dependencies="35 155"
+        dependenciesKind="fixed fixed"/>
+      <Unknown index="156"
+        dependencies="1 17 155"
+        dependenciesKind="fixed fixed dependent"/>
+    </Derivatives>
+    <InitialUnknowns>
+      <Unknown index="16"
+        dependencies="17"
+        dependenciesKind="dependent"/>
+      <Unknown index="18"
+        dependencies="14 24 35 130 290 292 293 294 295 296 297 298"
+        dependenciesKind="dependent dependent dependent dependent dependent dependent dependent dependent dependent dependent dependent dependent"/>
+      <Unknown index="31"
+        dependencies="17 24"
+        dependenciesKind="dependent dependent"/>
+      <Unknown index="155"
+        dependencies="130"
+        dependenciesKind="dependent"/>
+      <Unknown index="156"
+        dependencies="1 17 24 36 130 292 293 294 295 296 297 298 299"
+        dependenciesKind="dependent dependent dependent dependent dependent dependent dependent dependent dependent dependent dependent dependent dependent"/>
+    </InitialUnknowns>
+  </ModelStructure>
+</fmiModelDescription>

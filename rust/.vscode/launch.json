@@ -16,8 +16,14 @@
             "request": "launch",
             "program": "${workspaceFolder}/target/debug/modelica-fmi.exe",
             "args": [
-                "C:/Users/tsr2/Downloads/Reference-FMUs/2.0/BouncingBall.fmu",
-                "E:/WS/Modelica-FMI/FMI/Examples/BouncingBall2.mo",
+                // "C:/Users/tsr2/Downloads/Reference-FMUs/2.0/BouncingBall.fmu",
+                // "E:/WS/Modelica-FMI/FMI/Examples/FMI2/BouncingBall.mo",
+                // "C:/Users/tsr2/Downloads/Controller_FMU_2.fmu",
+                // "E:/WS/Modelica-FMI/FMI/Examples/FMI2/Controller_FMU_2.mo",
+                "C:/Users/tsr2/Downloads/Drive_FMU_2.fmu",
+                "E:/WS/Modelica-FMI/FMI/Examples/FMI2/Drive_FMU_2.mo",
+                // "C:/Users/tsr2/Downloads/Stimuli_FMU_2.fmu",
+                // "E:/WS/Modelica-FMI/FMI/Examples/FMI2/Stimuli_FMU_2.mo",
                 "--verbose",
                 "--overwrite"
             ],

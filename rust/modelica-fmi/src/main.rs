@@ -1,22 +1,15 @@
-use anyhow::Context;
-use anyhow::bail;
+use anyhow::{Context, bail};
+use askama::Template;
 use clap::Parser;
 use fmi_rs::{
     model_description::{
-        FMIMajorVersion,
-        fmi2::{Causality, ModelDescription, VariableType},
-        peek_fmi_major_version,
-    },
-    zip::extract_zip_archive,
+        FMIMajorVersion, fmi2::{Causality, ModelDescription, ScalarVariable, VariableType}, peek_fmi_major_version,
+    }, zip::extract_zip_archive,
 };
 use sha2::{Digest, Sha256};
 use std::{
-    fs::{self, File},
-    io::{self, Read},
-    path::{Path, PathBuf},
+    collections::HashMap, fs::{self, File}, io::{self, Read}, path::{Path, PathBuf},
 };
-
-const MODELICA_TEMPLATE: &str = include_str!("../templates/ExternalFMU.mo.tera");
 
 #[derive(Debug, Parser)]
 #[command(
@@ -40,15 +33,100 @@ struct Cli {
     overwrite: bool,
 }
 
+#[derive(Template)]
+#[template(path = "ExternalFMU.mo.askama", escape = "none")]
+struct ExternalFmuTemplate<'a> {
+    annotations: HashMap<String, String>,
+    version: String,
+    hash: String,
+    model_identifier: String,
+    instantiation_token: String,
+    model_name: String,
+    description: Option<String>,
+    within: String,
+    model_description: &'a ModelDescription,
+}
+
+impl<'a> ExternalFmuTemplate<'a> {
+    pub fn parameters(&self) -> impl Iterator<Item = &'a ScalarVariable> {
+        self.model_description
+            .modelVariables
+            .iter()
+            .filter(|v| v.causality == Causality::Parameter)
+    }
+    pub fn inputs(&self) -> impl Iterator<Item = &'a ScalarVariable> {
+        self.model_description
+            .modelVariables
+            .iter()
+            .filter(|v| v.causality == Causality::Input)
+    }
+    pub fn outputs(&self) -> impl Iterator<Item = &'a ScalarVariable> {
+        self.model_description
+            .modelVariables
+            .iter()
+            .filter(|v| v.causality == Causality::Output)
+    }
+    pub fn annotation(&self, variable_name: &str) -> String {
+        self.annotations.get(variable_name).cloned().unwrap_or_default()
+    }
+    pub fn id(&self, variable_name: &str) -> String {
+        modelica_identifier(variable_name)
+    }
+}
+
+pub struct ModelicaFormatter;
+
+impl ModelicaFormatter {
+    pub fn annotation() -> String {
+          "annotation(Placement(transformation(extent={ { 100, -60 }, { 120, -40 } }), iconTransformation(extent={ { 100, -60 }, { 120, -40 } })))".to_owned()
+    }
+}
+
+pub trait ScalarVariableExt {
+    fn start_literal(&self) -> String;
+    fn description_literal(&self) -> String;
+}
+
+impl ScalarVariableExt for ScalarVariable {
+    fn start_literal(&self) -> String {
+        match &self.variableType {
+            VariableType::Real {start, ..} => start.clone().unwrap_or_else(|| "0.0".to_owned()),
+        //     VariableType::Integer(start, ..) => start,
+        //     VariableType::Boolean(start, ..) => format!("{}", if *start { "true" } else { "false" }),
+        //     VariableType::String(start, ..) => format!({"start"}),
+        //     VariableType::Enumeration(start, ..) => format!({"start"}),
+            _ => "tata".to_owned()
+        }
+    }
+
+    fn description_literal(&self) -> String {
+        self.description.clone().map(|s| format!(" \"{s}\"")).unwrap_or_default()
+    }
+}
+
 fn get_library_root<P: AsRef<Path>>(path: P) -> Option<PathBuf> {
     let path = path.as_ref();
     let start = if path.is_file() { path.parent()? } else { path };
-
     start
         .ancestors()
         .filter(|directory| directory.join("package.mo").is_file())
         .last()
         .map(Path::to_path_buf)
+}
+
+fn modelica_within_path(library_root: &Path, model_path: &Path) -> Option<String> {
+    let relative = model_path.strip_prefix(library_root.parent()?).ok()?;
+    let package_path = relative.parent().unwrap_or_else(|| Path::new(""));
+
+    let parts: Vec<String> = package_path
+        .components()
+        .filter_map(|component| match component {
+            std::path::Component::Normal(part) => Some(part.to_string_lossy().to_string()),
+            _ => None,
+        })
+        .collect();
+
+    Some(parts.join("."))
 }
 
 fn main() -> anyhow::Result<()> {
@@ -104,22 +182,62 @@ fn main() -> anyhow::Result<()> {
 
     let model_description = ModelDescription::from_path(&xml_path)?;
 
-    let mut context = tera::Context::new();
+    let model_identifier = if let Some(co_simulation) = &model_description.coSimulation {
+        co_simulation.modelIdentifier.clone()
+    } else {
+        bail!("The FMU does not support Co-Simulation");
+    };
 
-    context.insert("model_name", &model_description.modelName);
-    context.insert("description", "Generated from a Tera template");
-    context.insert("parameters", &modelica_parameters(&model_description));
-    context.insert("outputs", &modelica_outputs(&model_description));
-    context.insert(
-        "output_variables",
-        &modelica_output_variables(&model_description),
-    );
-    context.insert(
-        "output_updates",
-        &modelica_output_updates(&model_description),
-    );
+    let mut annotations = HashMap::new();
 
-    let modelica = tera::Tera::one_off(MODELICA_TEMPLATE, &context, false)?;
+    let outputs: Vec<&ScalarVariable> = model_description.modelVariables
+        .iter()
+        .filter(|v| matches!(v.causality, Causality::Input | Causality::Output))
+        .collect();
+
+    let height = 160;
+    // let x0 = -100;
+    // let y0 = -80;
+    let y1 = 80;
+    
+    for (i, variable) in outputs.iter().enumerate() {
+        let x1 = if variable.causality == Causality::Input {
+            -120
+        } else {
+            100
+        };
+
+        let y = if outputs.len() == 1 {
+            0
+        } else if outputs.len() == 2 {
+            -50 + i as i32 * 100
+        } else {
+            y1 - i as i32 * (height / (outputs.len() as i32 - 1))
+        };
+
+        let annotation = format!(" annotation(Placement(transformation(extent={{ {{ {}, {} }}, {{ {}, {} }} }}), iconTransformation(extent={{ {{ {}, {} }}, {{ {}, {} }} }})))",
+            x1, y - 10, x1 + 20, y + 10, x1, y - 10, x1 + 20, y + 10
+        );
+
+        annotations.insert(variable.name.clone(), annotation);
+    }
+
+    let within = modelica_within_path(&library_root, output_file)
+        .unwrap_or_default();
+
+    let template = ExternalFmuTemplate {
+        annotations,
+        version: env!("CARGO_PKG_VERSION").to_owned(),
+        hash: hash[..7].to_owned(),
+        model_identifier,
+        instantiation_token: model_description.guid.clone(),
+        model_name: model_description.modelName.clone(),
+        description: model_description.description.clone(),
+        within,
+        model_description: &model_description,
+    };
+
+    let modelica = template.render()?;
 
     fs::write(output_file, modelica)?;
     update_package_order(output_file)?;
@@ -216,95 +334,6 @@ fn modelica_parameters(model_description: &ModelDescription) -> Vec<String> {
         .collect()
 }
 
-fn modelica_outputs(model_description: &ModelDescription) -> Vec<String> {
-    model_description
-        .modelVariables
-        .iter()
-        .filter(|variable| variable.causality == Causality::Output)
-        .map(|variable| {
-            let modelica_type = match &variable.variableType {
-                VariableType::Real { .. } => "FMI2RealOutput",
-                VariableType::Integer { .. } | VariableType::Enumeration { .. } => {
-                    "FMI2IntegerOutput"
-                }
-                VariableType::Boolean { .. } => "FMI2BooleanOutput",
-                VariableType::String { .. } => "FMI2StringOutput",
-            };
-
-            let attributes = match &variable.variableType {
-                VariableType::Real { unit, quantity, .. } => {
-                    let mut attributes = Vec::new();
-                    if let Some(unit) = unit {
-                        attributes.push(format!("unit=\"{}\"", modelica_string(unit)));
-                    }
-                    if let Some(quantity) = quantity {
-                        attributes.push(format!("quantity=\"{}\"", modelica_string(quantity)));
-                    }
-                    if attributes.is_empty() {
-                        String::new()
-                    } else {
-                        format!("({})", attributes.join(", "))
-                    }
-                }
-                _ => String::new(),
-            };
-
-            let description = variable
-                .description
-                .as_deref()
-                .map(|value| format!(" \"{}\"", modelica_string(value)))
-                .unwrap_or_default();
-
-            format!(
-                "{modelica_type} {}{attributes}{description};",
-                modelica_identifier(&variable.name)
-            )
-        })
-        .collect()
-}
-
-fn modelica_output_variables(model_description: &ModelDescription) -> Vec<String> {
-    model_description
-        .modelVariables
-        .iter()
-        .filter(|variable| variable.causality == Causality::Output)
-        .map(|variable| {
-            let modelica_type = match &variable.variableType {
-                VariableType::Real { .. } => "Real",
-                VariableType::Integer { .. } | VariableType::Enumeration { .. } => "Integer",
-                VariableType::Boolean { .. } => "Boolean",
-                VariableType::String { .. } => "String",
-            };
-
-            format!("{modelica_type} {};", modelica_identifier(&variable.name))
-        })
-        .collect()
-}
-
-fn modelica_output_updates(model_description: &ModelDescription) -> Vec<String> {
-    model_description
-        .modelVariables
-        .iter()
-        .filter(|variable| variable.causality == Causality::Output)
-        .map(|variable| {
-            let (getter, argument) = match &variable.variableType {
-                VariableType::Real { .. } => ("FMI2GetReal", "valueReference"),
-                VariableType::Integer { .. } | VariableType::Enumeration { .. } => {
-                    ("FMI2GetInteger", "valueReference")
-                }
-                VariableType::Boolean { .. } => ("FMI2GetBoolean", "valueReference"),
-                VariableType::String { .. } => ("FMI2GetString", "valueReference"),
-            };
-
-            format!(
-                "    outputVariables.{} := {getter}(instance, {argument}={});",
-                modelica_identifier(&variable.name),
-                variable.valueReference
-            )
-        })
-        .collect()
-}
-
 fn modelica_identifier(value: &str) -> String {
     let mut identifier: String = value
         .chars()
@@ -332,4 +361,21 @@ fn modelica_identifier(value: &str) -> String {
 
 fn modelica_string(value: &str) -> String {
     value.replace('"', "\\\"").replace('\n', "\\n")
+}
+
+#[cfg(test)]
+mod tests {
+    use super::modelica_within_path;
+    use std::path::Path;
+
+    #[test]
+    fn computes_modelica_within_path_for_nested_library_packages() {
+        let library_root = Path::new(r"E:\WS\Modelica-FMI");
+        let model_path = Path::new(r"E:\WS\Modelica-FMI\FMI\Examples\FMI2\Controller_FMU_2.mo");
+
+        assert_eq!(
+            modelica_within_path(library_root, model_path),
+            Some("FMI.Examples.FMI2".to_owned())
+        );
+    }
 }

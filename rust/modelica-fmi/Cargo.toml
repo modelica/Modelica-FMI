@@ -4,9 +4,9 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
+askama = "0.16"
 anyhow = "1.0.104"
 clap = { version = "4.6.6", features = ["derive"] }
 fmi-rs = { path = "../fmi-rs" }
 sha2 = "0.10"
 tempfile = "3"
-tera = "1"

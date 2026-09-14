@@ -52,7 +52,7 @@ end FMI{fmi_version};
             "Dahlquist",
             "Feedthrough",
             "Stair",
-            "Resource",
+            # "Resource",
             "VanDerPol",
         ]
 
