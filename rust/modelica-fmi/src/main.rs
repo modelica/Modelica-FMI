@@ -1,25 +1,22 @@
 use anyhow::{Context, bail};
-use askama::Template;
 use clap::Parser;
 use fmi_rs::{
-    model_description::{
-        FMIMajorVersion, fmi2::{Causality, ModelDescription, ScalarVariable, VariableType}, peek_fmi_major_version,
-    }, zip::extract_zip_archive,
+    model_description::{FMIMajorVersion, peek_fmi_major_version},
+    zip::extract_zip_archive,
 };
 use sha2::{Digest, Sha256};
 use std::{
-    collections::HashMap, fs::{self, File}, io::{self, Read}, path::{Path, PathBuf},
+    fs::{self, File},
+    io::{self, Read},
+    path::{Path, PathBuf},
 };
 
-use crate::fmi2::{create_modelica_file};
+use crate::fmi2::create_modelica_file;
 
 mod fmi2;
 
 #[derive(Debug, Parser)]
-#[command(
-    name = "modelica-fmi",
-    about = "Import an FMU into a Modelica library"
-)]
+#[command(name = "modelica-fmi", about = "Import an FMU into a Modelica library")]
 struct Cli {
     #[arg(help = "Path to the FMU to import")]
     fmu_file: PathBuf,
@@ -109,9 +106,8 @@ fn main() -> anyhow::Result<()> {
 
     let fmi_major_version =
         peek_fmi_major_version(&xml_path).context("Failed to determine FMI version")?;
-    
-    let within = modelica_within_path(&library_root, output_file)
-        .unwrap_or_default();
+
+    let within = modelica_within_path(&library_root, output_file).unwrap_or_default();
 
     match fmi_major_version {
         FMIMajorVersion::V2 => create_modelica_file(&xml_path, &hash, &within, output_file)?,
@@ -140,7 +136,7 @@ fn main() -> anyhow::Result<()> {
     // // let x0 = -100;
     // // let y0 = -80;
     // let y1 = 80;
-    
+
     // for (i, variable) in outputs.iter().enumerate() {
     //     let x1 = if variable.causality == Causality::Input {
     //         -120
@@ -237,44 +233,6 @@ fn sha256_file(path: &Path) -> io::Result<String> {
     Ok(format!("{:x}", hasher.finalize()))
 }
 
-fn modelica_parameters(model_description: &ModelDescription) -> Vec<String> {
-    model_description
-        .modelVariables
-        .iter()
-        .filter(|variable| {
-            matches!(
-                variable.causality,
-                Causality::Parameter | Causality::CalculatedParameter
-            )
-        })
-        .map(|variable| {
-            let (modelica_type, start) = match &variable.variableType {
-                VariableType::Real { start, .. } => ("FMI2Real", start.as_deref().unwrap_or("0.0")),
-                VariableType::Integer { start, .. } | VariableType::Enumeration { start, .. } => {
-                    ("FMI2Integer", start.as_deref().unwrap_or("0"))
-                }
-                VariableType::Boolean { start, .. } => {
-                    ("FMI2Boolean", start.as_deref().unwrap_or("false"))
-                }
-                VariableType::String { start, .. } => {
-                    ("FMI2String", start.as_deref().unwrap_or("\"\""))
-                }
-            };
-
-            let description = variable
-                .description
-                .as_deref()
-                .map(|value| format!(" \"{}\"", modelica_string(value)))
-                .unwrap_or_default();
-
-            format!(
-                "parameter {modelica_type} {} = {start}{description};",
-                modelica_identifier(&variable.name)
-            )
-        })
-        .collect()
-}
-
 fn modelica_identifier(value: &str) -> String {
     let mut identifier: String = value
         .chars()
@@ -300,9 +258,9 @@ fn modelica_identifier(value: &str) -> String {
     identifier
 }
 
-fn modelica_string(value: &str) -> String {
-    value.replace('"', "\\\"").replace('\n', "\\n")
-}
+// fn modelica_string(value: &str) -> String {
+//     value.replace('"', "\\\"").replace('\n', "\\n")
+// }
 
 #[cfg(test)]
 mod tests {
