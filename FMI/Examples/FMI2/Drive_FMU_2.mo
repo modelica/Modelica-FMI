@@ -1,4 +1,5 @@
 within FMI.Examples.FMI2;
+
 block Drive_FMU_2
   extends FMI.Internal.FMU;
 
@@ -24,9 +25,9 @@ block Drive_FMU_2
   parameter FMI2Real dcpmData_strayLoadParameters_power_w = 1 "Exponent of stray load loss torque w.r.t. angular velocity";
   parameter FMI2Real V_start = 0.0 annotation(Dialog(tab="Initial", group="Start Values"));
   parameter FMI2Real LoadTorque_Nm_start = 0.0 annotation(Dialog(tab="Initial", group="Start Values"));
-  FMI2RealInput V(start=V_start) annotation(Placement(transformation(extent={ { -120, 70},  { -100, 90}}),   iconTransformation(extent={ { -120, 70},  { -100, 90}})));
-  FMI2RealInput LoadTorque_Nm(start=LoadTorque_Nm_start) annotation(Placement(transformation(extent={ { -120, -90},  { -100, -70}}),   iconTransformation(extent={ { -120, -90},  { -100, -70}})));
-  FMI2RealOutput w annotation(Placement(transformation(extent={ { 100, -10},  { 120, 10}}),   iconTransformation(extent={ { 100, -10},  { 120, 10}})));
+  FMI2RealInput V(start=V_start) annotation(Placement(transformation(extent={ { -120, 70 }, { -100, 90 } }), iconTransformation(extent={ { -120, 70 }, { -100, 90 } })));
+  FMI2RealInput LoadTorque_Nm(start=LoadTorque_Nm_start) annotation(Placement(transformation(extent={ { -120, -90 }, { -100, -70 } }), iconTransformation(extent={ { -120, -90 }, { -100, -70 } })));
+  FMI2RealOutput w annotation(Placement(transformation(extent={ { 100, -10 }, { 120, 10 } }), iconTransformation(extent={ { 100, -10 }, { 120, 10 } })));
 
 initial algorithm
 
@@ -49,21 +50,21 @@ initial algorithm
 
   startTime := time;
 
-  FMI2SetReal(instance, valueReferences={ 16777216},  nValues=1, values={ loadInertia1_J});
-  FMI2SetReal(instance, valueReferences={ 16777217},  nValues=1, values={ idealGear_ratio});
-  FMI2SetReal(instance, valueReferences={ 16777218},  nValues=1, values={ dcpm_TaOperational});
-  FMI2SetReal(instance, valueReferences={ 16777219},  nValues=1, values={ dcpm_fixed_phi0});
-  FMI2SetReal(instance, valueReferences={ 16777220},  nValues=1, values={ dcpmData_Jr});
-  FMI2SetReal(instance, valueReferences={ 16777221},  nValues=1, values={ dcpmData_VaNominal});
-  FMI2SetReal(instance, valueReferences={ 16777222},  nValues=1, values={ dcpmData_IaNominal});
-  FMI2SetReal(instance, valueReferences={ 16777223},  nValues=1, values={ dcpmData_wNominal});
-  FMI2SetReal(instance, valueReferences={ 16777224},  nValues=1, values={ dcpmData_TaNominal});
-  FMI2SetReal(instance, valueReferences={ 16777225},  nValues=1, values={ dcpmData_Ra});
-  FMI2SetReal(instance, valueReferences={ 16777226},  nValues=1, values={ dcpmData_TaRef});
-  FMI2SetReal(instance, valueReferences={ 16777227},  nValues=1, values={ dcpmData_alpha20a});
-  FMI2SetReal(instance, valueReferences={ 16777228},  nValues=1, values={ dcpmData_La});
-  FMI2SetReal(instance, valueReferences={ 16777229},  nValues=1, values={ dcpmData_frictionParameters_power_w});
-  FMI2SetReal(instance, valueReferences={ 16777230},  nValues=1, values={ dcpmData_strayLoadParameters_power_w});
+  FMI2SetReal(instance, valueReferences={ 16777216 }, nValues=1, values={ loadInertia1_J });
+  FMI2SetReal(instance, valueReferences={ 16777217 }, nValues=1, values={ idealGear_ratio });
+  FMI2SetReal(instance, valueReferences={ 16777218 }, nValues=1, values={ dcpm_TaOperational });
+  FMI2SetReal(instance, valueReferences={ 16777219 }, nValues=1, values={ dcpm_fixed_phi0 });
+  FMI2SetReal(instance, valueReferences={ 16777220 }, nValues=1, values={ dcpmData_Jr });
+  FMI2SetReal(instance, valueReferences={ 16777221 }, nValues=1, values={ dcpmData_VaNominal });
+  FMI2SetReal(instance, valueReferences={ 16777222 }, nValues=1, values={ dcpmData_IaNominal });
+  FMI2SetReal(instance, valueReferences={ 16777223 }, nValues=1, values={ dcpmData_wNominal });
+  FMI2SetReal(instance, valueReferences={ 16777224 }, nValues=1, values={ dcpmData_TaNominal });
+  FMI2SetReal(instance, valueReferences={ 16777225 }, nValues=1, values={ dcpmData_Ra });
+  FMI2SetReal(instance, valueReferences={ 16777226 }, nValues=1, values={ dcpmData_TaRef });
+  FMI2SetReal(instance, valueReferences={ 16777227 }, nValues=1, values={ dcpmData_alpha20a });
+  FMI2SetReal(instance, valueReferences={ 16777228 }, nValues=1, values={ dcpmData_La });
+  FMI2SetReal(instance, valueReferences={ 16777229 }, nValues=1, values={ dcpmData_frictionParameters_power_w });
+  FMI2SetReal(instance, valueReferences={ 16777230 }, nValues=1, values={ dcpmData_strayLoadParameters_power_w });
 
   FMI2SetupExperiment(instance,
     toleranceDefined=tolerance > 0.0,
@@ -79,8 +80,8 @@ initial algorithm
 algorithm
 
   when sample(startTime, communicationStepSize) then
-    FMI2SetReal(instance, valueReferences={ 620756992},  nValues=1, values={ pre(V)});
-    FMI2SetReal(instance, valueReferences={ 620756993},  nValues=1, values={ pre(LoadTorque_Nm)});
+    FMI2SetReal(instance, valueReferences={ 620756992 }, nValues=1, values={ pre(V) });
+    FMI2SetReal(instance, valueReferences={ 620756993 }, nValues=1, values={ pre(LoadTorque_Nm) });
 
     if time >= startTime + communicationStepSize then
       FMI2DoStep(instance,
@@ -95,10 +96,12 @@ algorithm
 
   annotation (
     Icon(
-      coordinateSystem(preserveAspectRatio=false, extent={ {-100, -100}, {100, 100}}),
-      graphics={Bitmap(extent={ {-90, -90}, {90, 90}},  fileName="modelica://FMI/Resources/Images/FMU_bare.svg")}),
-    Diagram(coordinateSystem(preserveAspectRatio=false, extent={ {-100, -100}, {100, 100}})),
+      coordinateSystem(preserveAspectRatio=false, extent={ {-100, -100}, {100, 100} }),
+      graphics={Bitmap(extent={ {-90, -90}, {90, 90} }, fileName="modelica://FMI/Resources/Images/FMU_bare.svg")}
+    ),
+    Diagram(coordinateSystem(preserveAspectRatio=false, extent={ {-100, -100}, {100, 100} })),
     experiment(StopTime=1.0),
-    uses(FMI(version="0.0.9")),
-    Documentation(info="<html><p>For more information open the FMU's <a href=\"modelica://FMI/Resources/FMUs/f12c410/documentation/index.html\">original documentation</a>.</p></html>"));
-end Drive_FMU_2;
+    uses(FMI(version="0.1.0")),
+    Documentation(info="<html><p>For more information open the FMU's <a href=\"modelica://FMI/Resources/FMUs/f12c410/documentation/index.html\">original documentation</a>.</p></html>")
+  );
+end Drive_FMU_2;
