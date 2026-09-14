@@ -13,10 +13,10 @@ block {{ model_name }}
   parameter Modelica.Units.SI.Time communicationStepSize = 0.01 annotation(Dialog(tab="FMI", group="Parameters"));
 
 {%- for variable in self.parameters() %}
-  parameter FMI2{{ variable.variableType.name() }} {{ id(variable.name) }} = {{ variable.start_literal() }}{{ variable.description_literal() }};
+  parameter FMI2{{ variable.variableType.name() }} {{ id(variable.name) }} = {{ variable.start_literal()? }}{{ variable.description_literal() }};
 {%- endfor %}
 {%- for variable in self.inputs() %}
-  parameter FMI2{{ variable.variableType.name() }} {{ id(variable.name) }}_start = {{ variable.start_literal() }} annotation(Dialog(tab="Initial", group="Start Values"));
+  parameter FMI2{{ variable.variableType.name() }} {{ id(variable.name) }}_start = {{ variable.start_literal()? }} annotation(Dialog(tab="Initial", group="Start Values"));
 {%- endfor %}
 
 {%- for variable in self.inputs() %}

@@ -1,4 +1,4 @@
-use anyhow::bail;
+use anyhow::{anyhow, bail};
 use askama::Template;
 use fmi_rs::model_description::fmi2::{Causality, ModelDescription, ScalarVariable, VariableType};
 use std::{
@@ -54,20 +54,26 @@ impl<'a> ExternalFmuTemplate<'a> {
 }
 
 pub trait ScalarVariableExt {
-    fn start_literal(&self) -> String;
+    fn start_literal(&self) -> anyhow::Result<String>;
     fn description_literal(&self) -> String;
 }
 
 impl ScalarVariableExt for ScalarVariable {
-    fn start_literal(&self) -> String {
+    fn start_literal(&self) -> anyhow::Result<String> {
         match &self.variableType {
-            VariableType::Real { start, .. } => start.clone().unwrap_or_else(|| "0.0".to_owned()),
-            //     VariableType::Integer(start, ..) => start,
-            //     VariableType::Boolean(start, ..) => format!("{}", if *start { "true" } else { "false" }),
-            //     VariableType::String(start, ..) => format!({"start"}),
-            //     VariableType::Enumeration(start, ..) => format!({"start"}),
-            _ => "tata".to_owned(),
-        }
+            VariableType::Real { start, .. } => start.clone(),
+            VariableType::Integer { start, .. } => start.clone(),
+            VariableType::Boolean { start, .. } => {
+                start.clone().map(
+                    |s| match s.as_str() {
+                        "true" | "1" => "true".to_string(),
+                        _ => "false".to_string(),
+                    }
+                )
+            },
+            VariableType::String { start, .. } => start.clone().map(|s | format!("\"{s}\"")),
+            VariableType::Enumeration { start, .. } => start.clone(),
+        }.ok_or(anyhow!("Variable {} is missing start attribute.", self.name))
     }
 
     fn description_literal(&self) -> String {
