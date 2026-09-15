@@ -11,9 +11,8 @@ use std::{
     path::{Path, PathBuf},
 };
 
-use crate::fmi2::create_modelica_file;
-
 mod fmi2;
+mod fmi3;
 
 #[derive(Debug, Parser)]
 #[command(name = "modelica-fmi", about = "Import an FMU into a Modelica library")]
@@ -110,74 +109,9 @@ fn main() -> anyhow::Result<()> {
     let within = modelica_within_path(&library_root, output_file).unwrap_or_default();
 
     match fmi_major_version {
-        FMIMajorVersion::V2 => create_modelica_file(&xml_path, &hash, &within, output_file)?,
-        FMIMajorVersion::V3 => todo!(),
+        FMIMajorVersion::V2 => fmi2::create_modelica_file(&xml_path, &hash, &within, output_file)?,
+        FMIMajorVersion::V3 => fmi3::create_modelica_file(&xml_path, &hash, &within, output_file)?,
     }
-    if fmi_major_version != FMIMajorVersion::V2 {
-        bail!("Expected an FMI 2.0 FMU, found FMI {:?}", fmi_major_version);
-    }
-
-    // let model_description = ModelDescription::from_path(&xml_path)?;
-
-    // let model_identifier = if let Some(co_simulation) = &model_description.coSimulation {
-    //     co_simulation.modelIdentifier.clone()
-    // } else {
-    //     bail!("The FMU does not support Co-Simulation");
-    // };
-
-    // let mut annotations = HashMap::new();
-
-    // let outputs: Vec<&ScalarVariable> = model_description.modelVariables
-    //     .iter()
-    //     .filter(|v| matches!(v.causality, Causality::Input | Causality::Output))
-    //     .collect();
-
-    // let height = 160;
-    // // let x0 = -100;
-    // // let y0 = -80;
-    // let y1 = 80;
-
-    // for (i, variable) in outputs.iter().enumerate() {
-    //     let x1 = if variable.causality == Causality::Input {
-    //         -120
-    //     } else {
-    //         100
-    //     };
-
-    //     let y = if outputs.len() == 1 {
-    //         0
-    //     } else if outputs.len() == 2 {
-    //         -50 + i as i32 * 100
-    //     } else {
-    //         y1 - i as i32 * (height / (outputs.len() as i32 - 1))
-    //     };
-
-    //     let annotation = format!(" annotation(Placement(transformation(extent={{ {{ {}, {} }}, {{ {}, {} }} }}), iconTransformation(extent={{ {{ {}, {} }}, {{ {}, {} }} }})))",
-    //         x1, y - 10, x1 + 20, y + 10, x1, y - 10, x1 + 20, y + 10
-    //     );
-
-    //     annotations.insert(variable.name.clone(), annotation);
-    // }
-
-    // let within = modelica_within_path(&library_root, output_file)
-    //     .unwrap_or_default();
-
-    // let template = ExternalFmuTemplate {
-    //     annotations,
-    //     version: env!("CARGO_PKG_VERSION").to_owned(),
-    //     hash: hash[..7].to_owned(),
-    //     model_identifier,
-    //     instantiation_token: model_description.guid.clone(),
-    //     model_name: model_description.modelName.clone(),
-    //     description: model_description.description.clone(),
-    //     within,
-    //     model_description: &model_description,
-    // };
-
-    // let modelica = template.render()?;
-
-    // fs::write(output_file, modelica)?;
-    // update_package_order(output_file)?;
 
     if verbose {
         println!("Created {}", output_file.display());

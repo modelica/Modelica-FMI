@@ -1,0 +1,94 @@
+within {{ within }};
+
+block {{ model_name }}
+{%- if let Some(description) = description %}
+  "{{ description }}"
+{%- endif %}
+  extends FMI.Internal.FMU;
+
+  import FMI.FMI3.Types.*;
+  import FMI.FMI3.Interfaces.*;
+  import FMI.FMI3.Functions.*;
+
+  parameter Modelica.Units.SI.Time communicationStepSize = 0.01 annotation(Dialog(tab="FMI", group="Parameters"));
+
+{%- for variable in self.parameters() %}
+  parameter FMI3{{ variable.variableType.name() }} {{ id(variable.name) }}{{ subscripts(variable.name)? }} = {{ start_literal(variable)? }}{{ variable.description_literal() }};
+{%- endfor %}
+{%- for variable in self.inputs() %}
+  parameter FMI3{{ variable.variableType.name() }} {{ id(variable.name) }}_start{{ subscripts(variable.name)? }} = {{ start_literal(variable)? }} annotation(Dialog(tab="Initial", group="Start Values"));
+{%- endfor %}
+
+{%- for variable in self.inputs() %}
+  FMI3{{ variable.variableType.name() }}Input {{ variable.name }}{{ subscripts(variable.name)? }}(start={{ variable.name }}_start){{ variable.description_literal() }}{{ annotation(variable.name.as_str()) }};
+{%- endfor %}
+
+{%- for variable in self.outputs() %}
+  FMI3{{ variable.variableType.name() }}Output {{ variable.name }}{{ subscripts(variable.name)? }}{{ variable.description_literal() }}{{ annotation(variable.name.as_str()) }};
+{%- endfor %}
+
+initial algorithm
+
+  FMI.Internal.loadFMU(
+    instance=instance,
+    unzipdir=Modelica.Utilities.Files.loadResource("modelica://FMI/Resources/FMUs/{{ hash }}"),
+    fmiVersion=3,
+    modelIdentifier="{{ model_identifier }}",
+    instanceName=getInstanceName(),
+    interfaceType=1,
+    instantiationToken="{{ instantiation_token }}",
+    visible=visible,
+    loggingOn=loggingOn,
+    logFMICalls=logFMICalls,
+    logToFile=logToFile,
+    logFile=logFile,
+    copyPlatformBinary=false);
+
+  FMI.Internal.Logging.logMessages(instance);
+
+  startTime := time;
+{% for variable in self.parameters() %}
+  FMI3Set{{ variable.variableType.name() }}(instance, valueReferences={ {{ variable.valueReference }} }, values={ {{ id(variable.name) }} });
+{%- endfor %}
+
+  FMI3EnterInitializationMode(instance,
+    toleranceDefined=tolerance > 0.0,
+    tolerance=tolerance,
+    startTime=startTime,
+    stopTimeDefined=stopTime < Modelica.Constants.inf,
+    stopTime=stopTime);
+
+  FMI3ExitInitializationMode(instance);
+
+algorithm
+
+  when sample(startTime, communicationStepSize) then
+
+{%- for variable in self.inputs() %}
+    FMI3Set{{ variable.variableType.name() }}(instance, valueReferences={ {{ variable.valueReference }} }, values={ pre({{ id(variable.name) }}) });    
+{%- endfor %}
+
+    if time >= startTime + communicationStepSize then
+      FMI3DoStep(instance,
+        currentCommunicationPoint=time - communicationStepSize,
+        communicationStepSize=communicationStepSize);
+    end if;
+{% for variable in self.outputs() %}
+    {{ variable.name }} := scalar(FMI3Get{{ variable.variableType.name() }}(instance, valueReference={{ variable.valueReference }}, nValues=1));    
+{%- endfor %}
+
+  end when;
+
+  annotation (
+    Icon(
+      coordinateSystem(preserveAspectRatio=false, extent={ {-100, -100}, {100, 100} }),
+      graphics={Bitmap(extent={ {-90, -90}, {90, 90} }, fileName="modelica://FMI/Resources/Images/FMU_bare.svg")}
+    ),
+    Diagram(coordinateSystem(preserveAspectRatio=false, extent={ {-100, -100}, {100, 100} })),
+{%- if let Some(default_experiment) = model_description.defaultExperiment && let Some(stop_time) = default_experiment.stopTime %}
+    experiment(StopTime={{ stop_time }}),
+{%- endif %}
+    uses(FMI(version="{{ version }}")),
+    Documentation(info="<html><p>For more information open the FMU's <a href=\"modelica://FMI/Resources/FMUs/{{ hash }}/documentation/index.html\">original documentation</a>.</p></html>")
+  );
+end {{ model_name }};

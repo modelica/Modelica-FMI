@@ -10,7 +10,7 @@ use std::{
 use crate::{modelica_identifier, update_package_order};
 
 #[derive(Template)]
-#[template(path = "FMU2CS.mo.askama", escape = "none")]
+#[template(path = "FMI2CS.mo.askama", escape = "none")]
 struct ExternalFmuTemplate<'a> {
     annotations: HashMap<String, String>,
     version: String,
