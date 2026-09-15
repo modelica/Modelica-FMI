@@ -1,9 +1,10 @@
-use anyhow::{Context, anyhow, bail};
+use anyhow::{Context, bail};
 use clap::Parser;
 use fmi_rs::{
     model_description::{FMIMajorVersion, peek_fmi_major_version},
     zip::extract_zip_archive,
 };
+use modelica_fmi::modelica_within_path;
 use sha2::{Digest, Sha256};
 use std::{
     fs::{self, File},
@@ -44,24 +45,6 @@ fn get_library_root<P: AsRef<Path>>(path: P) -> Option<PathBuf> {
         .last()
         .map(Path::to_path_buf)
         .or_else(|| parent.map(Path::to_path_buf))
-}
-
-fn modelica_within_path(model_path: &Path) -> anyhow::Result<String> {
-    let model_parent = model_path.parent().ok_or(anyhow!("d'oh!"))?;
-
-    let mut parent_dir = fs::canonicalize(model_parent)?;
-
-    let mut segments = vec![];
-
-    while parent_dir.join("package.mo").is_file() {
-        let package_name = parent_dir.file_name().ok_or(anyhow!("d'oh!"))?;
-        segments.push(package_name.to_str().ok_or(anyhow!("d'oh!"))?.to_owned());
-        parent_dir = parent_dir.parent().ok_or(anyhow!("d'oh!"))?.to_path_buf();
-    }
-
-    segments.reverse();
-
-    Ok(segments.join("."))
 }
 
 fn main() -> anyhow::Result<()> {
@@ -201,26 +184,3 @@ fn modelica_identifier(value: &str) -> String {
 // fn modelica_string(value: &str) -> String {
 //     value.replace('"', "\\\"").replace('\n', "\\n")
 // }
-
-#[cfg(test)]
-mod tests {
-    use super::modelica_within_path;
-    use std::path::Path;
-
-    #[test]
-    fn computes_modelica_within_path_for_nested_library_packages() {
-        let model_path = Path::new(r"E:\WS\Modelica-FMI\FMI\Examples\FMI2\Controller_FMU_2.mo");
-
-        assert_eq!(
-            modelica_within_path(model_path).unwrap(),
-            "FMI.Examples.FMI2".to_owned()
-        );
-    }
-
-    #[test]
-    fn computes_modelica_within_path_standalone_model() {
-        let model_path = Path::new(r"C:\Users\tsr2\Documents\Dymola\Controller_FMU_2.mo");
-
-        assert_eq!(modelica_within_path(model_path).unwrap(), String::new());
-    }
-}
