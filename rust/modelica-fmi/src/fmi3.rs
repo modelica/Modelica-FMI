@@ -1,4 +1,4 @@
-use anyhow::{anyhow, bail};
+use anyhow::{Context, anyhow, bail};
 use askama::Template;
 use fmi_rs::model_description::fmi3::{
     Causality, Dimension, ModelDescription, ModelVariable, VariableType,
@@ -58,22 +58,84 @@ impl<'a> ExternalFmuTemplate<'a> {
         modelica_identifier(variable_name)
     }
 
-    pub fn subscripts(&self, variable_name: &str) -> anyhow::Result<String> {
-        let variable = self.model_description.variable_by_name(variable_name)?;
-        let subs = variable
+    pub fn extent(&self, variable: &ModelVariable) -> anyhow::Result<Vec<usize>> {
+        variable
             .dimensions
             .iter()
             .map(|d| match d {
-                Dimension::Fixed { start } => Ok(start.to_string()),
+                Dimension::Fixed { start } => Ok(*start),
                 Dimension::Variable { valueReference } => {
                     let dimension_variable = self
                         .model_description
                         .variable_by_value_reference(*valueReference)?;
-                    self.start_literal(dimension_variable)
+                    self.start_literal(dimension_variable)?.parse::<usize>().map_err(anyhow::Error::from)
                 }
             })
-            .collect::<Result<Vec<String>, _>>()?;
-        Ok(format!("[{}]", subs.join(",")))
+            .collect::<Result<Vec<usize>, _>>()
+    }
+
+    pub fn subscripts(&self, variable: &ModelVariable) -> anyhow::Result<String> {
+        let ext = self.extent(variable)?;
+
+        if ext.is_empty() {
+            return Ok(String::new());
+        }
+
+        Ok(format!("[{}]", ext.iter().map(|e| e.to_string()).collect::<Vec<String>>().join(",")))
+        
+        
+
+        // let subs = variable
+        //     .dimensions
+        //     .iter()
+        //     .map(|d| match d {
+        //         Dimension::Fixed { start } => Ok(start.to_string()),
+        //         Dimension::Variable { valueReference } => {
+        //             let dimension_variable = self
+        //                 .model_description
+        //                 .variable_by_value_reference(*valueReference)?;
+        //             self.start_literal(dimension_variable)
+        //         }
+        //     })
+        //     .collect::<Result<Vec<String>, _>>()?;
+        // Ok(format!("[{}]", subs.join(",")))
+    }
+
+    pub fn size(&self, variable: &ModelVariable) -> anyhow::Result<usize> {
+        if variable.dimensions.is_empty() {
+            Ok(1)
+        } else {
+            Ok(self.extent(variable)?.iter().product())
+        }
+    }
+
+    pub fn getter_prefix(&self, variable: &ModelVariable) -> anyhow::Result<String> {
+        match variable.dimensions.len() {
+            0 => Ok("scalar(".to_owned()),
+            1 => Ok("".to_owned()),
+            _ => Err(anyhow!("Max. number of dimensions for outputs is 1")),
+        }
+    }
+
+    pub fn getter_suffix(&self, variable: &ModelVariable) -> anyhow::Result<String> {
+        match variable.dimensions.len() {
+            0 => Ok(")".to_owned()),
+            1 => Ok("".to_owned()),
+            _ => Err(anyhow!("Max. number of dimensions for outputs is 1")),
+        }
+    }
+
+    pub fn as_vector(&self, variable: &ModelVariable, pre: bool) -> anyhow::Result<String> {
+        let mut name = self.id(&variable.name);
+        if pre { 
+            name = format!("pre({name})")
+        }
+        match variable.dimensions.len() {
+            0 => Ok(format!("{{{name}}}")),
+            1 => Ok(format!("{name}")),
+            2 => Ok(format!("matrix2vector({name})")),
+            _ => Err(anyhow!("Max. number of dimensions is 2")),
+        }
     }
 
     pub fn start_literal(&self, variable: &ModelVariable) -> anyhow::Result<String> {
