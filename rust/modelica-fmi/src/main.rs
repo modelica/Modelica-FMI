@@ -47,20 +47,19 @@ fn get_library_root<P: AsRef<Path>>(path: P) -> Option<PathBuf> {
 }
 
 fn modelica_within_path(model_path: &Path) -> anyhow::Result<String> {
-
     let model_parent = model_path.parent().ok_or(anyhow!("d'oh!"))?;
 
-    let model_parent = fs::canonicalize(model_parent)?;
+    let mut parent_dir = fs::canonicalize(model_parent)?;
 
     let mut segments = vec![];
 
-    let mut package_mo = model_parent.join("package.mo");
-
-    while package_mo.is_file() {
-        let package_name = model_parent.file_name().ok_or(anyhow!("d'oh!"))?;
+    while parent_dir.join("package.mo").is_file() {
+        let package_name = parent_dir.file_name().ok_or(anyhow!("d'oh!"))?;
         segments.push(package_name.to_str().ok_or(anyhow!("d'oh!"))?.to_owned());
-        package_mo = model_parent.parent().ok_or(anyhow!("d'oh!"))?.join("package.mo").to_path_buf();
+        parent_dir = parent_dir.parent().ok_or(anyhow!("d'oh!"))?.to_path_buf();
     }
+
+    segments.reverse();
 
     Ok(segments.join("."))
 }
@@ -211,7 +210,7 @@ mod tests {
     #[test]
     fn computes_modelica_within_path_for_nested_library_packages() {
         let model_path = Path::new(r"E:\WS\Modelica-FMI\FMI\Examples\FMI2\Controller_FMU_2.mo");
-        
+
         assert_eq!(
             modelica_within_path(model_path).unwrap(),
             "FMI.Examples.FMI2".to_owned()
@@ -222,9 +221,6 @@ mod tests {
     fn computes_modelica_within_path_standalone_model() {
         let model_path = Path::new(r"C:\Users\tsr2\Documents\Dymola\Controller_FMU_2.mo");
 
-        assert_eq!(
-            modelica_within_path(model_path).unwrap(),
-            String::new()
-        );
+        assert_eq!(modelica_within_path(model_path).unwrap(), String::new());
     }
 }

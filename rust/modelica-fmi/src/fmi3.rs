@@ -1,10 +1,7 @@
 use anyhow::{anyhow, bail};
 use askama::Template;
-use fmi_rs::{
-    model_description::fmi3::{
-        Causality, Dimension, ModelDescription, ModelVariable, VariableType,
-    },
-    sim::fmi3::parse_variable_value,
+use fmi_rs::model_description::fmi3::{
+    Causality, Dimension, ModelDescription, ModelVariable, VariableType,
 };
 use std::{
     collections::HashMap,
@@ -165,15 +162,10 @@ impl ModelVariableExt for ModelVariable {
 }
 
 fn port_annotation(n_ports: usize, i: usize, is_input: bool) -> String {
-    
     let h = 160;
     let y1 = 80;
 
-    let x1 = if is_input {
-        -120
-    } else {
-        100
-    };
+    let x1 = if is_input { -120 } else { 100 };
 
     let y = if n_ports == 1 {
         0
