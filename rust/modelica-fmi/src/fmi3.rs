@@ -103,6 +103,8 @@ impl<'a> ExternalFmuTemplate<'a> {
 
 /// Formats a flat vector of string literals into a nested Modelica array literal.
 pub fn format_modelica_array(values: &[String], sizes: &[usize]) -> String {
+    
+    // Scalar
     if sizes.is_empty() {
         return String::new();
     }
@@ -113,7 +115,6 @@ pub fn format_modelica_array(values: &[String], sizes: &[usize]) -> String {
     }
 
     // Recursive case: N-D array
-    let outer_dim = sizes[0];
     let sub_sizes = &sizes[1..];
     
     // Calculate the total number of scalar elements per element of the outer dimension
@@ -129,66 +130,10 @@ pub fn format_modelica_array(values: &[String], sizes: &[usize]) -> String {
 }
 
 pub trait ModelVariableExt {
-    // fn start_literal(&self) -> anyhow::Result<String>;
     fn description_literal(&self) -> String;
 }
 
 impl ModelVariableExt for ModelVariable {
-    // fn start_literal(&self) -> anyhow::Result<String> {
-
-    //     todo!()
-    //     // let value_literals: Vec<String> = match &self.variableType {
-    //     //     VariableType::Float64 { start, .. } => {
-    //     //         start.clone().ok_or(anyhow!("D'oh!"))?.split_whitespace().map(|s| s.to_owned()).collect()
-    //     //     },
-    //     //     _ => todo!("Not implemented for type {}", self.variableType.name()),
-    //     // };
-
-    //     // let sizes = variable.dimensions.iter().map(
-    //     //     |d| match d {
-    //     //         Dimension::Fixed { start } => Ok(start.to_string()),
-    //     //         Dimension::Variable { valueReference } => self.model_description.variable_by_value_reference(*valueReference)?.start_literal(),
-    //     // }).collect::<Result<Vec<usize>, _>>()?;
-
-    //     // for dimension in self.dimensions {
-
-    //     // }
-
-    //     // match &self.variableType {
-    //     //     VariableType::Float64 { start, .. } => {
-
-    //     //         let s = start.clone().ok_or(anyhow!("D'oh!"))?;                
-    //     //         let literal = match &self.dimensions.len() {
-    //     //         0 => s,
-    //     //         1 => {
-    //     //             let segments: Vec<String> = s.split_whitespace().map(|s| s.to_owned()).collect();
-    //     //             format!("{{{}}}", segments.join(", "))
-    //     //         },
-    //     //         2 => {
-    //     //             let segments: Vec<String> = s.split_whitespace().map(|s| s.to_owned()).collect();
-    //     //             let rows: Vec<String> = segments.chunks(3).map(|c| c.join(", ")).collect();
-    //     //             format!("[{}]", rows.join("; "))
-    //     //         },
-    //     //         _ => todo!()
-    //     //         };
-
-    //     //         Some(literal)
-    //     //     },
-    //     //     VariableType::UInt64 { start, .. } => start.clone(),
-    //     //     // VariableType::Boolean { start, .. } => {
-    //     //     //     start.clone().map(
-    //     //     //         |s| match s.as_str() {
-    //     //     //             "true" | "1" => "true".to_string(),
-    //     //     //             _ => "false".to_string(),
-    //     //     //         }
-    //     //     //     )
-    //     //     // },
-    //     //     // VariableType::String { start, .. } => start.clone().map(|s | format!("\"{s}\"")),
-    //     //     // VariableType::Enumeration { start, .. } => start.clone(),
-    //     //     _ => todo!("Not implemented for type {}", self.variableType.name()),
-    //     // }.ok_or(anyhow!("Variable {} is missing start attribute.", self.name))
-    // }
-
     fn description_literal(&self) -> String {
         self.description
             .clone()
