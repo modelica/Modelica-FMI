@@ -1,4 +1,4 @@
-use anyhow::{Context, bail};
+use anyhow::{Context, anyhow, bail};
 use clap::Parser;
 use fmi_rs::{
     model_description::{FMIMajorVersion, peek_fmi_major_version},
@@ -35,27 +35,34 @@ struct Cli {
 
 fn get_library_root<P: AsRef<Path>>(path: P) -> Option<PathBuf> {
     let path = path.as_ref();
-    let start = if path.is_file() { path.parent()? } else { path };
+    let parent = path.parent();
+    let start = if path.is_file() { parent? } else { path };
+
     start
         .ancestors()
         .filter(|directory| directory.join("package.mo").is_file())
         .last()
         .map(Path::to_path_buf)
+        .or_else(|| parent.map(Path::to_path_buf))
 }
 
-fn modelica_within_path(library_root: &Path, model_path: &Path) -> Option<String> {
-    let relative = model_path.strip_prefix(library_root.parent()?).ok()?;
-    let package_path = relative.parent().unwrap_or_else(|| Path::new(""));
+fn modelica_within_path(model_path: &Path) -> anyhow::Result<String> {
 
-    let parts: Vec<String> = package_path
-        .components()
-        .filter_map(|component| match component {
-            std::path::Component::Normal(part) => Some(part.to_string_lossy().to_string()),
-            _ => None,
-        })
-        .collect();
+    let model_parent = model_path.parent().ok_or(anyhow!("d'oh!"))?;
 
-    Some(parts.join("."))
+    let model_parent = fs::canonicalize(model_parent)?;
+
+    let mut segments = vec![];
+
+    let mut package_mo = model_parent.join("package.mo");
+
+    while package_mo.is_file() {
+        let package_name = model_parent.file_name().ok_or(anyhow!("d'oh!"))?;
+        segments.push(package_name.to_str().ok_or(anyhow!("d'oh!"))?.to_owned());
+        package_mo = model_parent.parent().ok_or(anyhow!("d'oh!"))?.join("package.mo").to_path_buf();
+    }
+
+    Ok(segments.join("."))
 }
 
 fn main() -> anyhow::Result<()> {
@@ -106,7 +113,7 @@ fn main() -> anyhow::Result<()> {
     let fmi_major_version =
         peek_fmi_major_version(&xml_path).context("Failed to determine FMI version")?;
 
-    let within = modelica_within_path(&library_root, output_file).unwrap_or_default();
+    let within = modelica_within_path(output_file).unwrap_or_default();
 
     match fmi_major_version {
         FMIMajorVersion::V2 => fmi2::create_modelica_file(&xml_path, &hash, &within, output_file)?,
@@ -203,12 +210,21 @@ mod tests {
 
     #[test]
     fn computes_modelica_within_path_for_nested_library_packages() {
-        let library_root = Path::new(r"E:\WS\Modelica-FMI");
         let model_path = Path::new(r"E:\WS\Modelica-FMI\FMI\Examples\FMI2\Controller_FMU_2.mo");
+        
+        assert_eq!(
+            modelica_within_path(model_path).unwrap(),
+            "FMI.Examples.FMI2".to_owned()
+        );
+    }
+
+    #[test]
+    fn computes_modelica_within_path_standalone_model() {
+        let model_path = Path::new(r"C:\Users\tsr2\Documents\Dymola\Controller_FMU_2.mo");
 
         assert_eq!(
-            modelica_within_path(library_root, model_path),
-            Some("FMI.Examples.FMI2".to_owned())
+            modelica_within_path(model_path).unwrap(),
+            String::new()
         );
     }
 }

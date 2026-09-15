@@ -63,17 +63,17 @@ impl ScalarVariableExt for ScalarVariable {
         match &self.variableType {
             VariableType::Real { start, .. } => start.clone(),
             VariableType::Integer { start, .. } => start.clone(),
-            VariableType::Boolean { start, .. } => {
-                start.clone().map(
-                    |s| match s.as_str() {
-                        "true" | "1" => "true".to_string(),
-                        _ => "false".to_string(),
-                    }
-                )
-            },
-            VariableType::String { start, .. } => start.clone().map(|s | format!("\"{s}\"")),
+            VariableType::Boolean { start, .. } => start.clone().map(|s| match s.as_str() {
+                "true" | "1" => "true".to_string(),
+                _ => "false".to_string(),
+            }),
+            VariableType::String { start, .. } => start.clone().map(|s| format!("\"{s}\"")),
             VariableType::Enumeration { start, .. } => start.clone(),
-        }.ok_or(anyhow!("Variable {} is missing start attribute.", self.name))
+        }
+        .ok_or(anyhow!(
+            "Variable {} is missing start attribute.",
+            self.name
+        ))
     }
 
     fn description_literal(&self) -> String {

@@ -1,4 +1,5 @@
 within FMI.Examples.FMI3;
+
 block StateSpace
   "This model implements a linear time-invariant (LTI) system"
   extends FMI.Internal.FMU;
@@ -14,8 +15,8 @@ block StateSpace
   parameter FMI3Float64 D[3,3] = {{1, 0, 0}, {0, 1, 0}, {0, 0, 1}} "Matrix coefficient D";
   parameter FMI3Float64 x0[3] = {0, 0, 0} "Initial state vector";
   parameter FMI3Float64 u_start[3] = {1, 2, 3} annotation(Dialog(tab="Initial", group="Start Values"));
-  FMI3Float64Input u[3](start=u_start) "Input vector" annotation(Placement(transformation(extent={ { -120, -60},  { -100, -40}}),   iconTransformation(extent={ { -120, -60},  { -100, -40}})));
-  FMI3Float64Output y[3] "Output vector" annotation(Placement(transformation(extent={ { 100, 40},  { 120, 60}}),   iconTransformation(extent={ { 100, 40},  { 120, 60}})));
+  FMI3Float64Input u[3](start=u_start) "Input vector" annotation(Placement(transformation(extent={ { -120, -60 }, { -100, -40 } }), iconTransformation(extent={ { -120, -60 }, { -100, -40 } })));
+  FMI3Float64Output y[3] "Output vector" annotation(Placement(transformation(extent={ { 100, 40 }, { 120, 60 } }), iconTransformation(extent={ { 100, 40 }, { 120, 60 } })));
 
 initial algorithm
 
@@ -38,11 +39,11 @@ initial algorithm
 
   startTime := time;
 
-  FMI3SetFloat64(instance, valueReferences={4},  values=matrix2vector(A));
-  FMI3SetFloat64(instance, valueReferences={5},  values=matrix2vector(B));
-  FMI3SetFloat64(instance, valueReferences={6},  values=matrix2vector(C));
-  FMI3SetFloat64(instance, valueReferences={7},  values=matrix2vector(D));
-  FMI3SetFloat64(instance, valueReferences={8},  values=x0);
+  FMI3SetFloat64(instance, valueReferences={ 4 }, values={ A });
+  FMI3SetFloat64(instance, valueReferences={ 5 }, values={ B });
+  FMI3SetFloat64(instance, valueReferences={ 6 }, values={ C });
+  FMI3SetFloat64(instance, valueReferences={ 7 }, values={ D });
+  FMI3SetFloat64(instance, valueReferences={ 8 }, values={ x0 });
 
   FMI3EnterInitializationMode(instance,
     toleranceDefined=tolerance > 0.0,
@@ -56,7 +57,7 @@ initial algorithm
 algorithm
 
   when sample(startTime, communicationStepSize) then
-    FMI3SetFloat64(instance, valueReferences={9},  values=pre(u));
+    FMI3SetFloat64(instance, valueReferences={ 9 }, values={ pre(u) });
 
     if time >= startTime + communicationStepSize then
       FMI3DoStep(instance,
@@ -64,16 +65,18 @@ algorithm
         communicationStepSize=communicationStepSize);
     end if;
 
-    y := FMI3GetFloat64(instance, valueReference=10, nValues=3);
+    y := scalar(FMI3GetFloat64(instance, valueReference=10, nValues=1));
 
   end when;
 
   annotation (
     Icon(
-      coordinateSystem(preserveAspectRatio=false, extent={ {-100, -100}, {100, 100}}),
-      graphics={Bitmap(extent={ {-90, -90}, {90, 90}},  fileName="modelica://FMI/Resources/Images/FMU_bare.svg")}),
-    Diagram(coordinateSystem(preserveAspectRatio=false, extent={ {-100, -100}, {100, 100}})),
+      coordinateSystem(preserveAspectRatio=false, extent={ {-100, -100}, {100, 100} }),
+      graphics={Bitmap(extent={ {-90, -90}, {90, 90} }, fileName="modelica://FMI/Resources/Images/FMU_bare.svg")}
+    ),
+    Diagram(coordinateSystem(preserveAspectRatio=false, extent={ {-100, -100}, {100, 100} })),
     experiment(StopTime=10),
-    uses(FMI(version="0.1.0")),
-    Documentation(info="<html><p>For more information open the FMU's <a href=\"modelica://FMI/Resources/FMUs/b4d2e6a/documentation/index.html\">original documentation</a>.</p></html>"));
-end StateSpace;
+    uses(FMI(version="0.0.9")),
+    Documentation(info="<html><p>For more information open the FMU's <a href=\"modelica://FMI/Resources/FMUs/b4d2e6a/documentation/index.html\">original documentation</a>.</p></html>")
+  );
+end StateSpace;
