@@ -5,21 +5,21 @@ fn test_library_root() -> PathBuf {
 }
 
 #[test]
-fn computes_modelica_within_path_for_nested_library_packages() {
+fn computes_modelica_path_for_nested_library_packages() {
     let model_path = test_library_root().join("MyLibrary/MyPackage/Controller_FMU_2.mo");
 
     assert_eq!(
-        modelica_fmi::modelica_within_path(model_path.as_path()).unwrap(),
-        "MyLibrary.MyPackage".to_owned()
+        modelica_fmi::modelica_path(model_path.as_path()).unwrap(),
+        vec!["MyLibrary", "MyPackage"]
     );
 }
 
 #[test]
-fn computes_modelica_within_path_standalone_model() {
+fn computes_modelica_path_for_standalone_model() {
     let model_path = test_library_root().join("Controller_FMU_2.mo");
 
     assert_eq!(
-        modelica_fmi::modelica_within_path(model_path.as_path()).unwrap(),
-        String::new()
+        modelica_fmi::modelica_path(model_path.as_path()).unwrap(),
+        Vec::<&str>::new()
     );
 }

@@ -108,7 +108,7 @@ fn main() -> anyhow::Result<()> {
         output_file
             .file_stem()
             .and_then(|s| s.to_str())
-            .ok_or(anyhow::anyhow!("d'oh"))?
+            .ok_or(anyhow::anyhow!("Missing file name"))?
     };
 
     let resource_path = format!("modelica://{library_name}/Resources/FMUs/{unzipdir_name}");
