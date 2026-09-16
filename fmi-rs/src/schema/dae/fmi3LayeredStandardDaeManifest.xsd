@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns:fmi-ls="http://fmi-standard.org/fmi-ls-manifest"
+    elementFormDefault="qualified"
+    attributeFormDefault="qualified">
+
+    <xs:annotation>
+        <xs:documentation>
+            Copyright(c) 2025 - 2026 Modelica Association Project FMI.
+            All rights reserved.
+
+            This file is licensed by the copyright holders under the 2-Clause BSD License
+            (https://opensource.org/licenses/BSD-2-Clause):
+
+            ----------------------------------------------------------------------------
+            Redistribution and use in source and binary forms, with or without
+            modification, are permitted provided that the following conditions are met:
+
+            - Redistributions of source code must retain the above copyright notice,
+            this list of conditions and the following disclaimer.
+
+            - Redistributions in binary form must reproduce the above copyright notice,
+            this list of conditions and the following disclaimer in the documentation
+            and/or other materials provided with the distribution.
+
+            THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+            "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+            TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+            PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR
+            CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+            EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+            PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS;
+            OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+            WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
+            OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
+            ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+            ----------------------------------------------------------------------------
+        </xs:documentation>
+    </xs:annotation>
+
+    <xs:import namespace="http://fmi-standard.org/fmi-ls-manifest"
+		schemaLocation="fmi3LayeredStandardManifest.xsd"/>
+
+    <xs:include schemaLocation="fmi3VariableDependency.xsd"/>
+
+    <xs:element name="fmiDAEManifest">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="EnableDAEParameter" type="TVariableReference"/>
+                <xs:element name="AlgebraicVariables">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="AlgebraicVariable" type="TVariableReference" minOccurs="0" maxOccurs="unbounded"/>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name="ModelStructure">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="Output" type="fmi3Unknown" minOccurs="0" maxOccurs="unbounded"/>
+                            <xs:element name="ContinuousStateDerivative" type="fmi3Unknown" minOccurs="0" maxOccurs="unbounded"/>
+                            <xs:element name="ClockedState" type="fmi3Unknown" minOccurs="0" maxOccurs="unbounded"/>
+                            <xs:element name="InitialUnknown" type="fmi3Unknown" minOccurs="0" maxOccurs="unbounded"/>
+                            <xs:element name="EventIndicator" type="fmi3Unknown" minOccurs="0" maxOccurs="unbounded"/>
+                            <xs:element name="Residual" type="fmi3Unknown" minOccurs="0" maxOccurs="unbounded"/>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element ref="Annotations" minOccurs="0"/>
+            </xs:sequence>
+            <xs:attribute ref="fmi-ls:fmi-ls-name" use="required"
+                fixed="org.fmi-standard.fmi-ls-dae"/>
+            <xs:attribute ref="fmi-ls:fmi-ls-version" use="required"/>
+            <xs:attribute ref="fmi-ls:fmi-ls-description" use="required"
+                fixed="Layered standard for DAE support in FMI."/>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:complexType name="TVariableReference">
+        <xs:complexContent>
+            <xs:restriction base="fmi3Unknown">
+                <xs:sequence>
+                    <xs:element ref="Annotations" minOccurs="0"/>
+                </xs:sequence>
+                <xs:attribute name="valueReference" type="xs:unsignedInt" use="required">
+                    <xs:annotation>
+                        <xs:documentation xml:lang="en">
+                            Value reference of the variable in ModelVariables of the modelDescription.xml.
+                        </xs:documentation>
+                    </xs:annotation>
+                </xs:attribute>
+            </xs:restriction>
+        </xs:complexContent>
+    </xs:complexType>
+</xs:schema>

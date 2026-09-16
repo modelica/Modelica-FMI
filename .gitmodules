@@ -1,3 +1,3 @@
-[submodule "rust/fmi-rs"]
-	path = rust/fmi-rs
+[submodule "fmi-rs"]
+	path = fmi-rs
 	url = https://github.com/CATIA-Systems/fmi-rs.git
