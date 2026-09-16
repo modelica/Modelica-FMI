@@ -107,8 +107,6 @@ pub fn create_modelica_file(
         .collect();
 
     let height = 160;
-    // let x0 = -100;
-    // let y0 = -80;
     let y1 = 80;
 
     for (i, variable) in outputs.iter().enumerate() {

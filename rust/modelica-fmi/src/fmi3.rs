@@ -1,8 +1,6 @@
 use anyhow::{anyhow, bail};
 use askama::Template;
-use fmi_rs::model_description::fmi3::{
-    Causality, Dimension, ModelDescription, ModelVariable, VariableType,
-};
+use fmi_rs::model_description::fmi3::{Causality, Dimension, ModelDescription, ModelVariable};
 use std::{
     collections::HashMap,
     fs::{self},
@@ -68,7 +66,9 @@ impl<'a> ExternalFmuTemplate<'a> {
                     let dimension_variable = self
                         .model_description
                         .variable_by_value_reference(*valueReference)?;
-                    self.start_literal(dimension_variable)?.parse::<usize>().map_err(anyhow::Error::from)
+                    self.start_literal(dimension_variable)?
+                        .parse::<usize>()
+                        .map_err(anyhow::Error::from)
                 }
             })
             .collect::<Result<Vec<usize>, _>>()
@@ -79,7 +79,13 @@ impl<'a> ExternalFmuTemplate<'a> {
         if ext.is_empty() {
             return Ok(String::new());
         }
-        Ok(format!("[{}]", ext.iter().map(|e| e.to_string()).collect::<Vec<String>>().join(",")))
+        Ok(format!(
+            "[{}]",
+            ext.iter()
+                .map(|e| e.to_string())
+                .collect::<Vec<String>>()
+                .join(",")
+        ))
     }
 
     pub fn size(&self, variable: &ModelVariable) -> anyhow::Result<usize> {
@@ -108,7 +114,7 @@ impl<'a> ExternalFmuTemplate<'a> {
 
     pub fn as_vector(&self, variable: &ModelVariable, pre: bool) -> anyhow::Result<String> {
         let mut name = self.id(&variable.name);
-        if pre { 
+        if pre {
             name = format!("pre({name})")
         }
         match variable.dimensions.len() {
@@ -120,62 +126,35 @@ impl<'a> ExternalFmuTemplate<'a> {
     }
 
     pub fn start_literal(&self, variable: &ModelVariable) -> anyhow::Result<String> {
-        let values: Vec<String> = match &variable.variableType {
-            VariableType::Float64 { start, .. } | VariableType::UInt64 { start, .. } => start
-                .clone()
-                .ok_or(anyhow!("D'oh!"))?
-                .split_whitespace()
-                .map(|s| s.to_owned())
-                .collect(),
-            _ => todo!("Not implemented for type {}", variable.variableType.name()),
-        };
+        let values = &variable.variableType.start().unwrap_or_default();
 
         if variable.dimensions.is_empty() {
-            return values.first()
+            return values
+                .first()
                 .cloned()
                 .ok_or(anyhow!("Variable has not start value"));
         }
 
-        let sizes = variable
-            .dimensions
-            .iter()
-            .map(|d| match d {
-                Dimension::Fixed { start } => Ok(*start),
-                Dimension::Variable { valueReference } => {
-                    let dimension_variable = self
-                        .model_description
-                        .variable_by_value_reference(*valueReference)?;
-                    let size: usize = match &dimension_variable.variableType {
-                        VariableType::UInt64 { start, .. } => {
-                            start.clone().ok_or(anyhow!("noo"))?.parse()?
-                        }
-                        _ => bail!("noooo"),
-                    };
-                    Ok(size)
-                }
-            })
-            .collect::<Result<Vec<usize>, _>>()?;
+        let size = self.model_description.initial_size(variable)?;
 
-        let literal = format_modelica_array(&values, &sizes);
-
-        Ok(literal)
+        Ok(format_modelica_array(values, &size))
     }
 }
 
 /// Formats a flat vector of string literals into a nested Modelica array literal.
-pub fn format_modelica_array(values: &[String], sizes: &[usize]) -> String {
+pub fn format_modelica_array(values: &[String], size: &[usize]) -> String {
     // Scalar
-    if sizes.is_empty() {
+    if size.is_empty() {
         return String::new();
     }
 
     // Base case: 1D array
-    if sizes.len() == 1 {
+    if size.len() == 1 {
         return format!("{{{}}}", values.join(", "));
     }
 
     // Recursive case: N-D array
-    let sub_sizes = &sizes[1..];
+    let sub_sizes = &size[1..];
 
     // Calculate the total number of scalar elements per element of the outer dimension
     let sub_element_count: usize = sub_sizes.iter().product();
