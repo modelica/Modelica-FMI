@@ -1,4 +1,4 @@
-use anyhow::{Context, anyhow, bail};
+use anyhow::{anyhow, bail};
 use askama::Template;
 use fmi_rs::model_description::fmi3::{
     Causality, Dimension, ModelDescription, ModelVariable, VariableType,
@@ -113,7 +113,7 @@ impl<'a> ExternalFmuTemplate<'a> {
         }
         match variable.dimensions.len() {
             0 => Ok(format!("{{{name}}}")),
-            1 => Ok(format!("{name}")),
+            1 => Ok(name.to_string()),
             2 => Ok(format!("matrix2vector({name})")),
             _ => Err(anyhow!("Max. number of dimensions is 2")),
         }
@@ -131,9 +131,7 @@ impl<'a> ExternalFmuTemplate<'a> {
         };
 
         if variable.dimensions.is_empty() {
-            return values
-                .iter()
-                .next()
+            return values.first()
                 .cloned()
                 .ok_or(anyhow!("Variable has not start value"));
         }
@@ -268,12 +266,6 @@ pub fn create_modelica_file(
         let annotation = port_annotation(outputs.len(), i, false);
         annotations.insert(variable.name.clone(), annotation);
     }
-
-    let root = if let Some(root) = modelica_path.first() {
-        format!("{root}/")
-    } else {
-        String::new()
-    };
 
     let template = ExternalFmuTemplate {
         annotations,
