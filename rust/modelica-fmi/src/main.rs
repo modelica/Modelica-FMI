@@ -4,7 +4,7 @@ use fmi_rs::{
     model_description::{FMIMajorVersion, peek_fmi_major_version},
     zip::extract_zip_archive,
 };
-use modelica_fmi::modelica_within_path;
+use modelica_fmi::{modelica_path};
 use sha2::{Digest, Sha256};
 use std::{
     fs::{self, File},
@@ -60,7 +60,9 @@ fn main() -> anyhow::Result<()> {
 
     let hash = sha256_file(&fmu_path).context(format!("Failed to read {}", fmu_path.display()))?;
 
-    let unzipdir = library_root.join("Resources").join("FMUs").join(&hash[..7]);
+    let unzipdir_name = &hash[..7];
+
+    let unzipdir = library_root.join("Resources").join("FMUs").join(unzipdir_name);
 
     if unzipdir.exists() {
         if overwrite {
@@ -95,11 +97,19 @@ fn main() -> anyhow::Result<()> {
     let fmi_major_version =
         peek_fmi_major_version(&xml_path).context("Failed to determine FMI version")?;
 
-    let within = modelica_within_path(output_file).unwrap_or_default();
+    let modelica_path = modelica_path(output_file).unwrap_or_default();
+
+    let library_name = if let Some(first) = modelica_path.first() {
+        first
+    } else {
+        output_file.file_stem().and_then(|s| s.to_str()).ok_or(anyhow::anyhow!("d'oh"))?
+    };
+
+    let resource_path = format!("modelica://{library_name}/Resources/FMUs/{unzipdir_name}");
 
     match fmi_major_version {
-        FMIMajorVersion::V2 => fmi2::create_modelica_file(&xml_path, &hash, &within, output_file)?,
-        FMIMajorVersion::V3 => fmi3::create_modelica_file(&xml_path, &hash, &within, output_file)?,
+        FMIMajorVersion::V2 => fmi2::create_modelica_file(&xml_path, &resource_path, modelica_path, output_file)?,
+        FMIMajorVersion::V3 => fmi3::create_modelica_file(&xml_path, &resource_path, modelica_path, output_file)?,
     }
 
     if verbose {

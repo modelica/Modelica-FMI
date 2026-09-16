@@ -31,7 +31,7 @@ initial algorithm
 
   FMI.Internal.loadFMU(
     instance=instance,
-    unzipdir=Modelica.Utilities.Files.loadResource("modelica://FMI/Resources/FMUs/{{ hash }}"),
+    unzipdir=Modelica.Utilities.Files.loadResource("{{ unzipdir }}"),
     fmiVersion=2,
     modelIdentifier="{{ model_identifier }}",
     instanceName=getInstanceName(),
@@ -92,6 +92,6 @@ algorithm
     experiment(StopTime={{ stop_time }}),
 {%- endif %}
     uses(FMI(version="{{ version }}")),
-    Documentation(info="<html><p>For more information open the FMU's <a href=\"modelica://FMI/Resources/FMUs/{{ hash }}/documentation/index.html\">original documentation</a>.</p></html>")
+    Documentation(info="<html><p>For more information open the FMU's <a href=\"{{ unzipdir }}/documentation/index.html\">original documentation</a>.</p></html>")
   );
 end {{ model_name }};

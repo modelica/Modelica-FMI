@@ -14,7 +14,7 @@ use crate::{modelica_identifier, update_package_order};
 struct ExternalFmuTemplate<'a> {
     annotations: HashMap<String, String>,
     version: String,
-    hash: String,
+    unzipdir: String,
     model_identifier: String,
     instantiation_token: String,
     model_name: String,
@@ -86,8 +86,8 @@ impl ScalarVariableExt for ScalarVariable {
 
 pub fn create_modelica_file(
     xml_path: &Path,
-    hash: &str,
-    within: &str,
+    unzipdir: &str,
+    modelica_path: Vec<String>,
     output_file: &Path,
 ) -> anyhow::Result<()> {
     let model_description = ModelDescription::from_path(xml_path)?;
@@ -144,12 +144,12 @@ pub fn create_modelica_file(
     let template = ExternalFmuTemplate {
         annotations,
         version: env!("CARGO_PKG_VERSION").to_owned(),
-        hash: hash[..7].to_owned(),
+        unzipdir: unzipdir.to_owned(),
         model_identifier,
         instantiation_token: model_description.guid.clone(),
         model_name: model_description.modelName.clone(),
         description: model_description.description.clone(),
-        within: within.to_owned(),
+        within: modelica_path.join("."),
         model_description: &model_description,
     };
 

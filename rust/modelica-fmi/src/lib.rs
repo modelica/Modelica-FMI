@@ -1,7 +1,7 @@
 use anyhow::anyhow;
 use std::{fs, path::Path};
 
-pub fn modelica_within_path(model_path: &Path) -> anyhow::Result<String> {
+pub fn modelica_path(model_path: &Path) -> anyhow::Result<Vec<String>> {
     let model_parent = model_path.parent().ok_or(anyhow!("d'oh!"))?;
 
     let mut parent_dir = fs::canonicalize(model_parent)?;
@@ -16,5 +16,5 @@ pub fn modelica_within_path(model_path: &Path) -> anyhow::Result<String> {
 
     segments.reverse();
 
-    Ok(segments.join("."))
+    Ok(segments)
 }

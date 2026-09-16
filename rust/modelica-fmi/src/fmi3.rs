@@ -16,7 +16,7 @@ use crate::{modelica_identifier, update_package_order};
 struct ExternalFmuTemplate<'a> {
     annotations: HashMap<String, String>,
     version: String,
-    hash: String,
+    unzipdir: String,
     model_identifier: String,
     instantiation_token: String,
     model_name: String,
@@ -76,29 +76,10 @@ impl<'a> ExternalFmuTemplate<'a> {
 
     pub fn subscripts(&self, variable: &ModelVariable) -> anyhow::Result<String> {
         let ext = self.extent(variable)?;
-
         if ext.is_empty() {
             return Ok(String::new());
         }
-
         Ok(format!("[{}]", ext.iter().map(|e| e.to_string()).collect::<Vec<String>>().join(",")))
-        
-        
-
-        // let subs = variable
-        //     .dimensions
-        //     .iter()
-        //     .map(|d| match d {
-        //         Dimension::Fixed { start } => Ok(start.to_string()),
-        //         Dimension::Variable { valueReference } => {
-        //             let dimension_variable = self
-        //                 .model_description
-        //                 .variable_by_value_reference(*valueReference)?;
-        //             self.start_literal(dimension_variable)
-        //         }
-        //     })
-        //     .collect::<Result<Vec<String>, _>>()?;
-        // Ok(format!("[{}]", subs.join(",")))
     }
 
     pub fn size(&self, variable: &ModelVariable) -> anyhow::Result<usize> {
@@ -252,8 +233,8 @@ fn port_annotation(n_ports: usize, i: usize, is_input: bool) -> String {
 
 pub fn create_modelica_file(
     xml_path: &Path,
-    hash: &str,
-    within: &str,
+    unzipdir: &str,
+    modelica_path: Vec<String>,
     output_file: &Path,
 ) -> anyhow::Result<()> {
     let model_description = ModelDescription::from_path(xml_path)?;
@@ -288,15 +269,21 @@ pub fn create_modelica_file(
         annotations.insert(variable.name.clone(), annotation);
     }
 
+    let root = if let Some(root) = modelica_path.first() {
+        format!("{root}/")
+    } else {
+        String::new()
+    };
+
     let template = ExternalFmuTemplate {
         annotations,
         version: env!("CARGO_PKG_VERSION").to_owned(),
-        hash: hash[..7].to_owned(),
+        unzipdir: unzipdir.to_owned(),
         model_identifier,
         instantiation_token: model_description.instantiationToken.clone(),
         model_name: model_description.modelName.clone(),
         description: model_description.description.clone(),
-        within: within.to_owned(),
+        within: modelica_path.join("."),
         model_description: &model_description,
     };
 
