@@ -31,8 +31,8 @@ jobs:
       with:
         name: linux64
         path: |
-          ./rust/target/release/modelica-fmi
-          ./rust/target/release/libModelicaFMI.so
+          ./target/release/modelica-fmi
+          ./target/release/libModelicaFMI.so
         if-no-files-found: error
   build-darwin64-binaries:
     runs-on: macos-14
@@ -45,8 +45,8 @@ jobs:
       with:
         name: darwin64
         path: |
-          ./rust/target/release/modelica-fmi
-          ./rust/target/release/libModelicaFMI.dylib
+          ./target/release/modelica-fmi
+          ./target/release/libModelicaFMI.dylib
         if-no-files-found: error
   build-modelica-library:
     runs-on: ubuntu-22.04
