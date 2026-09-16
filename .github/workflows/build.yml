@@ -9,9 +9,11 @@ jobs:
   build-win64-binaries:
     runs-on: windows-2022
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v7
+      with:
+        submodules: recursive
     - run: cargo build --workspace --release
-    - uses: actions/upload-artifact@v4
+    - uses: actions/upload-artifact@v7
       with:
         name: win64
         path: |
@@ -21,9 +23,11 @@ jobs:
   build-linux64-binaries:
     runs-on: ubuntu-22.04
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v7
+      with:
+        submodules: recursive
     - run: cargo build --workspace --release
-    - uses: actions/upload-artifact@v4
+    - uses: actions/upload-artifact@v7
       with:
         name: linux64
         path: |
@@ -33,9 +37,11 @@ jobs:
   build-darwin64-binaries:
     runs-on: macos-14
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v7
+      with:
+        submodules: recursive
     - run: cargo build --workspace --release
-    - uses: actions/upload-artifact@v4
+    - uses: actions/upload-artifact@v7
       with:
         name: darwin64
         path: |
@@ -46,21 +52,23 @@ jobs:
     runs-on: ubuntu-22.04
     needs: [build-win64-binaries, build-linux64-binaries, build-darwin64-binaries]
     steps:
-    - uses: actions/checkout@v4
-    - uses: actions/download-artifact@v4
+    - uses: actions/checkout@v7
+      with:
+        submodules: recursive
+    - uses: actions/download-artifact@v8
       with:
         name: win64
         path: ./FMI/Resources/Library/win64/
-    - uses: actions/download-artifact@v4
+    - uses: actions/download-artifact@v8
       with:
         name: linux64
         path: ./FMI/Resources/Library/linux64/
-    - uses: actions/download-artifact@v4
+    - uses: actions/download-artifact@v8
       with:
         name: darwin64
         path: ./FMI/Resources/Library/darwin64/
     - run: tree
-    - uses: actions/upload-artifact@v4
+    - uses: actions/upload-artifact@v7
       with:
         name: Modelica-FMI
         path: |
