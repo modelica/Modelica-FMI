@@ -1,6 +1,6 @@
 within {{ within }};
 
-block {{ model_name }}
+block {{ class_name }}
 {%- if let Some(description) = description %}
   "{{ description }}"
 {%- endif %}
@@ -91,4 +91,4 @@ algorithm
     uses(FMI(version="{{ version }}")),
     Documentation(info="<html><p>For more information open the FMU's <a href=\"{{ unzipdir }}/documentation/index.html\">original documentation</a>.</p></html>")
   );
-end {{ model_name }};
+end {{ class_name }};

@@ -17,7 +17,7 @@ struct ExternalFmuTemplate<'a> {
     unzipdir: String,
     model_identifier: String,
     instantiation_token: String,
-    model_name: String,
+    class_name: String,
     description: Option<String>,
     within: String,
     model_description: &'a ModelDescription,
@@ -274,7 +274,7 @@ pub fn create_modelica_file(
         unzipdir: unzipdir.to_owned(),
         model_identifier,
         instantiation_token: model_description.instantiationToken.clone(),
-        model_name: model_description.modelName.clone(),
+        class_name: class_name.to_owned(),
         description: model_description.description.clone(),
         within: modelica_path.join("."),
         model_description: &model_description,
@@ -284,7 +284,9 @@ pub fn create_modelica_file(
 
     fs::write(output_file, modelica)?;
 
-    update_package_order(output_file)?;
+    if !modelica_path.is_empty() {
+        update_package_order(output_file)?;
+    }
 
     Ok(())
 }
