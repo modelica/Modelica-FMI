@@ -12,18 +12,18 @@ block {{ class_name }}
 
   parameter Modelica.Units.SI.Time communicationStepSize = 0.01 annotation(Dialog(tab="FMI", group="Parameters"));
 
-{%- for variable in self.parameters() %}
+{%- for variable in parameters %}
   parameter FMI2{{ variable.variableType.name() }} {{ id(variable.name) }} = {{ variable.start_literal()? }}{{ variable.description_literal() }};
 {%- endfor %}
-{%- for variable in self.inputs() %}
+{%- for variable in inputs %}
   parameter FMI2{{ variable.variableType.name() }} {{ id(variable.name) }}_start = {{ variable.start_literal()? }} annotation(Dialog(tab="Initial", group="Start Values"));
 {%- endfor %}
 
-{%- for variable in self.inputs() %}
+{%- for variable in inputs %}
   FMI2{{ variable.variableType.name() }}Input {{ variable.name }}(start={{ variable.name }}_start){{ variable.description_literal() }}{{ annotation(variable.name.as_str()) }};
 {%- endfor %}
 
-{%- for variable in self.outputs() %}
+{%- for variable in outputs %}
   FMI2{{ variable.variableType.name() }}Output {{ variable.name }}{{ variable.description_literal() }}{{ annotation(variable.name.as_str()) }};
 {%- endfor %}
 
@@ -47,7 +47,7 @@ initial algorithm
   FMI.Internal.Logging.logMessages(instance);
 
   startTime := time;
-{% for variable in self.parameters() %}
+{% for variable in parameters %}
   FMI2Set{{ variable.variableType.name() }}(instance, valueReferences={ {{ variable.valueReference }} }, nValues=1, values={ {{ id(variable.name) }} });
 {%- endfor %}
 
@@ -66,7 +66,7 @@ algorithm
 
   when sample(startTime, communicationStepSize) then
 
-{%- for variable in self.inputs() %}
+{%- for variable in inputs %}
     FMI2Set{{ variable.variableType.name() }}(instance, valueReferences={ {{ variable.valueReference }} }, nValues=1, values={ pre({{ id(variable.name) }}) });    
 {%- endfor %}
 
@@ -76,7 +76,7 @@ algorithm
         communicationStepSize=communicationStepSize,
         noSetFMUStatePriorToCurrentPoint=true);
     end if;
-{% for variable in self.outputs() %}
+{% for variable in outputs %}
     {{ variable.name }} := FMI2Get{{ variable.variableType.name() }}(instance, valueReference={{ variable.valueReference }});    
 {%- endfor %}
 

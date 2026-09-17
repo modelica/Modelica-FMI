@@ -130,3 +130,30 @@ pub fn is_modelica_identifier(value: &str) -> bool {
         Some(character) if character == '_' || character.is_ascii_alphabetic()
     ) && characters.all(|character| character == '_' || character.is_ascii_alphanumeric())
 }
+
+pub fn port_annotation(n_ports: usize, i: usize, is_input: bool) -> String {
+    let h = 160;
+    let y1 = 80;
+
+    let x1 = if is_input { -120 } else { 100 };
+
+    let y = if n_ports == 1 {
+        0
+    } else if n_ports == 2 {
+        -50 + i as i32 * 100
+    } else {
+        y1 - i as i32 * (h / (n_ports as i32 - 1))
+    };
+
+    format!(
+        " annotation(Placement(transformation(extent={{ {{ {}, {} }}, {{ {}, {} }} }}), iconTransformation(extent={{ {{ {}, {} }}, {{ {}, {} }} }})))",
+        x1,
+        y - 10,
+        x1 + 20,
+        y + 10,
+        x1,
+        y - 10,
+        x1 + 20,
+        y + 10
+    )
+}

@@ -1,13 +1,17 @@
 use anyhow::{anyhow, bail};
 use askama::Template;
-use fmi_rs::model_description::fmi3::{Causality, Dimension, ModelDescription, ModelVariable};
+use fmi_rs::model_description::fmi3::{
+    Causality, Dimension, ModelDescription, ModelVariable, VariableType,
+};
 use std::{
     collections::HashMap,
     fs::{self},
     path::Path,
 };
 
-use modelica_fmi::{is_modelica_identifier, modelica_identifier, update_package_order};
+use modelica_fmi::{
+    is_modelica_identifier, modelica_identifier, port_annotation, update_package_order,
+};
 
 #[derive(Template)]
 #[template(path = "FMI3CS.mo.askama", escape = "none")]
@@ -21,30 +25,12 @@ struct ExternalFmuTemplate<'a> {
     description: Option<String>,
     within: String,
     model_description: &'a ModelDescription,
+    parameters: Vec<&'a ModelVariable>,
+    inputs: Vec<&'a ModelVariable>,
+    outputs: Vec<&'a ModelVariable>,
 }
 
 impl<'a> ExternalFmuTemplate<'a> {
-    pub fn parameters(&self) -> impl Iterator<Item = &'a ModelVariable> {
-        self.model_description
-            .modelVariables
-            .iter()
-            .filter(|v| v.causality == Causality::Parameter)
-    }
-
-    pub fn inputs(&self) -> impl Iterator<Item = &'a ModelVariable> {
-        self.model_description
-            .modelVariables
-            .iter()
-            .filter(|v| v.causality == Causality::Input)
-    }
-
-    pub fn outputs(&self) -> impl Iterator<Item = &'a ModelVariable> {
-        self.model_description
-            .modelVariables
-            .iter()
-            .filter(|v| v.causality == Causality::Output)
-    }
-
     pub fn annotation(&self, variable_name: &str) -> String {
         self.annotations
             .get(variable_name)
@@ -181,33 +167,6 @@ impl ModelVariableExt for ModelVariable {
     }
 }
 
-fn port_annotation(n_ports: usize, i: usize, is_input: bool) -> String {
-    let h = 160;
-    let y1 = 80;
-
-    let x1 = if is_input { -120 } else { 100 };
-
-    let y = if n_ports == 1 {
-        0
-    } else if n_ports == 2 {
-        -50 + i as i32 * 100
-    } else {
-        y1 - i as i32 * (h / (n_ports as i32 - 1))
-    };
-
-    format!(
-        " annotation(Placement(transformation(extent={{ {{ {}, {} }}, {{ {}, {} }} }}), iconTransformation(extent={{ {{ {}, {} }}, {{ {}, {} }} }})))",
-        x1,
-        y - 10,
-        x1 + 20,
-        y + 10,
-        x1,
-        y - 10,
-        x1 + 20,
-        y + 10
-    )
-}
-
 pub fn create_modelica_file(
     xml_path: &Path,
     unzipdir: &str,
@@ -244,24 +203,55 @@ pub fn create_modelica_file(
         bail!("The FMU does not support Co-Simulation");
     };
 
-    let mut annotations = HashMap::new();
+    let parameters: Vec<&ModelVariable> = model_description
+        .modelVariables
+        .iter()
+        .filter(|v| {
+            matches!(v.causality, Causality::Parameter)
+                && matches!(
+                    v.variableType,
+                    VariableType::Float64 { .. }
+                        | VariableType::Int32 { .. }
+                        | VariableType::Boolean { .. }
+                        | VariableType::String { .. }
+                )
+        })
+        .collect();
 
     let inputs: Vec<&ModelVariable> = model_description
         .modelVariables
         .iter()
-        .filter(|v| matches!(v.causality, Causality::Input))
+        .filter(|v| {
+            matches!(v.causality, Causality::Input)
+                && matches!(
+                    v.variableType,
+                    VariableType::Float64 { .. }
+                        | VariableType::Int32 { .. }
+                        | VariableType::Boolean { .. }
+                )
+        })
         .collect();
+
+    let outputs: Vec<&ModelVariable> = model_description
+        .modelVariables
+        .iter()
+        .filter(|v| {
+            matches!(v.causality, Causality::Output)
+                && matches!(
+                    v.variableType,
+                    VariableType::Float64 { .. }
+                        | VariableType::Int32 { .. }
+                        | VariableType::Boolean { .. }
+                )
+        })
+        .collect();
+
+    let mut annotations = HashMap::new();
 
     for (i, variable) in inputs.iter().enumerate() {
         let annotation = port_annotation(inputs.len(), i, true);
         annotations.insert(variable.name.clone(), annotation);
     }
-
-    let outputs: Vec<&ModelVariable> = model_description
-        .modelVariables
-        .iter()
-        .filter(|v| matches!(v.causality, Causality::Output))
-        .collect();
 
     for (i, variable) in outputs.iter().enumerate() {
         let annotation = port_annotation(outputs.len(), i, false);
@@ -278,6 +268,9 @@ pub fn create_modelica_file(
         description: model_description.description.clone(),
         within: modelica_path.join("."),
         model_description: &model_description,
+        parameters,
+        inputs,
+        outputs,
     };
 
     let modelica = template.render()?;

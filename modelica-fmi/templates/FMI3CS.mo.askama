@@ -12,18 +12,18 @@ block {{ class_name }}
 
   parameter Modelica.Units.SI.Time communicationStepSize = 0.01 annotation(Dialog(tab="FMI", group="Parameters"));
 
-{%- for variable in self.parameters() %}
+{%- for variable in parameters %}
   parameter FMI3{{ variable.variableType.name() }} {{ id(variable.name) }}{{ subscripts(variable)? }} = {{ start_literal(variable)? }}{{ variable.description_literal() }};
 {%- endfor %}
-{%- for variable in self.inputs() %}
+{%- for variable in inputs %}
   parameter FMI3{{ variable.variableType.name() }} {{ id(variable.name) }}_start{{ subscripts(variable)? }} = {{ start_literal(variable)? }} annotation(Dialog(tab="Initial", group="Start Values"));
 {%- endfor %}
 
-{%- for variable in self.inputs() %}
+{%- for variable in inputs %}
   FMI3{{ variable.variableType.name() }}Input {{ variable.name }}{{ subscripts(variable)? }}(start={{ variable.name }}_start){{ variable.description_literal() }}{{ annotation(variable.name.as_str()) }};
 {%- endfor %}
 
-{%- for variable in self.outputs() %}
+{%- for variable in outputs %}
   FMI3{{ variable.variableType.name() }}Output {{ variable.name }}{{ subscripts(variable)? }}{{ variable.description_literal() }}{{ annotation(variable.name.as_str()) }};
 {%- endfor %}
 
@@ -47,7 +47,7 @@ initial algorithm
   FMI.Internal.Logging.logMessages(instance);
 
   startTime := time;
-{% for variable in self.parameters() %}
+{% for variable in parameters %}
   FMI3Set{{ variable.variableType.name() }}(instance, valueReferences={ {{ variable.valueReference }} }, values={{ as_vector(variable, false)? }});
 {%- endfor %}
 
@@ -64,7 +64,7 @@ algorithm
 
   when sample(startTime, communicationStepSize) then
 
-{%- for variable in self.inputs() %}
+{%- for variable in inputs %}
     FMI3Set{{ variable.variableType.name() }}(instance, valueReferences={ {{ variable.valueReference }} }, values={{ as_vector(variable, true)? }});    
 {%- endfor %}
 
@@ -73,7 +73,7 @@ algorithm
         currentCommunicationPoint=time - communicationStepSize,
         communicationStepSize=communicationStepSize);
     end if;
-{% for variable in self.outputs() %}
+{% for variable in outputs %}
     {{ variable.name }} := {{ getter_prefix(variable)? }}FMI3Get{{ variable.variableType.name() }}(instance, valueReference={{ variable.valueReference }}, nValues={{ size(variable)? }}){{ getter_suffix(variable)? }};    
 {%- endfor %}
 
