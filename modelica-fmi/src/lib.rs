@@ -1,9 +1,14 @@
 use anyhow::anyhow;
-use std::{fs, path::Path};
+use sha2::{Digest, Sha256};
+use std::{fs, io, path::Path};
+use std::{fs::File, io::Read};
 
 pub fn modelica_path(model_path: &Path) -> anyhow::Result<Vec<String>> {
     let model_parent = model_path.parent().ok_or_else(|| {
-        anyhow!("Model path '{}' has no parent directory", model_path.display())
+        anyhow!(
+            "Model path '{}' has no parent directory",
+            model_path.display()
+        )
     })?;
 
     let mut parent_dir = fs::canonicalize(model_parent).map_err(|error| {
@@ -43,4 +48,85 @@ pub fn modelica_path(model_path: &Path) -> anyhow::Result<Vec<String>> {
     segments.reverse();
 
     Ok(segments)
+}
+
+pub fn update_package_order(output_file: &Path) -> io::Result<()> {
+    let package_order = output_file
+        .parent()
+        .unwrap_or_else(|| Path::new("."))
+        .join("package.order");
+
+    let entry = output_file
+        .file_stem()
+        .and_then(|stem| stem.to_str())
+        .ok_or_else(|| io::Error::new(io::ErrorKind::InvalidInput, "Invalid Modelica filename"))?;
+
+    let mut contents = match fs::read_to_string(&package_order) {
+        Ok(contents) => contents,
+        Err(error) if error.kind() == io::ErrorKind::NotFound => String::new(),
+        Err(error) => return Err(error),
+    };
+
+    if contents.lines().any(|line| line.trim() == entry) {
+        return Ok(());
+    }
+
+    if !contents.is_empty() && !contents.ends_with('\n') {
+        contents.push('\n');
+    }
+
+    contents.push_str(entry);
+    contents.push('\n');
+
+    fs::write(package_order, contents)
+}
+
+pub fn sha256_file(path: &Path) -> io::Result<String> {
+    let mut file = File::open(path)?;
+    let mut hasher = Sha256::new();
+    let mut buffer = [0_u8; 64 * 1024];
+
+    loop {
+        let bytes_read = file.read(&mut buffer)?;
+        if bytes_read == 0 {
+            break;
+        }
+        hasher.update(&buffer[..bytes_read]);
+    }
+
+    Ok(format!("{:x}", hasher.finalize()))
+}
+
+pub fn modelica_identifier(value: &str) -> String {
+    let mut identifier: String = value
+        .chars()
+        .map(|character| {
+            if character.is_ascii_alphanumeric() || character == '_' {
+                character
+            } else {
+                '_'
+            }
+        })
+        .collect();
+
+    if identifier.is_empty() {
+        identifier.push('_');
+    }
+    if identifier
+        .chars()
+        .next()
+        .is_some_and(|character| character.is_ascii_digit())
+    {
+        identifier.insert(0, '_');
+    }
+    identifier
+}
+
+pub fn is_modelica_identifier(value: &str) -> bool {
+    let mut characters = value.chars();
+
+    matches!(
+        characters.next(),
+        Some(character) if character == '_' || character.is_ascii_alphabetic()
+    ) && characters.all(|character| character == '_' || character.is_ascii_alphanumeric())
 }

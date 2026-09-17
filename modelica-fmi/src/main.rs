@@ -4,11 +4,9 @@ use fmi_rs::{
     model_description::{FMIMajorVersion, peek_fmi_major_version},
     zip::extract_zip_archive,
 };
-use modelica_fmi::modelica_path;
-use sha2::{Digest, Sha256};
+use modelica_fmi::{modelica_path, sha256_file};
 use std::{
-    fs::{self, File},
-    io::{self, Read},
+    fs::{self},
     path::{Path, PathBuf},
 };
 
@@ -16,7 +14,12 @@ mod fmi2;
 mod fmi3;
 
 #[derive(Debug, Parser)]
-#[command(name = "modelica-fmi", version, propagate_version = true, about = "Import an FMU into a Modelica library")]
+#[command(
+    name = "modelica-fmi",
+    version,
+    propagate_version = true,
+    about = "Import an FMU into a Modelica library"
+)]
 struct Cli {
     #[arg(help = "Path to the FMU to import")]
     fmu_file: PathBuf,
@@ -70,7 +73,7 @@ fn main() -> anyhow::Result<()> {
     if unzipdir.exists() {
         if overwrite {
             if verbose {
-                println!("Removing FMU directory {}", output_file.display());
+                println!("Removing FMU directory {}", unzipdir.display());
             }
             fs::remove_dir_all(&unzipdir)
                 .with_context(|| format!("Failed to remove existing FMU directory {unzipdir:?}"))?;
@@ -129,76 +132,20 @@ fn main() -> anyhow::Result<()> {
     Ok(())
 }
 
-fn update_package_order(output_file: &Path) -> io::Result<()> {
-    let package_order = output_file
-        .parent()
-        .unwrap_or_else(|| Path::new("."))
-        .join("package.order");
+#[cfg(test)]
+mod tests {
+    use modelica_fmi::is_modelica_identifier;
 
-    let entry = output_file
-        .file_stem()
-        .and_then(|stem| stem.to_str())
-        .ok_or_else(|| io::Error::new(io::ErrorKind::InvalidInput, "Invalid Modelica filename"))?;
-
-    let mut contents = match fs::read_to_string(&package_order) {
-        Ok(contents) => contents,
-        Err(error) if error.kind() == io::ErrorKind::NotFound => String::new(),
-        Err(error) => return Err(error),
-    };
-
-    if contents.lines().any(|line| line.trim() == entry) {
-        return Ok(());
-    }
-
-    if !contents.is_empty() && !contents.ends_with('\n') {
-        contents.push('\n');
-    }
-
-    contents.push_str(entry);
-    contents.push('\n');
-
-    fs::write(package_order, contents)
-}
-
-fn sha256_file(path: &Path) -> io::Result<String> {
-    let mut file = File::open(path)?;
-    let mut hasher = Sha256::new();
-    let mut buffer = [0_u8; 64 * 1024];
-
-    loop {
-        let bytes_read = file.read(&mut buffer)?;
-        if bytes_read == 0 {
-            break;
+    #[test]
+    fn validates_modelica_identifiers() {
+        for value in ["_", "Model", "model_2", "a_b"] {
+            assert!(is_modelica_identifier(value));
         }
-        hasher.update(&buffer[..bytes_read]);
-    }
 
-    Ok(format!("{:x}", hasher.finalize()))
-}
-
-fn modelica_identifier(value: &str) -> String {
-    let mut identifier: String = value
-        .chars()
-        .map(|character| {
-            if character.is_ascii_alphanumeric() || character == '_' {
-                character
-            } else {
-                '_'
-            }
-        })
-        .collect();
-
-    if identifier.is_empty() {
-        identifier.push('_');
+        for value in ["", "2model", "model-name", "model.name", "é"] {
+            assert!(!is_modelica_identifier(value));
+        }
     }
-    if identifier
-        .chars()
-        .next()
-        .is_some_and(|character| character.is_ascii_digit())
-    {
-        identifier.insert(0, '_');
-    }
-    identifier
 }
 
 // fn modelica_string(value: &str) -> String {

@@ -7,7 +7,7 @@ use std::{
     path::Path,
 };
 
-use crate::{modelica_identifier, update_package_order};
+use modelica_fmi::{is_modelica_identifier, modelica_identifier, update_package_order};
 
 #[derive(Template)]
 #[template(path = "FMI3CS.mo.askama", escape = "none")]
@@ -214,6 +214,28 @@ pub fn create_modelica_file(
     modelica_path: Vec<String>,
     output_file: &Path,
 ) -> anyhow::Result<()> {
+    let output_path = Path::new(output_file);
+
+    let output_file_ext = output_path.extension().and_then(|s| s.to_str());
+
+    if output_file_ext != Some("mo") {
+        bail!("Output file must have the extension '.mo'")
+    }
+
+    let class_name = output_path
+        .file_stem()
+        .and_then(|s| s.to_str())
+        .ok_or_else(|| {
+            anyhow::anyhow!(
+                "Output path '{}' does not have a valid file name stem",
+                output_path.display()
+            )
+        })?;
+
+    if !is_modelica_identifier(class_name) {
+        bail!("Output file name must be a valid Modelica identifier")
+    }
+
     let model_description = ModelDescription::from_path(xml_path)?;
 
     let model_identifier = if let Some(co_simulation) = &model_description.coSimulation {
