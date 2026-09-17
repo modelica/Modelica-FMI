@@ -10,13 +10,14 @@ use std::{
 };
 
 use modelica_fmi::{
-    is_modelica_identifier, modelica_identifier, port_annotation, update_package_order,
+    is_modelica_identifier, modelica_identifier, port_annotation, port_label, update_package_order,
 };
 
 #[derive(Template)]
 #[template(path = "FMI3CS.mo.askama", escape = "none")]
 struct ExternalFmuTemplate<'a> {
     annotations: HashMap<String, String>,
+    port_labels: Vec<String>,
     version: String,
     unzipdir: String,
     model_identifier: String,
@@ -258,8 +259,21 @@ pub fn create_modelica_file(
         annotations.insert(variable.name.clone(), annotation);
     }
 
+    let mut port_labels = vec![];
+
+    for (i, variable) in inputs.iter().enumerate() {
+        let label = port_label(inputs.len(), i, true, &variable.name);
+        port_labels.push(label);
+    }
+
+    for (i, variable) in outputs.iter().enumerate() {
+        let label = port_label(outputs.len(), i, false, &variable.name);
+        port_labels.push(label);
+    }
+
     let template = ExternalFmuTemplate {
         annotations,
+        port_labels,
         version: env!("CARGO_PKG_VERSION").to_owned(),
         unzipdir: unzipdir.to_owned(),
         model_identifier,
