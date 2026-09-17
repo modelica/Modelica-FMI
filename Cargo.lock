@@ -4,7 +4,7 @@ version = 4
 
 [[package]]
 name = "ModelicaFMI"
-version = "0.0.9"
+version = "0.0.10"
 dependencies = [
  "fmi-rs",
  "static_vcruntime",
@@ -1437,7 +1437,7 @@ dependencies = [
 
 [[package]]
 name = "modelica-fmi"
-version = "0.0.9"
+version = "0.0.10"
 dependencies = [
  "anyhow",
  "askama",
