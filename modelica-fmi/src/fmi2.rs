@@ -2,7 +2,7 @@ use anyhow::{anyhow, bail};
 use askama::Template;
 use fmi_rs::model_description::fmi2::{Causality, ModelDescription, ScalarVariable, VariableType};
 use modelica_fmi::{
-    is_modelica_identifier, modelica_identifier, port_annotation, update_package_order,
+    is_modelica_identifier, modelica_identifier, port_annotation, port_label, update_package_order,
 };
 use std::{
     collections::HashMap,
@@ -14,6 +14,7 @@ use std::{
 #[template(path = "FMI2CS.mo.askama", escape = "none")]
 struct ExternalFmuTemplate<'a> {
     annotations: HashMap<String, String>,
+    port_labels: Vec<String>,
     version: String,
     unzipdir: String,
     model_identifier: String,
@@ -25,6 +26,8 @@ struct ExternalFmuTemplate<'a> {
     parameters: Vec<&'a ScalarVariable>,
     inputs: Vec<&'a ScalarVariable>,
     outputs: Vec<&'a ScalarVariable>,
+    icon_width: f64,
+    icon_height: f64,
 }
 
 impl<'a> ExternalFmuTemplate<'a> {
@@ -150,20 +153,36 @@ pub fn create_modelica_file(
         })
         .collect();
 
+    let icon_height = (inputs.len().max(outputs.len()) as f64 * 100.).max(200.);
+    let icon_width = icon_height;
+    
     let mut annotations = HashMap::new();
 
     for (i, variable) in inputs.iter().enumerate() {
-        let annotation = port_annotation(200.,  200., inputs.len(), i, true);
+        let annotation = port_annotation(icon_width, icon_height, inputs.len(), i, true);
         annotations.insert(variable.name.clone(), annotation);
     }
 
     for (i, variable) in outputs.iter().enumerate() {
-        let annotation = port_annotation(200., 200., outputs.len(), i, false);
+        let annotation = port_annotation(icon_width, icon_height, outputs.len(), i, false);
         annotations.insert(variable.name.clone(), annotation);
+    }
+
+    let mut port_labels = vec![];
+
+    for (i, variable) in inputs.iter().enumerate() {
+        let label = port_label(icon_width, icon_height, inputs.len(), i, true, &variable.name);
+        port_labels.push(label);
+    }
+
+    for (i, variable) in outputs.iter().enumerate() {
+        let label = port_label(icon_width, icon_height, outputs.len(), i, false, &variable.name);
+        port_labels.push(label);
     }
 
     let template = ExternalFmuTemplate {
         annotations,
+        port_labels,
         version: env!("CARGO_PKG_VERSION").to_owned(),
         unzipdir: unzipdir.to_owned(),
         model_identifier,
@@ -175,6 +194,8 @@ pub fn create_modelica_file(
         parameters,
         inputs,
         outputs,
+        icon_width,
+        icon_height,        
     };
 
     let modelica = template.render()?;
