@@ -2,90 +2,22 @@
 
 # Modelica FMI
 
-A Modelica library to import [Functional Mock-up Units](https://fmi-standard.org/).
+Use [Functional Mock-up Units](https://fmi-standard.org/) in Modelica.
 
 ## Highlights
 
-- :white_check_mark: supports FMI 2.0 and FMI 3.0 for Co-Simulation
-- :tada: works with all Modelica tools
-- :page_with_curl: logs FMI calls to the console or to a file
-
-## Installation
-
-To import FMUs install the `modelica-fmi` and `modelica-fmi-gui` commands with [uv](https://docs.astral.sh/uv/getting-started/installation/):
-
-```bash
-uv tool install --reinstall https://github.com/modelica/Modelica-FMI/releases/download/v0.0.9/modelica_fmi-0.0.9-py3-none-any.whl
-```
-
-Or, with `pip`:
-
-```bash
-pip install https://github.com/modelica/Modelica-FMI/releases/download/v0.0.9/modelica_fmi-0.0.9-py3-none-any.whl
-```
-
-To simulate imported FMUs download the [Modelica-FMI](https://github.com/modelica/Modelica-FMI/releases/download/v0.0.9/Modelica-FMI-0.0.9.zip) package and load it in your Modelica tool.
+- Supports FMI 2.0 and FMI 3.0 for Co-Simulation.
+- Works with all Modelica tools.
+- Logs FMI calls to the console or to a file.
 
 ## Usage
 
-To open the import dialog run
-
-```bash
-modelica-fmi-gui
-```
-
-or
-
-```bash
-modelica-fmi /path/to/model.fmu /path/to/package/model.mo
-```
-
-to import an FMU directly.
-
-In Dymola you can open the import dialog by selecting `Tools > FMU Import > Import FMU...`.
-
-After the import you have to reload the package.
-
-## Building the binaries from source
-
-To build the binaries in `FMI/Resources/Library` from source install CMake
+- download the [latest release](https://github.com/modelica/Modelica-FMI/releases/latest/download/Modelica-FMI.zip)
+- extract the archive and load the `FMI` library into your Modelica tool
+- import an FMU by running `modelica-fmi` from the respective platform directory (e.g. `FMI/Resources/Library/win64` on Windows)
 
 ```
-uv tool install cmake
-```
-
-clone the repository, and run
-
-```
-cmake -S runtime -B runtime/build
-```
-
-```
-cmake --build runtime/build --config release --target install
-```
-
-## Building distributable import commands
-
-To build distributable version of the `modelica-fmi` and `modelica-fmi-gui` commands
-
-- create a new virtual environment
-```
-uv venv
-```
-
-- install PyInstaller and modelica_fmi
-```
-uv pip install pyinstaller https://github.com/modelica/Modelica-FMI/releases/download/v0.0.9/modelica_fmi-0.0.9-py3-none-any.whl
-```
-
-- build modelica-fmi-gui
-```
-uv run pyinstaller --windowed --name modelica-fmi-gui --collect-data modelica_fmi .venv/Lib/site-packages/modelica_fmi/gui/__main__.py
-```
-
-- ...or modelica-fmi
-```
-uv run pyinstaller --name modelica-fmi --collect-data modelica_fmi .venv/Lib/site-packages/modelica_fmi/__main__.py
+modelica-fmi /path/to/BouncingBall.fmu /path/to/BouncingBall.mo
 ```
 
 ## License
