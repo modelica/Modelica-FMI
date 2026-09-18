@@ -131,48 +131,35 @@ pub fn is_modelica_identifier(value: &str) -> bool {
     ) && characters.all(|character| character == '_' || character.is_ascii_alphanumeric())
 }
 
-pub fn port_annotation(n_ports: usize, i: usize, is_input: bool) -> String {
-    let h = 160.;
-    let y_off = 80.;
+pub fn port_annotation(icon_width: f64, icon_height: f64, n_ports: usize, i: usize, is_input: bool) -> String {
 
-    let y = if n_ports == 1 {
-        0.
-    } else if n_ports == 2 {
-        -50. + i as f64 * 100.
-    } else {
-        y_off - i as f64 * (h / (n_ports as f64 - 1.))
-    };
+    let y_off = icon_height / (n_ports as f64 + 1.0);
 
-    let x1 = if is_input { -110. } else { 100. };
-    let x2 = x1 + 10.;
-    let y1 = y - 5.;
-    let y2 = y + 5.;
+    let y = (icon_height / 2.) - (i as f64 + 0.5) * y_off;
+
+    let x1 = if is_input { -(icon_width / 2.) - 20. } else { icon_width / 2. };
+    let x2 = x1 + 20.;
+    let y1 = y - 10. - y_off / 2.0;
+    let y2 = y + 10. - y_off / 2.0;
 
     format!(
         " annotation(Placement(transformation(extent={{ {{ {x1}, {y1} }}, {{ {x2}, {y2} }} }}), iconTransformation(extent={{ {{ {x1}, {y1} }}, {{ {x2}, {y2} }} }})))"
     )
 }
 
-pub fn port_label(n_ports: usize, i: usize, is_input: bool, text: &str) -> String {
-    let h = 160.0;
-    let y_off = 80.0;
+pub fn port_label(icon_width: f64, icon_height: f64, n_ports: usize, i: usize, is_input: bool, text: &str) -> String {
 
-    let x1 = if is_input { -98.0 } else { 98.0 };
+    let y_off = icon_height / (n_ports as f64 + 1.0);
 
-    let y = if n_ports == 1 {
-        0.
-    } else if n_ports == 2 {
-        -50. + i as f64 * 100.
-    } else {
-        y_off - i as f64 * (h / (n_ports as f64 - 1.))
-    };
+    let y = (icon_height / 2.) - (i as f64 + 0.5) * y_off;
+
+    let x1 = if is_input { -(icon_width / 2.) + 10. } else { icon_width / 2. - 10. };
+    let y1 = y - 10. - y_off / 2.0;
+    let y2 = y + 10. - y_off / 2.0;
 
     let alignment = if is_input { "Left" } else { "Right" };
 
-    let y1 = y - 5.;
-    let y2 = y + 5.;
-
     format!(
-        "Text(extent={{ {{ {x1}, {y1} }}, {{ {x1}, {y2} }} }}, textColor={{0,0,0}}, textString=\"{text}\", horizontalAlignment=TextAlignment.{alignment}, fontSize=8, visible=showLabels)",
+        "Text(extent={{ {{ {x1}, {y1} }}, {{ {x1}, {y2} }} }}, textColor={{0,0,0}}, textString=\"{text}\", horizontalAlignment=TextAlignment.{alignment}, visible=showLabels)",
     )
 }

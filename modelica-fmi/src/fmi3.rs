@@ -29,6 +29,8 @@ struct ExternalFmuTemplate<'a> {
     parameters: Vec<&'a ModelVariable>,
     inputs: Vec<&'a ModelVariable>,
     outputs: Vec<&'a ModelVariable>,
+    icon_width: f64,
+    icon_height: f64,
 }
 
 impl<'a> ExternalFmuTemplate<'a> {
@@ -247,27 +249,30 @@ pub fn create_modelica_file(
         })
         .collect();
 
+    let icon_height = (inputs.len().max(outputs.len()) as f64 * 100.).max(200.);
+    let icon_width = icon_height;
+    
     let mut annotations = HashMap::new();
 
     for (i, variable) in inputs.iter().enumerate() {
-        let annotation = port_annotation(inputs.len(), i, true);
+        let annotation = port_annotation(icon_width, icon_height, inputs.len(), i, true);
         annotations.insert(variable.name.clone(), annotation);
     }
 
     for (i, variable) in outputs.iter().enumerate() {
-        let annotation = port_annotation(outputs.len(), i, false);
+        let annotation = port_annotation(icon_width, icon_height, outputs.len(), i, false);
         annotations.insert(variable.name.clone(), annotation);
     }
 
     let mut port_labels = vec![];
 
     for (i, variable) in inputs.iter().enumerate() {
-        let label = port_label(inputs.len(), i, true, &variable.name);
+        let label = port_label(icon_width, icon_height, inputs.len(), i, true, &variable.name);
         port_labels.push(label);
     }
 
     for (i, variable) in outputs.iter().enumerate() {
-        let label = port_label(outputs.len(), i, false, &variable.name);
+        let label = port_label(icon_width, icon_height, outputs.len(), i, false, &variable.name);
         port_labels.push(label);
     }
 
@@ -285,6 +290,8 @@ pub fn create_modelica_file(
         parameters,
         inputs,
         outputs,
+        icon_width,
+        icon_height,
     };
 
     let modelica = template.render()?;

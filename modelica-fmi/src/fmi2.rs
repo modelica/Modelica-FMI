@@ -153,12 +153,12 @@ pub fn create_modelica_file(
     let mut annotations = HashMap::new();
 
     for (i, variable) in inputs.iter().enumerate() {
-        let annotation = port_annotation(inputs.len(), i, true);
+        let annotation = port_annotation(200.,  200., inputs.len(), i, true);
         annotations.insert(variable.name.clone(), annotation);
     }
 
     for (i, variable) in outputs.iter().enumerate() {
-        let annotation = port_annotation(outputs.len(), i, false);
+        let annotation = port_annotation(200., 200., outputs.len(), i, false);
         annotations.insert(variable.name.clone(), annotation);
     }
 

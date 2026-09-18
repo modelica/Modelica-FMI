@@ -1,6 +1,5 @@
 within FMI.Internal;
 partial block FMU "Base class for imported FMUs"
-  extends Modelica.Blocks.Icons.Block;
 
   parameter Boolean showLabels = true "Show connector labels" annotation(Dialog(tab="General", group="Icon"));
 
