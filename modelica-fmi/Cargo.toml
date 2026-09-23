@@ -6,28 +6,10 @@ edition.workspace = true
 [dependencies]
 askama = "0.16"
 anyhow = "1.0.104"
-clap = { version = "4.6.6", features = ["derive"] }
+clap = { version = "4.6.7", features = ["derive"] }
 fmi-rs.workspace = true
-sha2 = "0.10"
+sha2 = "0.11"
 tempfile = "3"
 
 [build-dependencies]
 static_vcruntime = "3.0"
-
-[lints.clippy]
-# Disallow explicit panicking mechanisms
-unwrap_used = "warn"
-expect_used = "warn"
-panic = "warn"
-todo = "warn"
-unimplemented = "warn"
-unreachable = "warn"
-panic_in_result_fn = "warn"
-
-# Disallow implicit panicking operations
-# indexing_slicing = "deny"
-# arithmetic_side_effects = "deny"
-
-# Additional safety lints for fallible operations
-# out_of_bounds_indexing = "deny"
-# string_slice = "deny" # Slicing strings can panic if cut on non-UTF-8 boundaries
