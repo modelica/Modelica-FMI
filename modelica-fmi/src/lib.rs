@@ -131,13 +131,22 @@ pub fn is_modelica_identifier(value: &str) -> bool {
     ) && characters.all(|character| character == '_' || character.is_ascii_alphanumeric())
 }
 
-pub fn port_annotation(icon_width: f64, icon_height: f64, n_ports: usize, i: usize, is_input: bool) -> String {
-
+pub fn port_annotation(
+    icon_width: f64,
+    icon_height: f64,
+    n_ports: usize,
+    i: usize,
+    is_input: bool,
+) -> String {
     let y_off = icon_height / (n_ports as f64 + 1.0);
 
     let y = (icon_height / 2.) - (i as f64 + 0.5) * y_off;
 
-    let x1 = if is_input { -(icon_width / 2.) - 20. } else { icon_width / 2. };
+    let x1 = if is_input {
+        -(icon_width / 2.) - 20.
+    } else {
+        icon_width / 2.
+    };
     let x2 = x1 + 20.;
     let y1 = y - 10. - y_off / 2.0;
     let y2 = y + 10. - y_off / 2.0;
@@ -147,13 +156,23 @@ pub fn port_annotation(icon_width: f64, icon_height: f64, n_ports: usize, i: usi
     )
 }
 
-pub fn port_label(icon_width: f64, icon_height: f64, n_ports: usize, i: usize, is_input: bool, text: &str) -> String {
-
+pub fn port_label(
+    icon_width: f64,
+    icon_height: f64,
+    n_ports: usize,
+    i: usize,
+    is_input: bool,
+    text: &str,
+) -> String {
     let y_off = icon_height / (n_ports as f64 + 1.0);
 
     let y = (icon_height / 2.) - (i as f64 + 0.5) * y_off;
 
-    let x1 = if is_input { -(icon_width / 2.) + 10. } else { icon_width / 2. - 10. };
+    let x1 = if is_input {
+        -(icon_width / 2.) + 10.
+    } else {
+        icon_width / 2. - 10.
+    };
     let y1 = y - 10. - y_off / 2.0;
     let y2 = y + 10. - y_off / 2.0;
 

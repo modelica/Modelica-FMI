@@ -155,7 +155,7 @@ pub fn create_modelica_file(
 
     let icon_height = (inputs.len().max(outputs.len()) as f64 * 100.).max(200.);
     let icon_width = icon_height;
-    
+
     let mut annotations = HashMap::new();
 
     for (i, variable) in inputs.iter().enumerate() {
@@ -171,12 +171,26 @@ pub fn create_modelica_file(
     let mut port_labels = vec![];
 
     for (i, variable) in inputs.iter().enumerate() {
-        let label = port_label(icon_width, icon_height, inputs.len(), i, true, &variable.name);
+        let label = port_label(
+            icon_width,
+            icon_height,
+            inputs.len(),
+            i,
+            true,
+            &variable.name,
+        );
         port_labels.push(label);
     }
 
     for (i, variable) in outputs.iter().enumerate() {
-        let label = port_label(icon_width, icon_height, outputs.len(), i, false, &variable.name);
+        let label = port_label(
+            icon_width,
+            icon_height,
+            outputs.len(),
+            i,
+            false,
+            &variable.name,
+        );
         port_labels.push(label);
     }
 
@@ -195,7 +209,7 @@ pub fn create_modelica_file(
         inputs,
         outputs,
         icon_width,
-        icon_height,        
+        icon_height,
     };
 
     let modelica = template.render()?;

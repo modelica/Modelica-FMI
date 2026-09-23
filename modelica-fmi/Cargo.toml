@@ -7,9 +7,12 @@ edition.workspace = true
 askama = "0.16"
 anyhow = "1.0.104"
 clap = { version = "4.6.6", features = ["derive"] }
-fmi-rs = { path = "../fmi-rs" }
+fmi-rs.workspace = true
 sha2 = "0.10"
 tempfile = "3"
+
+[build-dependencies]
+static_vcruntime = "3.0"
 
 [lints.clippy]
 # Disallow explicit panicking mechanisms

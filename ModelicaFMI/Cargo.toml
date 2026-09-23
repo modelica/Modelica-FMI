@@ -7,7 +7,7 @@ edition.workspace = true
 crate-type = ["cdylib"]
 
 [dependencies]
-fmi-rs = { path = "../fmi-rs" }
+fmi-rs.workspace = true
 url = "2"
 
 [build-dependencies]
