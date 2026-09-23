@@ -115,8 +115,8 @@ pub unsafe extern "C" fn FMU_FMI3GetFloat32(
 
     call!(instance, fmu.getFloat32(&valueReferences, &mut buffer[..]));
 
-    for (i, &v) in buffer.iter().enumerate() {
-        values[i] = v as f64;
+    for (b, v) in buffer.iter().zip(values) {
+        *v = *b as f64;
     }
 }
 
@@ -153,8 +153,8 @@ pub unsafe extern "C" fn FMU_FMI3GetInt8(
 
     call!(instance, fmu.getInt8(&valueReferences, &mut buffer[..]));
 
-    for (i, &v) in buffer.iter().enumerate() {
-        values[i] = v as i32;
+    for (b, v) in buffer.iter().zip(values) {
+        *v = *b as i32;
     }
 }
 
@@ -175,8 +175,8 @@ pub unsafe extern "C" fn FMU_FMI3GetUInt8(
 
     call!(instance, fmu.getUInt8(&valueReferences, &mut buffer[..]));
 
-    for (i, &v) in buffer.iter().enumerate() {
-        values[i] = v as i32;
+    for (b, v) in buffer.iter().zip(values) {
+        *v = *b as i32;
     }
 }
 
@@ -197,8 +197,8 @@ pub unsafe extern "C" fn FMU_FMI3GetInt16(
 
     call!(instance, fmu.getInt16(&valueReferences, &mut buffer[..]));
 
-    for (i, &v) in buffer.iter().enumerate() {
-        values[i] = v as i32;
+    for (b, v) in buffer.iter().zip(values) {
+        *v = *b as i32;
     }
 }
 
@@ -219,8 +219,8 @@ pub unsafe extern "C" fn FMU_FMI3GetUInt16(
 
     call!(instance, fmu.getUInt16(&valueReferences, &mut buffer[..]));
 
-    for (i, &v) in buffer.iter().enumerate() {
-        values[i] = v as i32;
+    for (b, v) in buffer.iter().zip(values) {
+        *v = *b as i32;
     }
 }
 
@@ -257,8 +257,8 @@ pub unsafe extern "C" fn FMU_FMI3GetUInt32(
 
     call!(instance, fmu.getUInt32(&valueReferences, &mut buffer[..]));
 
-    for (i, &v) in buffer.iter().enumerate() {
-        values[i] = v as i32;
+    for (b, v) in buffer.iter().zip(values) {
+        *v = *b as i32;
     }
 }
 
@@ -279,8 +279,8 @@ pub unsafe extern "C" fn FMU_FMI3GetInt64(
 
     call!(instance, fmu.getInt64(&valueReferences, &mut buffer[..]));
 
-    for (i, &v) in buffer.iter().enumerate() {
-        values[i] = v as i32;
+    for (b, v) in buffer.iter().zip(values) {
+        *v = *b as i32;
     }
 }
 
@@ -301,8 +301,8 @@ pub unsafe extern "C" fn FMU_FMI3GetUInt64(
 
     call!(instance, fmu.getUInt64(&valueReferences, &mut buffer[..]));
 
-    for (i, &v) in buffer.iter().enumerate() {
-        values[i] = v as i32;
+    for (b, v) in buffer.iter().zip(values) {
+        *v = *b as i32;
     }
 }
 
@@ -323,8 +323,8 @@ pub unsafe extern "C" fn FMU_FMI3GetBoolean(
 
     call!(instance, fmu.getBoolean(&valueReferences, &mut buffer[..]));
 
-    for (i, &v) in buffer.iter().enumerate() {
-        values[i] = v as i32;
+    for (b, v) in buffer.iter().zip(values) {
+        *v = *b as i32;
     }
 }
 
@@ -346,8 +346,8 @@ pub unsafe extern "C" fn FMU_FMI3SetFloat32(
 
     let mut buffer = vec![0f32; nValues as usize];
 
-    for (i, &v) in values.iter().enumerate() {
-        buffer[i] = v as f32;
+    for (b, v) in buffer.iter_mut().zip(values) {
+        *b = *v as f32;
     }
 
     call!(instance, fmu.setFloat32(valueReferences, &buffer[..]));
@@ -390,8 +390,8 @@ pub unsafe extern "C" fn FMU_FMI3SetInt8(
 
     let mut buffer = vec![0i8; nValues as usize];
 
-    for (i, &v) in values.iter().enumerate() {
-        buffer[i] = v as i8;
+    for (b, v) in buffer.iter_mut().zip(values) {
+        *b = *v as i8;
     }
 
     call!(instance, fmu.setInt8(valueReferences, &buffer[..]));
@@ -415,8 +415,8 @@ pub unsafe extern "C" fn FMU_FMI3SetUInt8(
 
     let mut buffer = vec![0u8; nValues as usize];
 
-    for (i, &v) in values.iter().enumerate() {
-        buffer[i] = v as u8;
+    for (b, v) in buffer.iter_mut().zip(values) {
+        *b = *v as u8;
     }
 
     call!(instance, fmu.setUInt8(valueReferences, &buffer[..]));
@@ -440,8 +440,8 @@ pub unsafe extern "C" fn FMU_FMI3SetInt16(
 
     let mut buffer = vec![0i16; nValues as usize];
 
-    for (i, &v) in values.iter().enumerate() {
-        buffer[i] = v as i16;
+    for (b, v) in buffer.iter_mut().zip(values) {
+        *b = *v as i16;
     }
 
     call!(instance, fmu.setInt16(valueReferences, &buffer[..]));
@@ -465,8 +465,8 @@ pub unsafe extern "C" fn FMU_FMI3SetUInt16(
 
     let mut buffer = vec![0u16; nValues as usize];
 
-    for (i, &v) in values.iter().enumerate() {
-        buffer[i] = v as u16;
+    for (b, v) in buffer.iter_mut().zip(values) {
+        *b = *v as u16;
     }
 
     call!(instance, fmu.setUInt16(valueReferences, &buffer[..]));
@@ -509,8 +509,8 @@ pub unsafe extern "C" fn FMU_FMI3SetUInt32(
 
     let mut buffer = vec![0u32; nValues as usize];
 
-    for (i, &v) in values.iter().enumerate() {
-        buffer[i] = v as u32;
+    for (b, v) in buffer.iter_mut().zip(values) {
+        *b = *v as u32;
     }
 
     call!(instance, fmu.setUInt32(valueReferences, &buffer[..]));
@@ -534,8 +534,8 @@ pub unsafe extern "C" fn FMU_FMI3SetInt64(
 
     let mut buffer = vec![0i64; nValues as usize];
 
-    for (i, &v) in values.iter().enumerate() {
-        buffer[i] = v as i64;
+    for (b, v) in buffer.iter_mut().zip(values) {
+        *b = *v as i64;
     }
 
     call!(instance, fmu.setInt64(valueReferences, &buffer[..]));
@@ -559,8 +559,8 @@ pub unsafe extern "C" fn FMU_FMI3SetUInt64(
 
     let mut buffer = vec![0u64; nValues as usize];
 
-    for (i, &v) in values.iter().enumerate() {
-        buffer[i] = v as u64;
+    for (b, v) in buffer.iter_mut().zip(values) {
+        *b = *v as u64;
     }
 
     call!(instance, fmu.setUInt64(valueReferences, &buffer[..]));
@@ -585,8 +585,8 @@ pub unsafe extern "C" fn FMU_FMI3SetBoolean(
 
     let mut buffer = vec![false; nValues as usize];
 
-    for (i, &v) in values.iter().enumerate() {
-        buffer[i] = v != 0;
+    for (b, v) in buffer.iter_mut().zip(values) {
+        *b = *v != 0;
     }
 
     call!(instance, fmu.setBoolean(valueReferences, &buffer[..]));

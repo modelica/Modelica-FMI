@@ -167,6 +167,34 @@ pub extern "C" fn FMU_Free(instance: *mut c_void) {
     }
 }
 
+macro_rules! handle_err {
+    ($instance:expr, $expression:expr) => {
+        match $expression {
+            Ok(s) => s,
+            Err(e) => {
+                $instance.log_error(format!("{e}"));
+                return;
+            }
+        }
+    };
+}
+
+macro_rules! to_str {
+    ($instance:expr, $cstr:ident) => {
+        handle_err!(
+            $instance,
+            unsafe { std::ffi::CStr::from_ptr($cstr) }.to_str()
+        )
+        // match unsafe { std::ffi::CStr::from_ptr($cstr) }.to_str() {
+        //     Ok(s) => s,
+        //     Err(e) => {
+        //         $instance.log_error(format!("{e}"));
+        //         return;
+        //     }
+        //
+    };
+}
+
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn FMU_Load(
     instance: *mut c_void,
@@ -185,21 +213,25 @@ pub unsafe extern "C" fn FMU_Load(
 ) {
     let instance: &mut FMUInstance = unsafe { &mut *(instance as *mut FMUInstance) };
 
-    let unzipdir = unsafe { std::ffi::CStr::from_ptr(unzipdir) };
-    let unzipdir = Path::new(unzipdir.to_str().unwrap());
+    let unzipdir = to_str!(instance, unzipdir);
+    // let unzipdir = unsafe { std::ffi::CStr::from_ptr(unzipdir) };
+    let unzipdir = Path::new(unzipdir);
 
-    let modelIdentifier = unsafe { std::ffi::CStr::from_ptr(modelIdentifier) };
-    let modelIdentifier = modelIdentifier.to_str().unwrap();
+    // let modelIdentifier = unsafe { std::ffi::CStr::from_ptr(modelIdentifier) };
+    // let modelIdentifier = handle_err!(instance, modelIdentifier.to_str());
+    let modelIdentifier = to_str!(instance, modelIdentifier);
 
     let share_library_filename = format!("{}{}", modelIdentifier, SHARED_LIBRARY_EXTENSION);
 
-    let instanceName = unsafe { std::ffi::CStr::from_ptr(instanceName) };
-    let instanceName = instanceName.to_str().unwrap();
+    // let instanceName = unsafe { std::ffi::CStr::from_ptr(instanceName) };
+    // let instanceName = handle_err!(instance, instanceName.to_str());
+    let instanceName = to_str!(instance, instanceName);
 
     instance.log_file = if logToFile != 0 {
-        let log_file_cstr = unsafe { std::ffi::CStr::from_ptr(logFile) };
-        let log_file_str = log_file_cstr.to_str().unwrap();
-        let mut log_file = File::create(log_file_str).unwrap();
+        // let log_file_cstr = unsafe { std::ffi::CStr::from_ptr(logFile) };
+        // let log_file_str = log_file_cstr.to_str().unwrap();
+        let log_file_str = to_str!(instance, logFile);
+        let mut log_file = handle_err!(instance, File::create(log_file_str));
         Some(RefCell::new(log_file))
     } else {
         None
@@ -208,8 +240,10 @@ pub unsafe extern "C" fn FMU_Load(
     let visible = visible != 0;
     let loggingOn = loggingOn != 0;
     let resources_path = unzipdir.join("resources").join("");
-    let guid = unsafe { std::ffi::CStr::from_ptr(instantiationToken) };
-    let guid = guid.to_str().unwrap();
+    // let guid = unsafe { std::ffi::CStr::from_ptr(instantiationToken) };
+    // let guid = guid.to_str().unwrap();
+    let guid = to_str!(instance, instantiationToken);
+
     let logCalls = logFMICalls != 0;
 
     let instance_arc: Arc<FMUInstance> = unsafe { Arc::from_raw(instance as *mut FMUInstance) };
@@ -217,37 +251,41 @@ pub unsafe extern "C" fn FMU_Load(
     if fmiVersion == 2 {
         let logger: Arc<dyn fmi_rs::fmi2::log::Logger> = instance_arc.clone();
 
-        let mut fmu = FMU2::<CS>::new(
-            unzipdir,
-            modelIdentifier,
-            instanceName,
-            guid,
-            visible,
-            loggingOn,
-            logCalls,
-            logger,
-            true,
-        )
-        .unwrap();
+        let mut fmu = handle_err!(
+            instance,
+            FMU2::<CS>::new(
+                unzipdir,
+                modelIdentifier,
+                instanceName,
+                guid,
+                visible,
+                loggingOn,
+                logCalls,
+                logger,
+                true,
+            )
+        );
 
         instance.fmu = Some(FMU::FMI2(fmu));
     } else if fmiVersion == 3 {
         let logger: Arc<dyn fmi_rs::fmi3::log::Logger> = instance_arc.clone();
 
-        let fmu = FMU3::instantiateCoSimulation(
-            unzipdir,
-            modelIdentifier,
-            instanceName,
-            guid,
-            visible,
-            loggingOn,
-            false,
-            false,
-            logger,
-            logCalls,
-            None,
-        )
-        .unwrap();
+        let fmu = handle_err!(
+            instance,
+            FMU3::instantiateCoSimulation(
+                unzipdir,
+                modelIdentifier,
+                instanceName,
+                guid,
+                visible,
+                loggingOn,
+                false,
+                false,
+                logger,
+                logCalls,
+                None,
+            )
+        );
 
         instance.fmu = Some(FMU::FMI3(fmu));
     }

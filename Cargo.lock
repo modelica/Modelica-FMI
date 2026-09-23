@@ -993,6 +993,7 @@ dependencies = [
  "askama",
  "clap",
  "fmi-rs",
+ "hex",
  "sha2",
  "static_vcruntime",
  "tempfile",

@@ -12,3 +12,6 @@ url = "2"
 
 [build-dependencies]
 static_vcruntime = "3.0"
+
+[lints]
+workspace = true

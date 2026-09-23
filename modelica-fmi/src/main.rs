@@ -63,7 +63,9 @@ fn main() -> anyhow::Result<()> {
 
     let hash = sha256_file(&fmu_path).context(format!("Failed to read {}", fmu_path.display()))?;
 
-    let unzipdir_name = &hash[..7];
+    let unzipdir_name = hash
+        .get(0..7)
+        .context(format!("Illegal sha256 hash: {hash}"))?;
 
     let unzipdir = library_root
         .join("Resources")

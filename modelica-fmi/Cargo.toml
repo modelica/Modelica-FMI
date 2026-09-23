@@ -8,8 +8,12 @@ askama = "0.16"
 anyhow = "1.0.104"
 clap = { version = "4.6.7", features = ["derive"] }
 fmi-rs.workspace = true
+hex = "0.4"
 sha2 = "0.11"
 tempfile = "3"
 
 [build-dependencies]
 static_vcruntime = "3.0"
+
+[lints]
+workspace = true

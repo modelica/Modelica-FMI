@@ -6,51 +6,40 @@ on:
     branches: [ main ]
 
 jobs:
-  build-win64-binaries:
-    runs-on: windows-2022
+  build-binaries:
+    strategy:
+      matrix:
+        include:
+        - runner: windows-2022
+          artifact: win64
+          paths: |
+            ./target/release/modelica-fmi.exe
+            ./target/release/ModelicaFMI.dll
+        - runner: ubuntu-22.04
+          artifact: linux64
+          paths: |
+            ./target/release/modelica-fmi
+            ./target/release/libModelicaFMI.so
+        - runner: macos-14
+          artifact: darwin64
+          paths: |
+            ./target/release/modelica-fmi
+            ./target/release/libModelicaFMI.dylib
+    runs-on: ${{ matrix.runner }}
     steps:
     - uses: actions/checkout@v7
       with:
         submodules: recursive
+    - run: cargo clippy --workspace --all-targets -- -D warnings
     - run: cargo build --workspace --release
     - uses: actions/upload-artifact@v7
       with:
-        name: win64
-        path: |
-          ./target/release/modelica-fmi.exe
-          ./target/release/ModelicaFMI.dll
-        if-no-files-found: error
-  build-linux64-binaries:
-    runs-on: ubuntu-22.04
-    steps:
-    - uses: actions/checkout@v7
-      with:
-        submodules: recursive
-    - run: cargo build --workspace --release
-    - uses: actions/upload-artifact@v7
-      with:
-        name: linux64
-        path: |
-          ./target/release/modelica-fmi
-          ./target/release/libModelicaFMI.so
-        if-no-files-found: error
-  build-darwin64-binaries:
-    runs-on: macos-14
-    steps:
-    - uses: actions/checkout@v7
-      with:
-        submodules: recursive
-    - run: cargo build --workspace --release
-    - uses: actions/upload-artifact@v7
-      with:
-        name: darwin64
-        path: |
-          ./target/release/modelica-fmi
-          ./target/release/libModelicaFMI.dylib
+        name: ${{ matrix.artifact }}
+        path: ${{ matrix.paths }}
         if-no-files-found: error
   build-modelica-library:
     runs-on: ubuntu-22.04
-    needs: [build-win64-binaries, build-linux64-binaries, build-darwin64-binaries]
+    needs: build-binaries
     steps:
     - uses: actions/checkout@v7
       with:

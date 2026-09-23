@@ -143,7 +143,7 @@ pub fn format_modelica_array(values: &[String], size: &[usize]) -> String {
     }
 
     // Recursive case: N-D array
-    let sub_sizes = &size[1..];
+    let sub_sizes = size.get(1..).unwrap_or_default();
 
     // Calculate the total number of scalar elements per element of the outer dimension
     let sub_element_count: usize = sub_sizes.iter().product();

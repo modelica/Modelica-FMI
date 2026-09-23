@@ -37,6 +37,14 @@ macro_rules! call {
     };
 }
 
+macro_rules! not_implemented {
+    ($instance:expr) => {
+        let instance = get_instance!($instance);
+        instance.log_error("Not implemented".to_owned());
+        return;
+    };
+}
+
 /***************************************************
 Common Functions
 ****************************************************/
@@ -195,10 +203,7 @@ Model Exchange
 
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn FMU_FMI2EnterEventMode(instance: *mut c_void) {
-    let instance = get_instance!(instance);
-    let fmu = get_fmu!(instance);
-    todo!()
-    // call!(instance, fmu.enterEventMode());
+    not_implemented!(instance);
 }
 
 #[unsafe(no_mangle)]
@@ -207,23 +212,17 @@ pub unsafe extern "C" fn FMU_FMI2NewDiscreteStates(
     valuesOfContinuousStatesChanged: *mut i32,
     nextEventTime: *mut f64,
 ) {
-    todo!()
+    not_implemented!(instance);
 }
 
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn FMU_FMI2EnterContinuousTimeMode(instance: *mut c_void) {
-    let instance = get_instance!(instance);
-    let fmu = get_fmu!(instance);
-    todo!()
-    // call!(instance, fmu.enterContinuousTimeMode());
+    not_implemented!(instance);
 }
 
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn FMU_FMI2SetTime(instance: *mut c_void, time: f64) {
-    let instance = get_instance!(instance);
-    let fmu = get_fmu!(instance);
-    // call!(instance, fmu.setTime(time));
-    todo!()
+    not_implemented!(instance);
 }
 
 #[unsafe(no_mangle)]
@@ -232,11 +231,7 @@ pub unsafe extern "C" fn FMU_FMI2SetContinuousStates(
     x: *const f64,
     nx: i32,
 ) {
-    let instance = get_instance!(instance);
-    let fmu = get_fmu!(instance);
-    let x = unsafe { std::slice::from_raw_parts(x, nx as usize) };
-    // call!(instance, fmu.setContinuousStates(x));
-    todo!()
+    not_implemented!(instance);
 }
 
 #[unsafe(no_mangle)]
@@ -245,11 +240,7 @@ pub unsafe extern "C" fn FMU_FMI2GetDerivatives(
     derivatives: *mut f64,
     nx: i32,
 ) {
-    let instance = get_instance!(instance);
-    let fmu = get_fmu!(instance);
-    let derivatives = unsafe { std::slice::from_raw_parts_mut(derivatives, nx as usize) };
-    // call!(instance, fmu.getDerivatives(derivatives));
-    todo!()
+    not_implemented!(instance);
 }
 
 #[unsafe(no_mangle)]
@@ -258,20 +249,12 @@ pub unsafe extern "C" fn FMU_FMI2GetEventIndicators(
     eventIndicators: *mut f64,
     ni: i32,
 ) {
-    let instance = get_instance!(instance);
-    let fmu = get_fmu!(instance);
-    let eventIndicators = unsafe { std::slice::from_raw_parts_mut(eventIndicators, ni as usize) };
-    // call!(instance, fmu.getEventIndicators(eventIndicators));
-    todo!()
+    not_implemented!(instance);
 }
 
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn FMU_FMI2GetContinuousStates(instance: *mut c_void, x: *mut f64, nx: i32) {
-    let instance = get_instance!(instance);
-    let fmu = get_fmu!(instance);
-    let x = unsafe { std::slice::from_raw_parts_mut(x, nx as usize) };
-    // call!(instance, fmu.getContinuousStates(x));
-    todo!()
+    not_implemented!(instance);
 }
 
 /***************************************************

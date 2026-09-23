@@ -1,3 +1,5 @@
+#![allow(clippy::unwrap_used)]
+
 use std::path::{Path, PathBuf};
 
 fn test_library_root() -> PathBuf {

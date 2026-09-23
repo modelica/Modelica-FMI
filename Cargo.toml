@@ -8,3 +8,21 @@ edition = "2024"
 
 [workspace.dependencies]
 fmi-rs = "0.2.0"
+
+[workspace.lints.clippy]
+# Disallow explicit panicking mechanisms
+unwrap_used = "warn"
+expect_used = "warn"
+panic = "warn"
+todo = "warn"
+unimplemented = "warn"
+unreachable = "warn"
+panic_in_result_fn = "warn"
+
+# Disallow implicit panicking operations
+indexing_slicing = "warn"
+arithmetic_side_effects = "warn"
+
+# Additional safety lints for fallible operations
+out_of_bounds_indexing = "warn"
+string_slice = "warn"

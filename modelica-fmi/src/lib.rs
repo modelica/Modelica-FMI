@@ -81,7 +81,7 @@ pub fn update_package_order(output_file: &Path) -> io::Result<()> {
     fs::write(package_order, contents)
 }
 
-pub fn sha256_file(path: &Path) -> io::Result<String> {
+pub fn sha256_file(path: &Path) -> anyhow::Result<String> {
     let mut file = File::open(path)?;
     let mut hasher = Sha256::new();
     let mut buffer = [0_u8; 64 * 1024];
@@ -91,10 +91,14 @@ pub fn sha256_file(path: &Path) -> io::Result<String> {
         if bytes_read == 0 {
             break;
         }
-        hasher.update(&buffer[..bytes_read]);
+        hasher.update(
+            buffer
+                .get(..bytes_read)
+                .ok_or(anyhow!("Failed to read from buffer"))?,
+        );
     }
 
-    Ok(format!("{:x}", hasher.finalize()))
+    Ok(hex::encode(hasher.finalize()))
 }
 
 pub fn modelica_identifier(value: &str) -> String {
