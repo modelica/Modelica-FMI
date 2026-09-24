@@ -8,3 +8,4 @@ dist/
 modelica_fmi/tests/work/
 modelica_fmi/tests/resources/
 target/
+.vscode/

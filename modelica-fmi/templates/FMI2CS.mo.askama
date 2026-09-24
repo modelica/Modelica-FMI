@@ -1,0 +1,87 @@
+within {{ within }};
+
+block {{ class_name }}
+{%- if let Some(description) = description %}
+  "{{ description }}"
+{%- endif %}
+  extends FMI.Internal.FMU;
+
+  import FMI.FMI2.Types.*;
+  import FMI.FMI2.Interfaces.*;
+  import FMI.FMI2.Functions.*;
+
+  parameter Modelica.Units.SI.Time communicationStepSize = 0.01 annotation(Dialog(tab="FMI", group="Parameters"));
+
+{%- for variable in parameters %}
+  parameter FMI2{{ variable.variableType.name() }} {{ id(variable.name) }} = {{ variable.start_literal()? }}{{ variable.description_literal() }};
+{%- endfor %}
+{%- for variable in inputs %}
+  parameter FMI2{{ variable.variableType.name() }} {{ id(variable.name) }}_start = {{ variable.start_literal()? }} annotation(Dialog(tab="Initial", group="Start Values"));
+{%- endfor %}
+
+{%- for variable in inputs %}
+  FMI2{{ variable.variableType.name() }}Input {{ variable.name }}(start={{ variable.name }}_start){{ variable.description_literal() }}{{ annotation(variable.name.as_str()) }};
+{%- endfor %}
+
+{%- for variable in outputs %}
+  FMI2{{ variable.variableType.name() }}Output {{ variable.name }}{{ variable.description_literal() }}{{ annotation(variable.name.as_str()) }};
+{%- endfor %}
+
+initial algorithm
+
+  FMI.Internal.loadFMU(
+    instance=instance,
+    unzipdir=Modelica.Utilities.Files.loadResource("{{ unzipdir }}"),
+    fmiVersion=2,
+    modelIdentifier="{{ model_identifier }}",
+    instanceName=getInstanceName(),
+    interfaceType=1,
+    instantiationToken="{{ instantiation_token }}",
+    visible=visible,
+    loggingOn=loggingOn,
+    logFMICalls=logFMICalls,
+    logToFile=logToFile,
+    logFile=logFile,
+    copyPlatformBinary=false);
+
+  FMI.Internal.Logging.logMessages(instance);
+
+  startTime := time;
+{% for variable in parameters %}
+  FMI2Set{{ variable.variableType.name() }}(instance, valueReferences={ {{ variable.valueReference }} }, nValues=1, values={ {{ id(variable.name) }} });
+{%- endfor %}
+
+  FMI2SetupExperiment(instance,
+    toleranceDefined=tolerance > 0.0,
+    tolerance=tolerance,
+    startTime=startTime,
+    stopTimeDefined=stopTime < Modelica.Constants.inf,
+    stopTime=stopTime);
+
+  FMI2EnterInitializationMode(instance);
+
+  FMI2ExitInitializationMode(instance);
+
+algorithm
+
+  when sample(startTime, communicationStepSize) then
+
+{%- for variable in inputs %}
+    FMI2Set{{ variable.variableType.name() }}(instance, valueReferences={ {{ variable.valueReference }} }, nValues=1, values={ pre({{ id(variable.name) }}) });    
+{%- endfor %}
+
+    if time >= startTime + communicationStepSize then
+      FMI2DoStep(instance,
+        currentCommunicationPoint=time - communicationStepSize,
+        communicationStepSize=communicationStepSize,
+        noSetFMUStatePriorToCurrentPoint=true);
+    end if;
+{% for variable in outputs %}
+    {{ variable.name }} := FMI2Get{{ variable.variableType.name() }}(instance, valueReference={{ variable.valueReference }});    
+{%- endfor %}
+
+  end when;
+
+{% include "annotation.mo.askama" %}
+
+end {{ class_name }};

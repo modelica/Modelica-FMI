@@ -1,3 +1,0 @@
-[workspace]
-members = ["fmi", "ModelicaFMI"]
-resolver = "3"
