@@ -111,11 +111,14 @@ pub unsafe extern "C" fn FMU_FMI3GetFloat32(
     let valueReferences = [valueReference as u32];
     let values = unsafe { std::slice::from_raw_parts_mut(values, nValues as usize) };
 
-    let mut buffer = vec![0f32; nValues as usize];
+    instance.f32_buffer.resize(nValues as usize, 0.0);
 
-    call!(instance, fmu.getFloat32(&valueReferences, &mut buffer[..]));
+    call!(
+        instance,
+        fmu.getFloat32(&valueReferences, &mut instance.f32_buffer)
+    );
 
-    for (b, v) in buffer.iter().zip(values) {
+    for (b, v) in instance.f32_buffer.iter().zip(values) {
         *v = *b as f64;
     }
 }
@@ -149,11 +152,14 @@ pub unsafe extern "C" fn FMU_FMI3GetInt8(
     let valueReferences = [valueReference as u32];
     let values = unsafe { std::slice::from_raw_parts_mut(values, nValues as usize) };
 
-    let mut buffer = vec![0i8; nValues as usize];
+    instance.i8_buffer.resize(nValues as usize, i8::default());
 
-    call!(instance, fmu.getInt8(&valueReferences, &mut buffer[..]));
+    call!(
+        instance,
+        fmu.getInt8(&valueReferences, &mut instance.i8_buffer)
+    );
 
-    for (b, v) in buffer.iter().zip(values) {
+    for (b, v) in instance.i8_buffer.iter().zip(values) {
         *v = *b as i32;
     }
 }
@@ -171,11 +177,14 @@ pub unsafe extern "C" fn FMU_FMI3GetUInt8(
     let valueReferences = [valueReference as u32];
     let values = unsafe { std::slice::from_raw_parts_mut(values, nValues as usize) };
 
-    let mut buffer = vec![0u8; nValues as usize];
+    instance.u8_buffer.resize(nValues as usize, u8::default());
 
-    call!(instance, fmu.getUInt8(&valueReferences, &mut buffer[..]));
+    call!(
+        instance,
+        fmu.getUInt8(&valueReferences, &mut instance.u8_buffer)
+    );
 
-    for (b, v) in buffer.iter().zip(values) {
+    for (b, v) in instance.u8_buffer.iter().zip(values) {
         *v = *b as i32;
     }
 }
@@ -193,11 +202,14 @@ pub unsafe extern "C" fn FMU_FMI3GetInt16(
     let valueReferences = [valueReference as u32];
     let values = unsafe { std::slice::from_raw_parts_mut(values, nValues as usize) };
 
-    let mut buffer = vec![0i16; nValues as usize];
+    instance.i16_buffer.resize(nValues as usize, i16::default());
 
-    call!(instance, fmu.getInt16(&valueReferences, &mut buffer[..]));
+    call!(
+        instance,
+        fmu.getInt16(&valueReferences, &mut instance.i16_buffer)
+    );
 
-    for (b, v) in buffer.iter().zip(values) {
+    for (b, v) in instance.i16_buffer.iter().zip(values) {
         *v = *b as i32;
     }
 }
@@ -215,11 +227,14 @@ pub unsafe extern "C" fn FMU_FMI3GetUInt16(
     let valueReferences = [valueReference as u32];
     let values = unsafe { std::slice::from_raw_parts_mut(values, nValues as usize) };
 
-    let mut buffer = vec![0u16; nValues as usize];
+    instance.u16_buffer.resize(nValues as usize, u16::default());
 
-    call!(instance, fmu.getUInt16(&valueReferences, &mut buffer[..]));
+    call!(
+        instance,
+        fmu.getUInt16(&valueReferences, &mut instance.u16_buffer)
+    );
 
-    for (b, v) in buffer.iter().zip(values) {
+    for (b, v) in instance.u16_buffer.iter().zip(values) {
         *v = *b as i32;
     }
 }
@@ -253,11 +268,14 @@ pub unsafe extern "C" fn FMU_FMI3GetUInt32(
     let valueReferences = [valueReference as u32];
     let values = unsafe { std::slice::from_raw_parts_mut(values, nValues as usize) };
 
-    let mut buffer = vec![0u32; nValues as usize];
+    instance.u32_buffer.resize(nValues as usize, u32::default());
 
-    call!(instance, fmu.getUInt32(&valueReferences, &mut buffer[..]));
+    call!(
+        instance,
+        fmu.getUInt32(&valueReferences, &mut instance.u32_buffer)
+    );
 
-    for (b, v) in buffer.iter().zip(values) {
+    for (b, v) in instance.u32_buffer.iter().zip(values) {
         *v = *b as i32;
     }
 }
@@ -275,11 +293,14 @@ pub unsafe extern "C" fn FMU_FMI3GetInt64(
     let valueReferences = [valueReference as u32];
     let values = unsafe { std::slice::from_raw_parts_mut(values, nValues as usize) };
 
-    let mut buffer = vec![0i64; nValues as usize];
+    instance.i64_buffer.resize(nValues as usize, i64::default());
 
-    call!(instance, fmu.getInt64(&valueReferences, &mut buffer[..]));
+    call!(
+        instance,
+        fmu.getInt64(&valueReferences, &mut instance.i64_buffer)
+    );
 
-    for (b, v) in buffer.iter().zip(values) {
+    for (b, v) in instance.i64_buffer.iter().zip(values) {
         *v = *b as i32;
     }
 }
@@ -297,11 +318,14 @@ pub unsafe extern "C" fn FMU_FMI3GetUInt64(
     let valueReferences = [valueReference as u32];
     let values = unsafe { std::slice::from_raw_parts_mut(values, nValues as usize) };
 
-    let mut buffer = vec![0u64; nValues as usize];
+    instance.u64_buffer.resize(nValues as usize, u64::default());
 
-    call!(instance, fmu.getUInt64(&valueReferences, &mut buffer[..]));
+    call!(
+        instance,
+        fmu.getUInt64(&valueReferences, &mut instance.u64_buffer)
+    );
 
-    for (b, v) in buffer.iter().zip(values) {
+    for (b, v) in instance.u64_buffer.iter().zip(values) {
         *v = *b as i32;
     }
 }
@@ -319,11 +343,16 @@ pub unsafe extern "C" fn FMU_FMI3GetBoolean(
     let valueReferences = [valueReference as u32];
     let values = unsafe { std::slice::from_raw_parts_mut(values, nValues as usize) };
 
-    let mut buffer = vec![false; nValues as usize];
+    instance
+        .bool_buffer
+        .resize(nValues as usize, bool::default());
 
-    call!(instance, fmu.getBoolean(&valueReferences, &mut buffer[..]));
+    call!(
+        instance,
+        fmu.getBoolean(&valueReferences, &mut instance.bool_buffer)
+    );
 
-    for (b, v) in buffer.iter().zip(values) {
+    for (b, v) in instance.bool_buffer.iter().zip(values) {
         *v = *b as i32;
     }
 }
@@ -344,13 +373,16 @@ pub unsafe extern "C" fn FMU_FMI3SetFloat32(
     };
     let values = unsafe { std::slice::from_raw_parts(values, nValues as usize) };
 
-    let mut buffer = vec![0f32; nValues as usize];
+    instance.f32_buffer.resize(nValues as usize, f32::default());
 
-    for (b, v) in buffer.iter_mut().zip(values) {
+    for (b, v) in instance.f32_buffer.iter_mut().zip(values) {
         *b = *v as f32;
     }
 
-    call!(instance, fmu.setFloat32(valueReferences, &buffer[..]));
+    call!(
+        instance,
+        fmu.setFloat32(valueReferences, &instance.f32_buffer)
+    );
 }
 
 #[unsafe(no_mangle)]
@@ -388,13 +420,13 @@ pub unsafe extern "C" fn FMU_FMI3SetInt8(
     };
     let values = unsafe { std::slice::from_raw_parts(values, nValues as usize) };
 
-    let mut buffer = vec![0i8; nValues as usize];
+    instance.i8_buffer.resize(nValues as usize, i8::default());
 
-    for (b, v) in buffer.iter_mut().zip(values) {
+    for (b, v) in instance.i8_buffer.iter_mut().zip(values) {
         *b = *v as i8;
     }
 
-    call!(instance, fmu.setInt8(valueReferences, &buffer[..]));
+    call!(instance, fmu.setInt8(valueReferences, &instance.i8_buffer));
 }
 
 #[unsafe(no_mangle)]
@@ -413,13 +445,13 @@ pub unsafe extern "C" fn FMU_FMI3SetUInt8(
     };
     let values = unsafe { std::slice::from_raw_parts(values, nValues as usize) };
 
-    let mut buffer = vec![0u8; nValues as usize];
+    instance.u8_buffer.resize(nValues as usize, u8::default());
 
-    for (b, v) in buffer.iter_mut().zip(values) {
+    for (b, v) in instance.u8_buffer.iter_mut().zip(values) {
         *b = *v as u8;
     }
 
-    call!(instance, fmu.setUInt8(valueReferences, &buffer[..]));
+    call!(instance, fmu.setUInt8(valueReferences, &instance.u8_buffer));
 }
 
 #[unsafe(no_mangle)]
@@ -438,13 +470,16 @@ pub unsafe extern "C" fn FMU_FMI3SetInt16(
     };
     let values = unsafe { std::slice::from_raw_parts(values, nValues as usize) };
 
-    let mut buffer = vec![0i16; nValues as usize];
+    instance.i16_buffer.resize(nValues as usize, i16::default());
 
-    for (b, v) in buffer.iter_mut().zip(values) {
+    for (b, v) in instance.i16_buffer.iter_mut().zip(values) {
         *b = *v as i16;
     }
 
-    call!(instance, fmu.setInt16(valueReferences, &buffer[..]));
+    call!(
+        instance,
+        fmu.setInt16(valueReferences, &instance.i16_buffer)
+    );
 }
 
 #[unsafe(no_mangle)]
@@ -463,13 +498,16 @@ pub unsafe extern "C" fn FMU_FMI3SetUInt16(
     };
     let values = unsafe { std::slice::from_raw_parts(values, nValues as usize) };
 
-    let mut buffer = vec![0u16; nValues as usize];
+    instance.u16_buffer.resize(nValues as usize, u16::default());
 
-    for (b, v) in buffer.iter_mut().zip(values) {
+    for (b, v) in instance.u16_buffer.iter_mut().zip(values) {
         *b = *v as u16;
     }
 
-    call!(instance, fmu.setUInt16(valueReferences, &buffer[..]));
+    call!(
+        instance,
+        fmu.setUInt16(valueReferences, &instance.u16_buffer)
+    );
 }
 
 #[unsafe(no_mangle)]
@@ -507,13 +545,16 @@ pub unsafe extern "C" fn FMU_FMI3SetUInt32(
     };
     let values = unsafe { std::slice::from_raw_parts(values, nValues as usize) };
 
-    let mut buffer = vec![0u32; nValues as usize];
+    instance.u32_buffer.resize(nValues as usize, u32::default());
 
-    for (b, v) in buffer.iter_mut().zip(values) {
+    for (b, v) in instance.u32_buffer.iter_mut().zip(values) {
         *b = *v as u32;
     }
 
-    call!(instance, fmu.setUInt32(valueReferences, &buffer[..]));
+    call!(
+        instance,
+        fmu.setUInt32(valueReferences, &instance.u32_buffer)
+    );
 }
 
 #[unsafe(no_mangle)]
@@ -532,13 +573,16 @@ pub unsafe extern "C" fn FMU_FMI3SetInt64(
     };
     let values = unsafe { std::slice::from_raw_parts(values, nValues as usize) };
 
-    let mut buffer = vec![0i64; nValues as usize];
+    instance.i64_buffer.resize(nValues as usize, i64::default());
 
-    for (b, v) in buffer.iter_mut().zip(values) {
+    for (b, v) in instance.i64_buffer.iter_mut().zip(values) {
         *b = *v as i64;
     }
 
-    call!(instance, fmu.setInt64(valueReferences, &buffer[..]));
+    call!(
+        instance,
+        fmu.setInt64(valueReferences, &instance.i64_buffer)
+    );
 }
 
 #[unsafe(no_mangle)]
@@ -557,13 +601,16 @@ pub unsafe extern "C" fn FMU_FMI3SetUInt64(
     };
     let values = unsafe { std::slice::from_raw_parts(values, nValues as usize) };
 
-    let mut buffer = vec![0u64; nValues as usize];
+    instance.u64_buffer.resize(nValues as usize, u64::default());
 
-    for (b, v) in buffer.iter_mut().zip(values) {
+    for (b, v) in instance.u64_buffer.iter_mut().zip(values) {
         *b = *v as u64;
     }
 
-    call!(instance, fmu.setUInt64(valueReferences, &buffer[..]));
+    call!(
+        instance,
+        fmu.setUInt64(valueReferences, &instance.u64_buffer)
+    );
 }
 
 #[unsafe(no_mangle)]
@@ -583,13 +630,18 @@ pub unsafe extern "C" fn FMU_FMI3SetBoolean(
 
     let values = unsafe { std::slice::from_raw_parts(values, nValues as usize) };
 
-    let mut buffer = vec![false; nValues as usize];
+    instance
+        .bool_buffer
+        .resize(nValues as usize, bool::default());
 
-    for (b, v) in buffer.iter_mut().zip(values) {
+    for (b, v) in instance.bool_buffer.iter_mut().zip(values) {
         *b = *v != 0;
     }
 
-    call!(instance, fmu.setBoolean(valueReferences, &buffer[..]));
+    call!(
+        instance,
+        fmu.setBoolean(valueReferences, &instance.bool_buffer)
+    );
 }
 
 #[unsafe(no_mangle)]

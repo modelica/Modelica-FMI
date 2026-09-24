@@ -32,6 +32,15 @@ pub struct FMUInstance {
     warning_messages: RefCell<Vec<String>>,
     error_messages: RefCell<Vec<String>>,
     message_buffer: RefCell<Vec<u8>>,
+    pub f32_buffer: Vec<f32>,
+    pub i8_buffer: Vec<i8>,
+    pub u8_buffer: Vec<u8>,
+    pub i16_buffer: Vec<i16>,
+    pub u16_buffer: Vec<u16>,
+    pub u32_buffer: Vec<u32>,
+    pub i64_buffer: Vec<i64>,
+    pub u64_buffer: Vec<u64>,
+    pub bool_buffer: Vec<bool>,
 }
 
 macro_rules! get_instance {
@@ -141,6 +150,15 @@ pub extern "C" fn FMU_Create() -> *mut c_void {
         warning_messages: RefCell::new(Vec::new()),
         error_messages: RefCell::new(Vec::new()),
         message_buffer: RefCell::new(Vec::new()),
+        f32_buffer: Vec::new(),
+        i8_buffer: Vec::new(),
+        u8_buffer: Vec::new(),
+        i16_buffer: Vec::new(),
+        u16_buffer: Vec::new(),
+        u32_buffer: Vec::new(),
+        i64_buffer: Vec::new(),
+        u64_buffer: Vec::new(),
+        bool_buffer: Vec::new(),
     });
 
     Arc::into_raw(instance) as *mut c_void
@@ -214,22 +232,15 @@ pub unsafe extern "C" fn FMU_Load(
     let instance: &mut FMUInstance = unsafe { &mut *(instance as *mut FMUInstance) };
 
     let unzipdir = to_str!(instance, unzipdir);
-    // let unzipdir = unsafe { std::ffi::CStr::from_ptr(unzipdir) };
     let unzipdir = Path::new(unzipdir);
 
-    // let modelIdentifier = unsafe { std::ffi::CStr::from_ptr(modelIdentifier) };
-    // let modelIdentifier = handle_err!(instance, modelIdentifier.to_str());
     let modelIdentifier = to_str!(instance, modelIdentifier);
 
     let share_library_filename = format!("{}{}", modelIdentifier, SHARED_LIBRARY_EXTENSION);
 
-    // let instanceName = unsafe { std::ffi::CStr::from_ptr(instanceName) };
-    // let instanceName = handle_err!(instance, instanceName.to_str());
     let instanceName = to_str!(instance, instanceName);
 
     instance.log_file = if logToFile != 0 {
-        // let log_file_cstr = unsafe { std::ffi::CStr::from_ptr(logFile) };
-        // let log_file_str = log_file_cstr.to_str().unwrap();
         let log_file_str = to_str!(instance, logFile);
         let mut log_file = handle_err!(instance, File::create(log_file_str));
         Some(RefCell::new(log_file))
@@ -240,8 +251,6 @@ pub unsafe extern "C" fn FMU_Load(
     let visible = visible != 0;
     let loggingOn = loggingOn != 0;
     let resources_path = unzipdir.join("resources").join("");
-    // let guid = unsafe { std::ffi::CStr::from_ptr(instantiationToken) };
-    // let guid = guid.to_str().unwrap();
     let guid = to_str!(instance, instantiationToken);
 
     let logCalls = logFMICalls != 0;
