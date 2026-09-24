@@ -3,7 +3,7 @@ function importFMU "Import an FMU"
 
   input String fmuPath "Path to the FMU to import" annotation(Dialog(loadSelector(filter="FMU files (*.fmu)", caption="Select FMU file")));
   input String modelPath "Path to the Modelica file to create" annotation(Dialog(saveSelector(filter="Modelica files (*.mo)", caption="New Modelica file")));
-  input Boolean overwrite = true "Overwrite existing files" annotation (choices(checkBox=true));
+  input Boolean overwrite = false "Overwrite existing files" annotation (choices(checkBox=true));
   output Boolean success;
 
 protected
@@ -20,16 +20,20 @@ algorithm
     command := command + " --overwrite";
   end if;
 
-  command := command + " \"" + fmuPath + "\" \"" + modelPath + "\" > \"" + tempFile + "\"";
+  command := command + " \"" + fmuPath + "\" \"" + modelPath + "\" 2> \"" + tempFile + "\"";
 
   Modelica.Utilities.Streams.print("Executing command: " + command);
 
   success := Modelica.Utilities.System.command(command) == 0;
 
-  lines := Modelica.Utilities.Streams.readFile(tempFile);
+  if success then
+    DymolaCommands.SimulatorAPI.openModel(modelPath, changeDirectory=false);
+  else
+    lines := Modelica.Utilities.Streams.readFile(tempFile);
 
-  for i in 1:size(lines, 1) loop
-    Modelica.Utilities.Streams.print(lines[i] + "\n");
-  end for;
+    for i in 1:size(lines, 1) loop
+      Modelica.Utilities.Streams.print(lines[i] + "\n");
+    end for;
+  end if;
 
 end importFMU;
