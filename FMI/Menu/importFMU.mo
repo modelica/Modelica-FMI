@@ -1,10 +1,9 @@
 within FMI.Menu;
-function importFMU
+function importFMU "Import an FMU"
 
-  input String fmuPath = "C:/Users/tsr2/Documents/Dymola/Feedthrough.fmu" "Path to the FMU to import" annotation(Dialog(loadSelector(filter="FMU files (*.fmu)", caption="Select FMU file")));
-  input String modelPath = "C:/Users/tsr2/Documents/Dymola/Feeder.mo" "Path to the Modelica file to create" annotation(Dialog(saveSelector(filter="Modelica files (*.mo)", caption="New Modelica file")));
+  input String fmuPath "Path to the FMU to import" annotation(Dialog(loadSelector(filter="FMU files (*.fmu)", caption="Select FMU file")));
+  input String modelPath "Path to the Modelica file to create" annotation(Dialog(saveSelector(filter="Modelica files (*.mo)", caption="New Modelica file")));
   input Boolean overwrite = true "Overwrite existing files" annotation (choices(checkBox=true));
-  output String fullOutput = "";
   output Boolean success;
 
 protected
@@ -30,11 +29,7 @@ algorithm
   lines := Modelica.Utilities.Streams.readFile(tempFile);
 
   for i in 1:size(lines, 1) loop
-    fullOutput := fullOutput + lines[i] + "\n";
+    Modelica.Utilities.Streams.print(lines[i] + "\n");
   end for;
-
-  Modelica.Utilities.Streams.print(fullOutput);
-
-  annotation(__Dymola_interactive=true);
 
 end importFMU;

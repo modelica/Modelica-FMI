@@ -16,5 +16,5 @@ modelica-fmi /path/to/BouncingBall.fmu /path/to/BouncingBall.mo
 </pre>
 </p>
 
-</html>"));
+</html>"), __Dymola_containsMenu=true);
 end FMI;
